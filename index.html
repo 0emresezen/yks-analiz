@@ -3,6 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             script-src 'self' 'unsafe-inline';
+             style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+             font-src 'self' https://fonts.gstatic.com;
+             connect-src 'self' https://*.supabase.co;
+             img-src 'self' data:;
+             object-src 'none';">
   <title>YKS Tercih Veritabanı & Ultimate Karar Platformu</title>
 
   <!-- Clean Monospace & Sans-Serif Fonts -->
@@ -62,6 +71,10 @@
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>
         Karşılaştırma Laboratuvarı
       </button>
+      <button class="nav-tab" data-tab="tab-stats">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Platform İstatistikleri
+      </button>
     </nav>
   </header>
 
@@ -71,48 +84,6 @@
     <!-- TAB 1: Ana Tercih Listesi -->
     <section class="tab-content active" id="tab-main-list">
       <div class="table-card">
-        
-        <!-- Dynamic Profile Weight Controller -->
-        <div class="weight-controller-box">
-          <div class="weight-controller-header">
-            <h3>⚡ Dinamik Profil Karar Motoru</h3>
-            <p>Tercih puanlarınızı hedeflerinize göre ağırlıklandırın.</p>
-          </div>
-          <div class="weight-controls-row">
-            <div class="filter-group">
-              <label for="profile-select" style="font-weight: 600;">Tercih Profili:</label>
-              <select id="profile-select" class="compact-select">
-                <option value="career">💼 Kariyer Odaklı (Prestij & İstihdam)</option>
-                <option value="academic">🔬 Akademi Odaklı (Araştırma & Kadro)</option>
-                <option value="student">🎭 Öğrenci Hayatı Odaklı (Sosyallik & Ulaşım)</option>
-                <option value="software">💻 Yazılım/Bilişim Odaklı (Sektör & Ekosistem)</option>
-                <option value="custom">⚙️ Özel Ağırlıklı (Manuel)</option>
-              </select>
-            </div>
-            <div id="sliders-container" class="sliders-grid">
-              <div class="slider-item">
-                <span class="slider-label">Prestij: <strong id="val-w-prestige">40</strong>%</span>
-                <input type="range" id="slide-w-prestige" min="0" max="100" value="40" class="weight-slider">
-              </div>
-              <div class="slider-item">
-                <span class="slider-label">Akademik Kadro: <strong id="val-w-academic">30</strong>%</span>
-                <input type="range" id="slide-w-academic" min="0" max="100" value="30" class="weight-slider">
-              </div>
-              <div class="slider-item">
-                <span class="slider-label">Ulaşım & KYK: <strong id="val-w-transport">15</strong>%</span>
-                <input type="range" id="slide-w-transport" min="0" max="100" value="15" class="weight-slider">
-              </div>
-              <div class="slider-item">
-                <span class="slider-label">Öğrenci Hayatı: <strong id="val-w-student">15</strong>%</span>
-                <input type="range" id="slide-w-student" min="0" max="100" value="15" class="weight-slider">
-              </div>
-              <div class="slider-item sum-item">
-                <span class="slider-label">Ağırlık Toplamı: <strong id="val-w-sum">100</strong>%</span>
-                <div class="sum-bar-bg"><div id="sum-bar-fill" class="sum-bar-fill ok" style="width: 100%;"></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
         <!-- Search & Filter Controls -->
         <div class="filter-bar">
           <div class="segment-controls">
@@ -175,10 +146,14 @@
             </select>
           </div>
 
-          <div class="filter-group" style="margin-left: auto;">
-            <button id="btn-restore-all" class="btn btn-outline btn-sm" title="Sıfırla">
-              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-              Sıfırla
+          <div class="filter-group" style="margin-left: auto; display: flex; gap: 0.5rem;">
+            <button id="btn-open-add-program-modal" class="btn btn-primary btn-sm" title="Yeni Bölüm Ekle" style="display: flex; align-items: center; gap: 0.25rem;">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Bölüm Ekle
+            </button>
+            <button id="btn-restore-all" class="btn btn-outline btn-sm" title="Tüm listeyi temizle">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Tümünü Sil
             </button>
           </div>
         </div>
@@ -271,14 +246,18 @@
 
         <!-- Active Duel Area -->
         <div id="wizard-active-duel" class="duel-area hidden">
-          <div class="wizard-layout-grid">
+          <div class="wizard-layout-grid side-collapsed" id="wizard-layout-grid">
             <div class="wizard-main-pane">
               <div class="duel-progress" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 200px;">
                   <span id="duel-step-text">Karşılaştırma 1 / 10</span>
                   <div class="progress-bar-bg"><div id="duel-progress-fill" class="progress-bar-fill"></div></div>
                 </div>
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                  <button type="button" id="btn-toggle-wizard-side" class="btn btn-outline btn-sm wizard-side-toggle" aria-expanded="false" aria-controls="wizard-side-pane-body">
+                    <svg class="icon-svg side-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+                    Tercih Geçmişi
+                  </button>
                   <button id="btn-wizard-show-results" class="btn btn-primary btn-sm hidden">Sonuçları Göster</button>
                   <button id="btn-wizard-undo" class="btn btn-outline btn-sm" disabled>
                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
@@ -293,52 +272,124 @@
                 
                 <!-- Option A Card -->
                 <div class="duel-card option-card" id="option-a-card" data-choice="A">
-                  <span class="option-badge">SEÇENEK A</span>
+                  <div class="duel-card-top">
+                    <span class="option-badge">SEÇENEK A</span>
+                    <button type="button" class="btn btn-outline btn-sm btn-wizard-inspect" id="btn-inspect-a" title="Detaylı İncele" aria-label="Seçenek A detaylarını incele">
+                      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      İncele
+                    </button>
+                  </div>
                   <h3 id="opt-a-title" class="opt-title">-</h3>
                   <span id="opt-a-sub" class="opt-sub">-</span>
 
                   <div class="opt-metrics-grid">
-                    <div class="opt-metric"><span>Ulaşım / KYK:</span> <strong id="opt-a-trans">-</strong></div>
-                    <div class="opt-metric"><span>ÜNİAR Memnuniyet:</span> <strong id="opt-a-uniar">-</strong></div>
-                    <div class="opt-metric"><span>Prestij:</span> <strong id="opt-a-prestige">-</strong></div>
-                    <div class="opt-metric"><span>Akademik Kadro:</span> <strong id="opt-a-academic">-</strong></div>
-                    <div class="opt-metric"><span>Tahmini Sıralama:</span> <strong id="opt-a-pred">-</strong></div>
+                    <div class="opt-metric-row">
+                      <div class="opt-metric-header">
+                        <span class="opt-metric-name">Ulaşım / KYK</span>
+                        <span class="opt-metric-value" id="opt-a-trans-val">-</span>
+                      </div>
+                      <div class="opt-metric-desc" id="opt-a-trans-desc">-</div>
+                    </div>
+                    <div class="opt-metric-row">
+                      <div class="opt-metric-header">
+                        <span class="opt-metric-name">ÜNİAR Memnuniyet</span>
+                        <span class="opt-metric-value" id="opt-a-uniar-val">-</span>
+                      </div>
+                      <div class="opt-metric-desc" id="opt-a-uniar-desc">-</div>
+                    </div>
+                    <div class="opt-metric-row">
+                      <div class="opt-metric-header">
+                        <span class="opt-metric-name">Prestij</span>
+                        <span class="opt-metric-value" id="opt-a-prestige">-</span>
+                      </div>
+                    </div>
+                    <div class="opt-metric-row">
+                      <div class="opt-metric-header">
+                        <span class="opt-metric-name">Akademik Kadro</span>
+                        <span class="opt-metric-value" id="opt-a-academic">-</span>
+                      </div>
+                    </div>
+                    <div class="opt-metric-row">
+                      <div class="opt-metric-header">
+                        <span class="opt-metric-name">Geçen Yıl / Tahmini Sıralama</span>
+                        <span class="opt-metric-value" id="opt-a-pred">-</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <button class="btn btn-primary btn-select-choice">Seçenek A'yı Seç (Tuş: 1 / A / Left)</button>
+                  <div class="duel-card-actions">
+                    <button type="button" class="btn btn-primary btn-select-choice">Seçenek A'yı Seç (Tuş: 1 / A / Left)</button>
+                  </div>
                 </div>
 
                 <div class="duel-vs">VS</div>
 
                 <!-- Option B Card -->
                 <div class="duel-card option-card" id="option-b-card" data-choice="B">
-                  <span class="option-badge">SEÇENEK B</span>
+                  <div class="duel-card-top">
+                    <span class="option-badge">SEÇENEK B</span>
+                    <button type="button" class="btn btn-outline btn-sm btn-wizard-inspect" id="btn-inspect-b" title="Detaylı İncele" aria-label="Seçenek B detaylarını incele">
+                      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      İncele
+                    </button>
+                  </div>
                   <h3 id="opt-b-title" class="opt-title">-</h3>
                   <span id="opt-b-sub" class="opt-sub">-</span>
 
                   <div class="opt-metrics-grid">
-                    <div class="opt-metric"><span>Ulaşım / KYK:</span> <strong id="opt-b-trans">-</strong></div>
-                    <div class="opt-metric"><span>ÜNİAR Memnuniyet:</span> <strong id="opt-b-uniar">-</strong></div>
-                    <div class="opt-metric"><span>Prestij:</span> <strong id="opt-b-prestige">-</strong></div>
-                    <div class="opt-metric"><span>Akademik Kadro:</span> <strong id="opt-b-academic">-</strong></div>
-                    <div class="opt-metric"><span>Tahmini Sıralama:</span> <strong id="opt-b-pred">-</strong></div>
+                    <div class="opt-metric-row">
+                      <div class="opt-metric-header">
+                        <span class="opt-metric-name">Ulaşım / KYK</span>
+                        <span class="opt-metric-value" id="opt-b-trans-val">-</span>
+                      </div>
+                      <div class="opt-metric-desc" id="opt-b-trans-desc">-</div>
+                    </div>
+                    <div class="opt-metric-row">
+                      <div class="opt-metric-header">
+                        <span class="opt-metric-name">ÜNİAR Memnuniyet</span>
+                        <span class="opt-metric-value" id="opt-b-uniar-val">-</span>
+                      </div>
+                      <div class="opt-metric-desc" id="opt-b-uniar-desc">-</div>
+                    </div>
+                    <div class="opt-metric-row">
+                      <div class="opt-metric-header">
+                        <span class="opt-metric-name">Prestij</span>
+                        <span class="opt-metric-value" id="opt-b-prestige">-</span>
+                      </div>
+                    </div>
+                    <div class="opt-metric-row">
+                      <div class="opt-metric-header">
+                        <span class="opt-metric-name">Akademik Kadro</span>
+                        <span class="opt-metric-value" id="opt-b-academic">-</span>
+                      </div>
+                    </div>
+                    <div class="opt-metric-row">
+                      <div class="opt-metric-header">
+                        <span class="opt-metric-name">Geçen Yıl / Tahmini Sıralama</span>
+                        <span class="opt-metric-value" id="opt-b-pred">-</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <button class="btn btn-primary btn-select-choice">Seçenek B'yi Seç (Tuş: 2 / B / Right)</button>
+                  <div class="duel-card-actions">
+                    <button type="button" class="btn btn-primary btn-select-choice">Seçenek B'yi Seç (Tuş: 2 / B / Right)</button>
+                  </div>
                 </div>
 
               </div>
             </div>
 
-            <div class="wizard-side-pane">
+            <aside class="wizard-side-pane collapsed" id="wizard-side-pane" aria-label="Tercih geçmişi paneli">
               <div class="side-pane-header">
-                <h3>Karşılaştırma Listesi</h3>
-                <p>Soruları inceleyin veya doğrudan cevabını değiştirmek için tıklayın.</p>
+                <h3>Tercih Geçmişi</h3>
+                <p>Karşılaştırmalarınızı inceleyin veya cevabınızı değiştirmek için tıklayın.</p>
               </div>
-              <div id="wizard-questions-list" class="questions-list">
-                <!-- Dynamically populated -->
+              <div id="wizard-side-pane-body" class="side-pane-body">
+                <div id="wizard-questions-list" class="questions-list">
+                  <!-- Dynamically populated -->
+                </div>
               </div>
-            </div>
+            </aside>
           </div>
         </div>
 
@@ -365,6 +416,26 @@
             </table>
           </div>
         </div>
+
+        <aside class="wizard-info-note card" aria-label="Tercih sihirbazı hakkında bilgi">
+          <div class="wizard-info-note-header">
+            <svg class="icon-svg wizard-info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <h3>Bu yöntem neden mantıklı?</h3>
+          </div>
+          <p class="wizard-info-lead">
+            Onlarca bölümü tek seferde sıralamaya çalışmak kafanızı karıştırır. İkili karşılaştırma, her adımda yalnızca iki seçenek arasında karar vermenizi ister — tıpkı gerçek tercih sürecinde yaptığınız gibi.
+          </p>
+          <div class="wizard-info-grid">
+            <div class="wizard-info-item">
+              <strong>Çoğu kişinin atladığı sorular</strong>
+              <p>“Bu ikisinden biri gelirse hangisini seçerdim?”, “Sadece isim prestijine mi bakıyorum, yoksa 4 yıl boyunca yaşayacağım şehir ve kampüs hayatı benim için fark yaratır mı?”, “Bu bölümde mezun olanlar gerçekten istediğim alana mı gidiyor?” — sihirbaz bu soruları sormadan geçmenizi zorlaştırır.</p>
+            </div>
+            <div class="wizard-info-item">
+              <strong>Kararsız kaldığınız eşleşmeler kritiktir</strong>
+              <p>En çok düşündüğünüz, seçim yaparken tereddüt ettiğiniz karşılaştırmalar listenizdeki en önemli sınır çizgileridir. Bu ikilileri aceleye getirmeyin; gerekirse geri dönüp yeniden değerlendirin. Listenin üst sıraları ile alt sıraları arasındaki gerçek ayrım çoğu zaman tam bu noktalarda belirlenir.</p>
+            </div>
+          </div>
+        </aside>
 
       </div>
     </section>
@@ -475,12 +546,28 @@
       </div>
     </section>
 
+    <!-- TAB 5: Platform İstatistikleri -->
+    <section class="tab-content" id="tab-stats">
+      <div class="stats-page">
+        <div class="stats-hero card">
+          <h2>Platform İstatistikleri</h2>
+          <p>Anonim kullanım sayıları — kişisel bilgi toplanmaz.</p>
+        </div>
+
+        <div id="stats-simple-grid" class="stats-simple-grid">
+          <!-- Rendered via JS -->
+        </div>
+
+        <p id="stats-footnote" class="stats-footnote" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
   </main>
 
-  <!-- Persistent Footer Disclaimer -->
-  <footer class="app-footer" style="padding: 1.5rem; text-align: center; border-top: 1px solid var(--border); margin-top: 3rem; background: var(--muted); font-size: 0.8125rem; color: var(--muted-foreground);">
-    <p>⚡ <strong>YKS Tercih & Karar Platformu:</strong> Bu sistem tercih sürecinizde yalnızca rehberlik ve destek amaçlıdır. Sistemdeki veriler ve regresyon modelleri tahmini değerler sunar ve hata riski barındırabilir.</p>
-    <p style="margin-top: 0.25rem;">Nihai kararlarınızın sorumluluğu tamamen size aittir; tercihlerinizi göndermeden önce mutlaka resmi <strong>ÖSYM Tercih Kılavuzu</strong> ve <strong>YÖK Atlas</strong> verileriyle teyit ediniz.</p>
+  <footer class="app-footer">
+    <p>Tercih listeniz bu tarayıcıda otomatik kaydedilir; hesap açmanız gerekmez.</p>
+    <p>Buradaki sıralama ve puanlar tahminidir. Tercih vermeden önce <a href="https://yokatlas.yok.gov.tr/" target="_blank" rel="noopener noreferrer">YÖK Atlas</a> ve ÖSYM kılavuzunu kontrol edin.</p>
+    <p class="app-footer-fine">Bu site rehberlik amaçlıdır; nihai karar size aittir.</p>
   </footer>
 
   <!-- Department Detail Modal Drawer -->
@@ -512,13 +599,13 @@
             <div class="eval-block">
               <div class="eval-block-header">
                 <h3>Genel Değerlendirme & Analiz</h3>
-                <span id="modal-eval-badge" class="ai-badge hidden">✨ Gemini AI</span>
+                <span id="modal-eval-badge" class="ai-badge hidden">Gemini AI</span>
               </div>
               <div id="modal-general-eval">-</div>
             </div>
 
-            <div class="history-table-box">
-              <h3>Son 4 Yıl Sıralama ve Kontenjan Değişimi</h3>
+            <details class="collapsible-section history-table-box">
+              <summary>Son 4 Yıl Sıralama ve Kontenjan Değişimi</summary>
               <table class="history-table">
                 <thead>
                   <tr>
@@ -540,7 +627,7 @@
                   </tr>
                 </tbody>
               </table>
-            </div>
+            </details>
 
             <div>
               <h3>Değerlendirme ve Notlar</h3>
@@ -577,27 +664,87 @@
     </div>
   </div>
 
-  <!-- Disclaimer Modal -->
-  <div id="disclaimer-modal" class="modal-overlay hidden">
-    <div class="modal-card" style="max-width: 500px;">
+  <div id="disclaimer-modal" class="modal-overlay hidden" role="dialog" aria-labelledby="disclaimer-title" aria-modal="true">
+    <div class="modal-card disclaimer-card">
       <div class="modal-header">
-        <h2 style="font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 700;">
-          ⚠️ Yasal Sorumluluk Reddi & Bilgilendirme
+        <h2 id="disclaimer-title" class="disclaimer-title">Kısa bilgilendirme</h2>
+      </div>
+      <div class="modal-body disclaimer-body">
+        <ul class="disclaimer-list">
+          <li>Listeniz bu cihazda saklanır; kapatınca silinmez, giriş gerekmez.</li>
+          <li>Sıralama ve puanlar tahminidir; hata olabilir.</li>
+          <li>Tercih vermeden önce ÖSYM kılavuzu ve YÖK Atlas ile doğrulayın.</li>
+        </ul>
+        <button id="btn-accept-disclaimer" class="btn btn-primary disclaimer-accept-btn" type="button">
+          Anladım, devam et
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Add Program Modal -->
+  <div id="add-program-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 600px; width: 100%;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+          Yeni Tercih Programı Ekle
         </h2>
+        <button id="add-program-close-btn" class="modal-close-btn">&times;</button>
       </div>
       <div class="modal-body" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
-        <p style="font-size: 0.875rem; line-height: 1.6; color: var(--foreground); font-weight: 500;">
-          Bu platformda yer alan tüm sıralama, kontenjan, puan ve veri analizleri <strong>tahmini ve öngörüye dayalı kararlar</strong> içerir.
-        </p>
-        <p style="font-size: 0.875rem; line-height: 1.6; color: var(--muted-foreground);">
-          Verilerin doğruluğunda ve hesaplanan regresyon tahminlerinde hata veya sapma riski bulunmaktadır. Bu platform, tercih sürecinizde yalnızca <strong>destek, rehberlik ve karar verme kolaylığı sağlamak amacıyla</strong> tasarlanmıştır.
-        </p>
-        <div style="background: var(--muted); border-left: 3px solid var(--primary); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.8125rem; color: var(--muted-foreground); line-height: 1.5;">
-          <strong>Önemli:</strong> Bu uygulamadaki veriler resmi tercih kılavuzu yerine geçmez. Tercihlerinizi yapmadan önce lütfen resmi <strong>ÖSYM Tercih Kılavuzu</strong> ve <strong>YÖK Atlas</strong> sistemindeki güncel verileri kontrol edip teyit ediniz.
+        
+        <div class="filter-group">
+          <label for="search-add-program" style="font-weight: 600;">Program Ara (Üniversite veya Bölüm Adı):</label>
+          <input type="text" id="search-add-program" class="compact-input" placeholder="Örn: Yıldız Teknik Bilgisayar..." style="width: 100%; padding: 0.75rem; font-size: 0.875rem;">
         </div>
-        <button id="btn-accept-disclaimer" class="btn btn-primary" style="width: 100%; padding: 0.75rem; margin-top: 0.5rem; display: flex; justify-content: center; align-items: center;">
-          Okudum, Kabul Ediyorum
-        </button>
+
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <div class="filter-group" style="flex: 1; min-width: 120px;">
+            <label style="font-size: 0.75rem;">Şehir Filtresi:</label>
+            <select id="add-program-city" class="compact-select" style="width: 100%;"><option value="">Tümü</option></select>
+          </div>
+          <div class="filter-group" style="flex: 1; min-width: 120px;">
+            <label style="font-size: 0.75rem;">Derece:</label>
+            <select id="add-program-degree" class="compact-select" style="width: 100%;">
+              <option value="all">Tümü</option>
+              <option value="Lisans">Lisans (4Y)</option>
+              <option value="Önlisans">Önlisans (2Y)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="search-add-results" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--secondary);">
+          <div style="padding: 1rem; text-align: center; color: var(--muted-foreground); font-size: 0.8125rem;">
+            Aramak için yazın veya filtreleri kullanın...
+          </div>
+        </div>
+
+        <div id="add-program-details-form" class="hidden" style="display: flex; flex-direction: column; gap: 0.75rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+          <h4 style="font-size: 0.875rem; font-weight: 700; margin: 0; color: var(--primary);" id="selected-program-title">-</h4>
+          <div id="matching-badge" style="font-size: 0.7rem; color: #10b981; font-weight: 600; display: none;">
+            Eşleşen Üniversite Metrikleri Bulundu (Prestij, Ulaşım vb. otomatik kopyalanacaktır)
+          </div>
+          
+          <div style="display: flex; gap: 0.5rem;">
+            <div class="filter-group" style="flex: 1;">
+              <label for="add-program-rank" style="font-size: 0.75rem;">Geçen Yıl Sıralama:</label>
+              <input type="number" id="add-program-rank" class="compact-input" placeholder="Örn: 24500" style="width: 100%;">
+            </div>
+            <div class="filter-group" style="flex: 1;">
+              <label for="add-program-pred" style="font-size: 0.75rem;">Tahmini Sıralama:</label>
+              <input type="number" id="add-program-pred" class="compact-input" placeholder="Örn: 22000" style="width: 100%;">
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label for="add-program-notes" style="font-size: 0.75rem;">Kişisel Notlar / Artılar - Eksiler:</label>
+            <textarea id="add-program-notes" class="compact-input" placeholder="Kampüs, olanaklar, kiralar vb..." style="width: 100%; height: 50px; font-size: 0.8125rem; padding: 0.5rem; resize: vertical;"></textarea>
+          </div>
+
+          <button id="btn-save-new-program" class="btn btn-primary" style="width: 100%; padding: 0.75rem; display: flex; justify-content: center; align-items: center; gap: 0.25rem;">
+            Seçilen Programı Tercih Listeme Ekle
+          </button>
+        </div>
+
       </div>
     </div>
   </div>

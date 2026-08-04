@@ -1,31 +1,63 @@
 import { MASTER_DATABASE as RAW_DATABASE } from './data.js';
-import { supabase } from './supabaseClient.js';
+import {
+  escapeHtml as eh,
+  escapeAttr as ea,
+  sanitizePlainText,
+  sanitizeRichHtml,
+  sanitizeProgramStrings
+} from './security.js';
+import {
+  trackVisit,
+  trackWizardUsed,
+  trackListCreated,
+  startPresence,
+  fetchSimpleStats,
+  formatStatNumber
+} from './usageStats.js';
+
+const NO_DATA_NOTE = 'Bu alan için doğrulanmış resmî veri bulunamadı.';
+
+export const getMetricScore = (item, key) => {
+  const scoreKey = key.endsWith('_score') ? key : `${key}_score`;
+  const availKey = `${key.replace(/_score$/, '')}_data_available`;
+  const available = item[availKey];
+  const score = item[scoreKey] ?? item[key];
+  if (available === false || score == null || score === '') return null;
+  return score;
+};
+
+export const formatMetricDisplay = (score, desc, dataNote, viewMode = 'scores') => {
+  if (score == null) {
+    const note = eh(dataNote || NO_DATA_NOTE);
+    if (viewMode === 'scores') {
+      return `<span class="score-pill score-na" title="${note}">—</span>`;
+    }
+    return `<div class="cell-sub cell-na" title="${note}">${note}</div>`;
+  }
+  if (viewMode === 'scores') {
+    return `<span class="score-pill">${Math.round(score * 10)} / 100</span>`;
+  }
+  const safeDesc = eh(desc || '—');
+  return `<div class="cell-sub" title="${ea(desc || '')}">${safeDesc}</div>`;
+};
 
 export function sanitizeItem(item) {
-  const newItem = { ...item };
-  // prestige_desc cleanup
-  if (newItem.prestige_desc && (newItem.prestige_desc.includes('Açıklanabilir Metrik') || newItem.prestige_desc.includes('Açıklanabilir metrik'))) {
-    const score = newItem.prestige_score || 0;
-    if (score >= 9) newItem.prestige_desc = "Çok Güçlü Kurumsal İtibar & Mezun Ağı";
-    else if (score >= 7.5) newItem.prestige_desc = "Yüksek Sektör Prestiji & İşveren Tercihi";
-    else if (score >= 5) newItem.prestige_desc = "Dengeli Kurumsal Kimlik & Genel Tanınırlık";
-    else newItem.prestige_desc = "Gelişmekte Olan Tanınırlık & Bölgesel İtibar";
-  }
-  // academic_desc cleanup
-  if (newItem.academic_desc && (newItem.academic_desc.includes('Açıklanabilir Metrik') || newItem.academic_desc.includes('Açıklanabilir metrik'))) {
-    const score = newItem.academic_score || 0;
-    if (score >= 9) newItem.academic_desc = "Seçkin Profesör Kadrosu & Yüksek Yayın Sayısı";
-    else if (score >= 7.5) newItem.academic_desc = "Nitelikli Akademik Altyapı & Tecrübeli Kadro";
-    else if (score >= 5) newItem.academic_desc = "Yeterli Akademik Kadro & Standart Eğitim";
-    else newItem.academic_desc = "Gelişme Aşamasında Kadro & Standart Altyapı";
-  }
-  // uniar_desc cleanup
-  if (newItem.uniar_desc && (newItem.uniar_desc.includes('Skor:') || newItem.uniar_desc.includes('Memnuniyeti ve Kampüs Hayatı'))) {
-    const score = newItem.uniar_score || 0;
-    if (score >= 9) newItem.uniar_desc = "A+ Öğrenci Memnuniyeti & Canlı Kampüs Yaşamı";
-    else if (score >= 7.5) newItem.uniar_desc = "Yüksek Öğrenci Memnuniyeti & Aktif Sosyal Hayat";
-    else if (score >= 5) newItem.uniar_desc = "Orta Düzey Sosyal İmkânlar & Standart Memnuniyet";
-    else newItem.uniar_desc = "Sınırlı Kampüs İmkânları & Gelişmekte Olan Sosyal Hayat";
+  const newItem = sanitizeProgramStrings(item);
+  const metrics = ['prestige', 'academic', 'uniar', 'transport'];
+  metrics.forEach((key) => {
+    const score = getMetricScore(newItem, key);
+    const availKey = `${key}_data_available`;
+    if (score == null) {
+      newItem[`${key}_score`] = null;
+      if (newItem[availKey] !== true) {
+        newItem[availKey] = false;
+        newItem[`${key}_data_note`] = newItem[`${key}_data_note`] || NO_DATA_NOTE;
+        newItem[`${key}_desc`] = newItem[`${key}_data_note`];
+      }
+    }
+  });
+  if (newItem.partial_rating != null) {
+    newItem.rating = newItem.partial_rating;
   }
   return newItem;
 }
@@ -47,40 +79,15 @@ const SVG_REFRESH = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" strok
 const SVG_CHECK = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>`;
 const SVG_BARS = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`;
 
-const PROFILE_PRESETS = {
-  career: { prestige: 50, academic: 30, transport: 10, student_life: 10 },
-  academic: { prestige: 25, academic: 45, transport: 10, student_life: 20 },
-  student: { prestige: 20, academic: 15, transport: 25, student_life: 40 },
-  software: { prestige: 25, academic: 20, transport: 10, student_life: 45 }
+const DEFAULT_RATING_WEIGHTS = {
+  prestige: 40,
+  academic: 30,
+  transport: 15,
+  student_life: 15
 };
 
 class MasterApp {
   constructor() {
-    // Dynamic weights and profile loading
-    this.weights = { prestige: 40, academic: 30, transport: 15, student_life: 15 };
-    this.activeProfile = 'career';
-
-    const savedProfile = localStorage.getItem('yks_active_profile');
-    if (savedProfile) {
-      this.activeProfile = savedProfile;
-    }
-    const savedWeights = localStorage.getItem('yks_profile_weights');
-    if (savedWeights) {
-      try {
-        this.weights = JSON.parse(savedWeights);
-      } catch (e) {}
-    } else {
-      const preset = PROFILE_PRESETS[this.activeProfile];
-      if (preset) {
-        this.weights = {
-          prestige: preset.prestige,
-          academic: preset.academic,
-          transport: preset.transport,
-          student_life: preset.student_life
-        };
-      }
-    }
-
     this.data = this.loadState();
     this.viewMode = 'scores'; // 'scores' (Puanlar 1-10) or 'descriptions' (Metinler)
     this.filterDegree = 'all'; // 'all', 'Lisans (4Y)', 'Önlisans (2Y)'
@@ -114,29 +121,26 @@ class MasterApp {
     this.compareUnis = cleanCompare(this.loadCompareState('yks_compare_unis'));
     this.compareDepts = cleanCompare(this.loadCompareState('yks_compare_depts'));
     this.activeCompareMode = localStorage.getItem('yks_compare_mode') || 'program';
-
-    // Sync with Supabase asynchronously
-    this.syncWithSupabase();
   }
 
   calculateRating(item) {
-    if (!item.detailed_scores) {
-      const prestige = item.prestige_score || 5;
-      const academic = item.academic_score || 5;
-      const transport = item.transport_score || 5;
-      const student_life = item.uniar_score || 5;
-      const rawVal = (prestige * this.weights.prestige) +
-                     (academic * this.weights.academic) +
-                     (transport * this.weights.transport) +
-                     (student_life * this.weights.student_life);
-      return parseFloat((rawVal / 100).toFixed(1));
+    if (item.partial_rating != null) {
+      return parseFloat(item.partial_rating);
     }
-    const ds = item.detailed_scores;
-    const rawVal = (ds.prestige * this.weights.prestige) +
-                   (ds.academic * this.weights.academic) +
-                   (ds.transport * this.weights.transport) +
-                   (ds.student_life * this.weights.student_life);
-    return parseFloat((rawVal / 100).toFixed(1));
+    const prestige = getMetricScore(item, 'prestige');
+    const academic = getMetricScore(item, 'academic');
+    const transport = getMetricScore(item, 'transport');
+    const student_life = getMetricScore(item, 'uniar');
+    const parts = [
+      [prestige, DEFAULT_RATING_WEIGHTS.prestige],
+      [academic, DEFAULT_RATING_WEIGHTS.academic],
+      [transport, DEFAULT_RATING_WEIGHTS.transport],
+      [student_life, DEFAULT_RATING_WEIGHTS.student_life],
+    ].filter(([s]) => s != null);
+    if (!parts.length) return null;
+    const totalWeight = parts.reduce((sum, [, w]) => sum + w, 0);
+    const rawVal = parts.reduce((sum, [s, w]) => sum + s * w, 0);
+    return parseFloat((rawVal / totalWeight).toFixed(1));
   }
 
   loadCompareState(key) {
@@ -153,99 +157,72 @@ class MasterApp {
   }
 
   loadState() {
+    const masterIds = new Set(MASTER_DATABASE.map(x => x.id));
+    let customPrograms = [];
+    let deletedIds = [];
+
+    try {
+      const custom = localStorage.getItem('yks_custom_programs');
+      if (custom) customPrograms = JSON.parse(custom);
+    } catch (e) {}
+
+    try {
+      const deleted = localStorage.getItem('yks_deleted_ids');
+      if (deleted) deletedIds = JSON.parse(deleted);
+    } catch (e) {}
+
+    const deletedSet = new Set(deletedIds);
     const saved = localStorage.getItem('yks_master_v8_employability_data');
-    if (saved) {
+
+    const mergeSavedFields = (item) => {
+      const rating = this.calculateRating(item);
+      if (!saved) return { ...item, rating, isFavorite: true };
+
       try {
         const parsed = JSON.parse(saved);
-        return MASTER_DATABASE.map(item => {
-          const match = parsed.find(x => x.id === item.id);
-          const rating = this.calculateRating(item);
-          if (match) {
-            return { ...item, rating: rating, notes: match.notes, isFavorite: typeof match.isFavorite === 'boolean' ? match.isFavorite : true };
-          }
-          return { ...item, rating: rating, isFavorite: true };
-        });
-      } catch (e) {
-        console.error('LocalStorage error:', e);
-      }
-    }
-    return MASTER_DATABASE.map(item => {
-      const rating = this.calculateRating(item);
-      return { ...item, rating: rating, isFavorite: true };
+        const match = parsed.find(x => x.id === item.id);
+        if (match) {
+          return {
+            ...item,
+            rating,
+            notes: typeof match.notes === 'string' ? sanitizePlainText(match.notes) : match.notes,
+            isFavorite: typeof match.isFavorite === 'boolean' ? match.isFavorite : true
+          };
+        }
+      } catch (e) {}
+
+      return { ...item, rating, isFavorite: true };
+    };
+
+    const baseData = MASTER_DATABASE
+      .filter(item => !deletedSet.has(item.id))
+      .map(mergeSavedFields);
+
+    const customData = customPrograms.map(item => {
+      const sanitized = sanitizeItem(item);
+      return {
+        ...sanitized,
+        rating: this.calculateRating(sanitized)
+      };
     });
+
+    return [...baseData, ...customData];
   }
 
   saveState() {
+    const masterIds = new Set(MASTER_DATABASE.map(x => x.id));
     const stateToSave = this.data.map(item => ({
       id: item.id,
       rating: item.rating,
-      notes: item.notes,
+      notes: typeof item.notes === 'string' ? sanitizePlainText(item.notes) : item.notes,
       isFavorite: item.isFavorite
     }));
     localStorage.setItem('yks_master_v8_employability_data', JSON.stringify(stateToSave));
+
+    const customPrograms = this.data.filter(item => !masterIds.has(item.id));
+    localStorage.setItem('yks_custom_programs', JSON.stringify(customPrograms));
+
     this.updateStats();
-    this.syncStateToSupabase();
-  }
-
-  async syncWithSupabase() {
-    try {
-      const { data, error } = await supabase
-        .from('yks_programs')
-        .select('*')
-        .order('id', { ascending: true });
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        // Sync our local this.data with Supabase data
-        this.data = data.map(dbItem => {
-          const sanitized = sanitizeItem(dbItem);
-          const rating = this.calculateRating(sanitized);
-          return {
-            ...sanitized,
-            rating: rating
-          };
-        });
-
-        // Sync favorite order (filter out IDs that are no longer favorites)
-        const dbFavIds = this.data.filter(x => x.isFavorite).map(x => x.id);
-        this.favoriteOrder = this.favoriteOrder.filter(id => dbFavIds.includes(id));
-        
-        // Add new favorites that might not be in our favoriteOrder list
-        dbFavIds.forEach(id => {
-          if (!this.favoriteOrder.includes(id)) {
-            this.favoriteOrder.push(id);
-          }
-        });
-
-        // Save order and update UI
-        this.saveFavoriteOrder();
-        this.updateStats();
-
-        // Re-render components
-        if (typeof renderMasterTable === 'function') renderMasterTable();
-        if (typeof renderFavoritesList === 'function') renderFavoritesList();
-        if (typeof renderCompareHub === 'function') renderCompareHub();
-        
-        console.log('Synced with Supabase successfully.');
-      }
-    } catch (e) {
-      console.error('Supabase sync error:', e);
-    }
-  }
-
-  async syncStateToSupabase() {
-    try {
-      const promises = this.data.map(item => 
-        supabase
-          .from('yks_programs')
-          .update({ isFavorite: item.isFavorite, notes: item.notes })
-          .eq('id', item.id)
-      );
-      await Promise.all(promises);
-      console.log('Successfully synced state to Supabase.');
-    } catch (e) {
-      console.error('Supabase save error:', e);
-    }
   }
 
   loadFavoriteOrder() {
@@ -295,9 +272,19 @@ class MasterApp {
     if (index === -1) return null;
     const item = this.data[index];
     const wasFavorite = item.isFavorite || this.favoriteOrder.includes(id);
+    const masterIds = new Set(MASTER_DATABASE.map(x => x.id));
 
     this.data.splice(index, 1);
     this.favoriteOrder = this.favoriteOrder.filter(x => x !== id);
+
+    if (masterIds.has(id)) {
+      const deletedIds = JSON.parse(localStorage.getItem('yks_deleted_ids') || '[]');
+      if (!deletedIds.includes(id)) {
+        deletedIds.push(id);
+        localStorage.setItem('yks_deleted_ids', JSON.stringify(deletedIds));
+      }
+    }
+
     this.saveState();
     this.saveFavoriteOrder();
     this.updateStats();
@@ -321,10 +308,12 @@ class MasterApp {
   }
 
   restoreAllItems() {
-    localStorage.removeItem('yks_master_v8_employability_data');
-    this.data = MASTER_DATABASE.map(item => ({ ...item }));
+    localStorage.setItem('yks_cleared_list', 'true');
+    localStorage.setItem('yks_custom_programs', '[]');
+    localStorage.setItem('yks_deleted_ids', JSON.stringify(MASTER_DATABASE.map(x => x.id)));
+    localStorage.setItem('yks_master_v8_employability_data', '[]');
+    this.data = [];
     this.favoriteOrder = [];
-    this.saveState();
     this.saveFavoriteOrder();
     this.updateStats();
   }
@@ -335,6 +324,18 @@ class MasterApp {
       item[key] = value;
       this.saveState();
     }
+  }
+
+  getNextId() {
+    if (this.data.length === 0) return 1;
+    return Math.max(...this.data.map(x => x.id)) + 1;
+  }
+
+  addProgramItem(item) {
+    localStorage.removeItem('yks_cleared_list');
+    this.data.push(item);
+    this.saveState();
+    this.updateStats();
   }
 
   syncFavoritesList() {
@@ -404,13 +405,13 @@ class MasterApp {
     } else if (this.sortOrder === 'rating-asc') {
       result.sort((a, b) => (a.rating || 0) - (b.rating || 0));
     } else if (this.sortOrder === 'prestige-desc') {
-      result.sort((a, b) => (b.prestige_score || 0) - (a.prestige_score || 0));
+      result.sort((a, b) => (getMetricScore(b, 'prestige') || 0) - (getMetricScore(a, 'prestige') || 0));
     } else if (this.sortOrder === 'academic-desc') {
       result.sort((a, b) => (b.academic_score || 0) - (a.academic_score || 0));
     } else if (this.sortOrder === 'transport-desc') {
-      result.sort((a, b) => (b.transport_score || 0) - (a.transport_score || 0));
+      result.sort((a, b) => (getMetricScore(b, 'transport') || 0) - (getMetricScore(a, 'transport') || 0));
     } else if (this.sortOrder === 'uniar-desc') {
-      result.sort((a, b) => (b.uniar_score || 0) - (a.uniar_score || 0));
+      result.sort((a, b) => (getMetricScore(b, 'uniar') || 0) - (getMetricScore(a, 'uniar') || 0));
     } else if (this.sortOrder === 'y5-asc') {
       result.sort((a, b) => (a.last_rank || 999999) - (b.last_rank || 999999));
     } else {
@@ -446,133 +447,18 @@ class MasterApp {
 
 const app = new MasterApp();
 
-function setupWeightEngine() {
-  const profileSelect = document.getElementById('profile-select');
-  const sliders = {
-    prestige: document.getElementById('slide-w-prestige'),
-    academic: document.getElementById('slide-w-academic'),
-    transport: document.getElementById('slide-w-transport'),
-    student: document.getElementById('slide-w-student')
-  };
-  const valLabels = {
-    prestige: document.getElementById('val-w-prestige'),
-    academic: document.getElementById('val-w-academic'),
-    transport: document.getElementById('val-w-transport'),
-    student: document.getElementById('val-w-student')
-  };
-  const sumLabel = document.getElementById('val-w-sum');
-  const sumBarFill = document.getElementById('sum-bar-fill');
-
-  const updateWeightsUI = () => {
-    // Set slider values
-    for (const key in sliders) {
-      if (sliders[key]) {
-        sliders[key].value = app.weights[key === 'student' ? 'student_life' : key];
-      }
-      if (valLabels[key]) {
-        valLabels[key].textContent = app.weights[key === 'student' ? 'student_life' : key];
-      }
-    }
-    
-    // Calculate sum
-    const totalSum = app.weights.prestige + app.weights.academic + app.weights.transport + app.weights.student_life;
-    if (sumLabel) sumLabel.textContent = totalSum;
-    if (sumBarFill) {
-      sumBarFill.style.width = `${Math.min(100, totalSum)}%`;
-      if (totalSum === 100) {
-        sumBarFill.className = 'sum-bar-fill ok';
-      } else {
-        sumBarFill.className = 'sum-bar-fill warn';
-      }
-    }
-
-    // Toggle sliders disabled state if profile is not custom
-    const isCustom = app.activeProfile === 'custom';
-    for (const key in sliders) {
-      if (sliders[key]) sliders[key].disabled = !isCustom;
-    }
-  };
-
-  const applyProfile = (profileKey) => {
-    app.activeProfile = profileKey;
-    localStorage.setItem('yks_active_profile', profileKey);
-    
-    if (profileKey !== 'custom') {
-      const preset = PROFILE_PRESETS[profileKey];
-      if (preset) {
-        app.weights.prestige = preset.prestige;
-        app.weights.academic = preset.academic;
-        app.weights.transport = preset.transport;
-        app.weights.student_life = preset.student_life;
-      }
-    }
-    
-    app.saveState();
-    // Recalculate ratings
-    app.data.forEach(item => {
-      item.rating = app.calculateRating(item);
-    });
-    
-    updateWeightsUI();
-    renderMasterTable();
-  };
-
-  if (profileSelect) {
-    profileSelect.value = app.activeProfile;
-    profileSelect.addEventListener('change', (e) => {
-      applyProfile(e.target.value);
-    });
-  }
-
-  // Sliders input events
-  for (const key in sliders) {
-    if (sliders[key]) {
-      sliders[key].addEventListener('input', (e) => {
-        if (app.activeProfile !== 'custom') return;
-        const val = parseInt(e.target.value, 10);
-        const wKey = key === 'student' ? 'student_life' : key;
-        app.weights[wKey] = val;
-        
-        const totalSum = app.weights.prestige + app.weights.academic + app.weights.transport + app.weights.student_life;
-        if (sumLabel) sumLabel.textContent = totalSum;
-        if (valLabels[key]) valLabels[key].textContent = val;
-        
-        // Recalculate ratings
-        app.data.forEach(item => {
-          item.rating = app.calculateRating(item);
-        });
-        
-        // Update sum bar
-        if (sumBarFill) {
-          sumBarFill.style.width = `${Math.min(100, totalSum)}%`;
-          if (totalSum === 100) {
-            sumBarFill.className = 'sum-bar-fill ok';
-          } else {
-            sumBarFill.className = 'sum-bar-fill warn';
-          }
-        }
-        
-        // Save weights
-        localStorage.setItem('yks_profile_weights', JSON.stringify(app.weights));
-        renderMasterTable();
-      });
-    }
-  }
-
-  // Initialize UI
-  applyProfile(app.activeProfile);
-}
-
 document.addEventListener('DOMContentLoaded', () => {
+  trackVisit();
+  startPresence();
   app.syncFavoritesList();
   setupNavTabs();
   setupFilterEvents();
   setupViewModeToggle();
   populateDropdowns();
-  setupWeightEngine();
   renderMasterTable();
   renderFavoritesList();
   setupModalEvents();
+  setupAddProgramModal();
   setupDisclaimer();
   setupPairwiseWizard();
   setupCompareHub();
@@ -597,6 +483,8 @@ function setupNavTabs() {
         startPairwiseWizard();
       } else if (targetId === 'tab-compare-hub') {
         renderCompareHub();
+      } else if (targetId === 'tab-stats') {
+        renderUsageStatsPage();
       }
     });
   });
@@ -635,9 +523,9 @@ function populateDropdowns() {
 }
 
 function setupFilterEvents() {
-  document.querySelectorAll('.seg-btn').forEach(btn => {
+  document.querySelectorAll('.filter-bar .seg-btn[data-filter-degree]').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.filter-bar .seg-btn[data-filter-degree]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       app.filterDegree = btn.dataset.filterDegree;
       renderMasterTable();
@@ -667,10 +555,11 @@ function setupFilterEvents() {
   const restoreBtn = document.getElementById('btn-restore-all');
   if (restoreBtn) {
     restoreBtn.onclick = () => {
-      if (confirm('Tüm verileri orijinal haline getirmek ve silinen tüm bölümleri geri yüklemek istediğinize emin misiniz?')) {
+      if (confirm('Tüm bölümleri listeden silmek istediğinize emin misiniz? Bu işlem geri alınamaz.')) {
         app.restoreAllItems();
         renderMasterTable();
         renderFavoritesList();
+        renderCompareHub();
       }
     };
   }
@@ -726,6 +615,22 @@ function renderMasterTable() {
 
   tbody.innerHTML = '';
 
+  if (items.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="11" style="padding: 2.5rem; text-align: center;">
+          <p style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 1rem;">Listeniz boş. Yeni bölüm ekleyerek başlayın.</p>
+          <button class="btn btn-primary btn-sm" id="btn-empty-add-program" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Bölüm Ekle
+          </button>
+        </td>
+      </tr>
+    `;
+    document.getElementById('btn-empty-add-program')?.addEventListener('click', openAddProgramModal);
+    return;
+  }
+
   items.forEach(item => {
     const tr = document.createElement('tr');
 
@@ -736,12 +641,11 @@ function renderMasterTable() {
 
     const degreeClass = item.degree.includes('Lisans') ? 'lisans' : 'onlisans';
 
-    const renderMetricCell = (score, desc) => {
-      if (app.viewMode === 'scores') {
-        return `<span class="score-pill">${Math.round(score * 10)} / 100</span>`;
-      } else {
-        return `<div class="cell-sub" title="${desc}">${desc}</div>`;
-      }
+    const renderMetricCell = (key) => {
+      const score = getMetricScore(item, key);
+      const desc = item[`${key}_desc`];
+      const note = item[`${key}_data_note`];
+      return formatMetricDisplay(score, desc, note, app.viewMode);
     };
 
     const starSvg = item.isFavorite ? SVG_STAR_FILLED : SVG_STAR_OUTLINE;
@@ -770,10 +674,10 @@ function renderMasterTable() {
           <span class="cell-sub">${item.tuition_status}</span>
         </div>
       </td>
-      <td>${renderMetricCell(item.transport_score, item.transport_desc)}</td>
-      <td>${renderMetricCell(item.uniar_score, item.uniar_desc)}</td>
-      <td>${renderMetricCell(item.prestige_score, item.prestige_desc)}</td>
-      <td>${renderMetricCell(item.academic_score, item.academic_desc)}</td>
+      <td>${renderMetricCell('transport')}</td>
+      <td>${renderMetricCell('uniar')}</td>
+      <td>${renderMetricCell('prestige')}</td>
+      <td>${renderMetricCell('academic')}</td>
       <td>
         <div class="cell-stack">
           <span class="cell-sub">Geçen: ${lastRankStr}</span>
@@ -1063,8 +967,27 @@ function setupPairwiseWizard() {
     startBtn.addEventListener('click', startPairwiseWizard);
   }
 
-  document.getElementById('option-a-card')?.addEventListener('click', () => handleDuelChoice('A'));
-  document.getElementById('option-b-card')?.addEventListener('click', () => handleDuelChoice('B'));
+  document.getElementById('option-a-card')?.addEventListener('click', (e) => {
+    if (e.target.closest('.btn-wizard-inspect')) return;
+    handleDuelChoice('A');
+  });
+  document.getElementById('option-b-card')?.addEventListener('click', (e) => {
+    if (e.target.closest('.btn-wizard-inspect')) return;
+    handleDuelChoice('B');
+  });
+
+  document.getElementById('btn-inspect-a')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const id = parseInt(document.getElementById('option-a-card')?.dataset.itemId, 10);
+    if (id) openDetailModal(id);
+  });
+  document.getElementById('btn-inspect-b')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const id = parseInt(document.getElementById('option-b-card')?.dataset.itemId, 10);
+    if (id) openDetailModal(id);
+  });
+
+  document.getElementById('btn-toggle-wizard-side')?.addEventListener('click', toggleWizardSidePane);
 
   // Keyboard navigation
   document.addEventListener('keydown', (e) => {
@@ -1102,6 +1025,17 @@ function setupPairwiseWizard() {
   });
 }
 
+function toggleWizardSidePane() {
+  const grid = document.getElementById('wizard-layout-grid');
+  const sidePane = document.getElementById('wizard-side-pane');
+  const toggleBtn = document.getElementById('btn-toggle-wizard-side');
+  if (!grid || !sidePane || !toggleBtn) return;
+
+  const isCollapsed = grid.classList.toggle('side-collapsed');
+  sidePane.classList.toggle('collapsed', isCollapsed);
+  toggleBtn.setAttribute('aria-expanded', String(!isCollapsed));
+}
+
 function startPairwiseWizard() {
   const duelArea = document.getElementById('wizard-active-duel');
   const resultsArea = document.getElementById('wizard-final-results');
@@ -1122,6 +1056,7 @@ function startPairwiseWizard() {
 
   if (emptyState) emptyState.classList.add('hidden');
 
+  trackWizardUsed();
   app.wizardPairs = [];
   app.wizardScores = {};
   app.wizardHeadToHead = {};
@@ -1150,6 +1085,14 @@ function startPairwiseWizard() {
   renderDuelStep();
 }
 
+function formatWizardRankDisplay(item) {
+  const last = item.last_rank ? item.last_rank.toLocaleString('tr-TR') : '-';
+  const pred = item.prediction?.tahmini_skor != null
+    ? item.prediction.tahmini_skor.toLocaleString('tr-TR')
+    : '-';
+  return `${last} / ${pred}`;
+}
+
 function renderDuelStep() {
   const totalPairs = app.wizardPairs.length;
 
@@ -1164,6 +1107,11 @@ function renderDuelStep() {
   }
 
   const [itemA, itemB] = app.wizardPairs[app.wizardCurrentIndex];
+  const cardA = document.getElementById('option-a-card');
+  const cardB = document.getElementById('option-b-card');
+  if (cardA) cardA.dataset.itemId = String(itemA.id);
+  if (cardB) cardB.dataset.itemId = String(itemB.id);
+
   const stepText = document.getElementById('duel-step-text');
   const fillBar = document.getElementById('duel-progress-fill');
 
@@ -1193,8 +1141,6 @@ function renderDuelStep() {
 
   // Highlight selected card if answered already
   const currentChoice = app.wizardChoices[app.wizardCurrentIndex];
-  const cardA = document.getElementById('option-a-card');
-  const cardB = document.getElementById('option-b-card');
   if (cardA && cardB) {
     cardA.classList.remove('selected-card-highlight');
     cardB.classList.remove('selected-card-highlight');
@@ -1205,20 +1151,24 @@ function renderDuelStep() {
   // Option A Card
   document.getElementById('opt-a-title').textContent = itemA.full_name;
   document.getElementById('opt-a-sub').textContent = `${itemA.city} | ${itemA.faculty}`;
-  document.getElementById('opt-a-trans').textContent = `${itemA.transport_score}/10 (${itemA.transport_desc})`;
-  document.getElementById('opt-a-uniar').textContent = `${itemA.uniar_score}/10 (${itemA.uniar_desc})`;
-  document.getElementById('opt-a-prestige').textContent = `${itemA.prestige_score}/10`;
-  document.getElementById('opt-a-academic').textContent = `${itemA.academic_score}/10`;
-  document.getElementById('opt-a-pred').textContent = itemA.prediction.tahmini_skor.toLocaleString('tr-TR');
+  document.getElementById('opt-a-trans-val').textContent = `${Math.round(itemA.transport_score * 10)} / 100`;
+  document.getElementById('opt-a-trans-desc').textContent = itemA.transport_desc || 'Detay bulunmuyor.';
+  document.getElementById('opt-a-uniar-val').textContent = `${Math.round(itemA.uniar_score * 10)} / 100`;
+  document.getElementById('opt-a-uniar-desc').textContent = itemA.uniar_desc || 'Detay bulunmuyor.';
+  document.getElementById('opt-a-prestige').textContent = `${Math.round(itemA.prestige_score * 10)} / 100`;
+  document.getElementById('opt-a-academic').textContent = `${Math.round(itemA.academic_score * 10)} / 100`;
+  document.getElementById('opt-a-pred').textContent = formatWizardRankDisplay(itemA);
 
   // Option B Card
   document.getElementById('opt-b-title').textContent = itemB.full_name;
   document.getElementById('opt-b-sub').textContent = `${itemB.city} | ${itemB.faculty}`;
-  document.getElementById('opt-b-trans').textContent = `${itemB.transport_score}/10 (${itemB.transport_desc})`;
-  document.getElementById('opt-b-uniar').textContent = `${itemB.uniar_score}/10 (${itemB.uniar_desc})`;
-  document.getElementById('opt-b-prestige').textContent = `${itemB.prestige_score}/10`;
-  document.getElementById('opt-b-academic').textContent = `${itemB.academic_score}/10`;
-  document.getElementById('opt-b-pred').textContent = itemB.prediction.tahmini_skor.toLocaleString('tr-TR');
+  document.getElementById('opt-b-trans-val').textContent = `${Math.round(itemB.transport_score * 10)} / 100`;
+  document.getElementById('opt-b-trans-desc').textContent = itemB.transport_desc || 'Detay bulunmuyor.';
+  document.getElementById('opt-b-uniar-val').textContent = `${Math.round(itemB.uniar_score * 10)} / 100`;
+  document.getElementById('opt-b-uniar-desc').textContent = itemB.uniar_desc || 'Detay bulunmuyor.';
+  document.getElementById('opt-b-prestige').textContent = `${Math.round(itemB.prestige_score * 10)} / 100`;
+  document.getElementById('opt-b-academic').textContent = `${Math.round(itemB.academic_score * 10)} / 100`;
+  document.getElementById('opt-b-pred').textContent = formatWizardRankDisplay(itemB);
 
   renderWizardQuestionsList();
 }
@@ -1274,7 +1224,7 @@ function renderWizardQuestionsList() {
     itemDiv.innerHTML = `
       <div class="question-item-header">
         <span>Soru ${idx + 1}</span>
-        <span>${choice ? '✓ Seçildi' : 'Bekliyor'}</span>
+        <span>${choice ? 'Seçildi' : 'Bekliyor'}</span>
       </div>
       <div class="question-item-options">
         <button class="q-opt-btn ${choice === 'A' ? 'selected' : ''}" data-choice="A" title="${itemA.full_name}">${uNameA}</button>
@@ -1401,6 +1351,7 @@ function finishWizard() {
   document.getElementById('btn-restart-wizard').onclick = startPairwiseWizard;
 
   resultsArea.classList.remove('hidden');
+  trackListCreated();
 }
 
 function getQualitativeReason(subKey, value) {
@@ -1518,13 +1469,13 @@ function getOverallMetricDescription(item, key, score) {
   const scorePercent = Math.round(score * 10);
   switch (key) {
     case 'prestige':
-      return `Diploma gücü ve işveren itibarı 100 üzerinden <strong>${scorePercent}</strong> seviyesindedir. ${item.prestige_desc || 'Sektör genelinde yüksek tanınırlığa sahiptir.'}`;
+      return `Diploma gücü ve işveren itibarı 100 üzerinden <strong>${scorePercent}</strong> seviyesindedir. ${eh(item.prestige_desc || 'Sektör genelinde yüksek tanınırlığa sahiptir.')}`;
     case 'academic':
-      return `Akademik yeterlilik ve kadro gücü 100 üzerinden <strong>${scorePercent}</strong> olarak değerlendirilmiştir. ${item.academic_desc || 'Deneyimli öğretim üyeleri barındırmaktadır.'}`;
+      return `Akademik yeterlilik ve kadro gücü 100 üzerinden <strong>${scorePercent}</strong> olarak değerlendirilmiştir. ${eh(item.academic_desc || 'Deneyimli öğretim üyeleri barındırmaktadır.')}`;
     case 'transport':
-      return `Kampüse ulaşım ve KYK yurt erişilebilirliği 100 üzerinden <strong>${scorePercent}</strong> düzeyindedir. ${item.transport_desc || 'Toplu taşıma seçenekleri mevcuttur.'}`;
+      return `Kampüse ulaşım ve KYK yurt erişilebilirliği 100 üzerinden <strong>${scorePercent}</strong> düzeyindedir. ${eh(item.transport_desc || 'Toplu taşıma seçenekleri mevcuttur.')}`;
     case 'student_life':
-      return `Öğrenci kulüpleri, spor imkanları ve kampüs yaşamı memnuniyeti 100 üzerinden <strong>${scorePercent}</strong>'dur. ${item.uniar_desc || 'ÜNİAR memnuniyet endeksleri referans alınmıştır.'}`;
+      return `Öğrenci kulüpleri, spor imkanları ve kampüs yaşamı memnuniyeti 100 üzerinden <strong>${scorePercent}</strong>'dur. ${eh(item.uniar_desc || 'ÜNİAR memnuniyet endeksleri referans alınmıştır.')}`;
     case 'industry':
       return `Sanayi ve sektör bağlantıları 100 üzerinden <strong>${scorePercent}</strong> seviyesindedir. Üniversitenin iş dünyasıyla yürüttüğü ortak projeleri ve sektörel marka gücünü yansıtır.`;
     case 'research':
@@ -1565,26 +1516,28 @@ function openDetailModal(id) {
   // Use pre-calculated Gemini LLM analysis if available, otherwise fallback to template
   const evalBadge = document.getElementById('modal-eval-badge');
   if (item.ai_eval) {
-    document.getElementById('modal-general-eval').innerHTML = item.ai_eval;
+    document.getElementById('modal-general-eval').innerHTML = sanitizeRichHtml(item.ai_eval);
     if (evalBadge) evalBadge.classList.remove('hidden');
   } else {
     const unName = item.university.split(' (')[0];
-    const isTopTier = item.prestige_score >= 8 && item.academic_score >= 8;
-    const isGood = item.prestige_score >= 7 || item.academic_score >= 7;
-    let tierText = "";
+    const prestige = getMetricScore(item, 'prestige');
+    const academic = getMetricScore(item, 'academic');
+    const isTopTier = prestige != null && academic != null && prestige >= 8 && academic >= 8;
+    const isGood = (prestige != null && prestige >= 7) || (academic != null && academic >= 7);
+    let tierText = NO_DATA_NOTE;
     if (isTopTier) {
       tierText = "akademik kadro kalitesi ve üniversite prestiji açısından Türkiye genelinde üst düzey (seçkin) bir konumdadır.";
     } else if (isGood) {
-      tierText = "güçlü ve dengeli bir akademik/prestij altyapısına sahiptir. Sektör kabulü ve mezuniyet sonrası iş olanakları oldukça tatmin edici düzeydedir.";
-    } else {
-      tierText = "ortalama standartlarda eğitim veren, yerel iş piyasalarında kabul gören dengeli bir programa sahiptir.";
+      tierText = "güçlü ve dengeli bir akademik/prestij altyapısına sahiptir.";
+    } else if (prestige == null && academic == null) {
+      tierText = "prestij ve akademik kalite için doğrulanmış resmî veri bulunmamaktadır.";
     }
 
     const predRank = item.prediction && typeof item.prediction.tahmini_skor === 'number'
       ? item.prediction.tahmini_skor.toLocaleString('tr-TR')
       : '-';
 
-    const generalEvalHtml = `Bu program, <strong>${item.city}</strong> şehrinde, <strong>${item.tuition_status}</strong> statüsünde ve <strong>${item.language}</strong> eğitim diliyle verilmektedir. ${unName} bünyesindeki bu bölüm, ${tierText} Son yerleşme verilerine göre geçen yılki taban sıralaması <strong>${item.last_rank ? item.last_rank.toLocaleString('tr-TR') : '-'}</strong> iken, bu yılki kontenjan esnekliği ve trend analizi doğrultusunda tahmini yerleşme skorunun <strong>${predRank}</strong> civarında seyretmesi beklenmektedir.`;
+    const generalEvalHtml = `Bu program, <strong>${eh(item.city)}</strong> şehrinde, <strong>${eh(item.tuition_status)}</strong> statüsünde ve <strong>${eh(item.language)}</strong> eğitim diliyle verilmektedir. ${eh(unName)} bünyesindeki bu bölüm, ${eh(tierText)} Son yerleşme verilerine göre geçen yılki taban sıralaması <strong>${item.last_rank ? item.last_rank.toLocaleString('tr-TR') : '-'}</strong> iken, bu yılki kontenjan esnekliği ve trend analizi doğrultusunda tahmini yerleşme skorunun <strong>${predRank}</strong> civarında seyretmesi beklenmektedir.`;
     
     document.getElementById('modal-general-eval').innerHTML = generalEvalHtml;
     if (evalBadge) evalBadge.classList.add('hidden');
@@ -1644,11 +1597,20 @@ function openDetailModal(id) {
     gridContainer.innerHTML = '';
     
     const scores = item.detailed_scores || {
-      prestige: item.prestige_score || 5,
-      academic: item.academic_score || 5,
-      transport: item.transport_score || 5,
-      student_life: item.uniar_score || 5,
-      industry: 5, research: 5, international: 5, cost: 5, housing: 5, career: 5, ai_opportunity: 5, internship: 5, scholarship: 5, startup: 5
+      prestige: getMetricScore(item, 'prestige'),
+      academic: getMetricScore(item, 'academic'),
+      transport: getMetricScore(item, 'transport'),
+      student_life: getMetricScore(item, 'uniar'),
+      industry: getMetricScore(item, 'industry'),
+      research: getMetricScore(item, 'research'),
+      international: getMetricScore(item, 'international'),
+      cost: getMetricScore(item, 'cost'),
+      housing: getMetricScore(item, 'housing'),
+      career: getMetricScore(item, 'career'),
+      ai_opportunity: getMetricScore(item, 'ai_opportunity'),
+      internship: getMetricScore(item, 'internship'),
+      scholarship: getMetricScore(item, 'scholarship'),
+      startup: getMetricScore(item, 'startup'),
     };
     
     const exp = item.explainable_details || {};
@@ -1656,15 +1618,16 @@ function openDetailModal(id) {
 
     Object.keys(METRIC_LABELS).forEach(key => {
       const label = METRIC_LABELS[key];
-      const score = scores[key] || 5;
-      const mMeta = meta[key] || { source: 'Tahmini', version: '2025', confidence: 0.8 };
+      const score = scores[key];
+      if (score == null) return;
+      const mMeta = meta[key] || { source: 'Resmî kaynak', version: '2025', confidence: 1.0 };
       
       let explainHtml = '';
       if (exp[key]) {
         const subItems = Object.entries(exp[key]).map(([subKey, subVal]) => {
           const subLabel = SUB_LABELS[subKey] || subKey;
           const reason = getQualitativeReason(subKey, subVal);
-          return `<li><strong>${subLabel}:</strong> ${reason}</li>`;
+          return `<li><strong>${eh(subLabel)}:</strong> ${eh(reason)}</li>`;
         }).join('');
         
         explainHtml = `
@@ -1695,7 +1658,7 @@ function openDetailModal(id) {
 
         <div class="modal-metric-meta" style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--muted-foreground); margin-top:0.35rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
           <span>Güven: <strong>${(mMeta.confidence * 100).toFixed(0)}%</strong></span>
-          <span title="Güncelleme: ${mMeta.last_updated || ''}">Kaynak: ${mMeta.source} (${mMeta.version})</span>
+          <span title="Güncelleme: ${ea(mMeta.last_updated || '')}">Kaynak: ${eh(mMeta.source)} (${eh(mMeta.version)})</span>
         </div>
         ${explainHtml}
       `;
@@ -1713,6 +1676,310 @@ function openDetailModal(id) {
   quotaRow.innerHTML = '<td><strong>Kontenjan</strong></td>' + item.history_quotas.map(q => `<td style="font-family: var(--font-mono);">${q}</td>`).join('');
 
   overlay.classList.remove('hidden');
+}
+
+// ==========================================================================
+// Add Program Modal — YÖK Atlas program_index üzerinden bölüm ekleme
+// ==========================================================================
+
+let programIndexCache = null;
+let selectedAddProgram = null;
+let addProgramSearchTimer = null;
+
+const parseProgramTitle = (fullTitle) => {
+  const parts = fullTitle.split(' - ');
+  const department = parts.length > 1 ? parts.slice(1).join(' - ').trim() : fullTitle;
+  let university = parts[0].trim();
+  university = university.replace(/\s*\([^)]+\)\s*$/, '').trim();
+  return { university, department };
+};
+
+const normalizeCity = (city) => {
+  if (!city) return '';
+  const lower = city.toLocaleLowerCase('tr-TR');
+  return lower.charAt(0).toLocaleUpperCase('tr-TR') + lower.slice(1);
+};
+
+const normalizeTitle = (title) => title.toUpperCase().replace(/\s+/g, ' ').trim();
+
+const inferDegree = (fullTitle) => {
+  const upper = fullTitle.toUpperCase();
+  if (upper.includes('ÖNLİSANS') || upper.includes('MYO') || upper.includes('MESLEK YÜKSEKOKULU')) {
+    return 'Önlisans (2Y)';
+  }
+  return 'Lisans (4Y)';
+};
+
+const inferLanguage = (fullTitle) => {
+  const upper = fullTitle.toUpperCase();
+  if (upper.includes('%100 İNGİLİZCE') || upper.includes('100% İNGİLİZCE')) {
+    return '%100 İngilizce';
+  }
+  if (upper.includes('İNGİLİZCE')) return 'İngilizce';
+  return 'Türkçe';
+};
+
+const inferTuition = (fullTitle) => {
+  const upper = fullTitle.toUpperCase();
+  if (upper.includes('%50')) return '%50 İndirimli';
+  if (upper.includes('BURSLU') || upper.includes('%100 BURSLU')) return 'Burslu';
+  if (upper.includes('ÜCRETLİ')) return 'Ücretli';
+  return 'Devlet (Ücretsiz)';
+};
+
+const findMatchingUniversityProgram = (universityName) => {
+  const normalized = universityName.toUpperCase().replace(/[^A-ZÇĞİÖŞÜ0-9]/g, '');
+  if (!normalized) return null;
+
+  return app.data.find(item => {
+    const itemNorm = item.university.toUpperCase().replace(/[^A-ZÇĞİÖŞÜ0-9]/g, '');
+    return itemNorm.includes(normalized) || normalized.includes(itemNorm);
+  }) || null;
+};
+
+const isProgramAlreadyAdded = (program) => {
+  const normalized = normalizeTitle(program.full_title);
+  return app.data.some(item => normalizeTitle(item.full_name) === normalized);
+};
+
+const loadProgramIndex = async () => {
+  if (programIndexCache) return programIndexCache;
+  try {
+    const response = await fetch('/data/program_index.json');
+    if (!response.ok) throw new Error('program_index yüklenemedi');
+    programIndexCache = await response.json();
+    return programIndexCache;
+  } catch (e) {
+    console.error('Program index yükleme hatası:', e);
+    return [];
+  }
+};
+
+const buildNewProgramItem = (program, rank, predRank, notes, matchSource) => {
+  const { university, department } = parseProgramTitle(program.full_title);
+  const city = normalizeCity(program.city);
+  const degree = inferDegree(program.full_title);
+  const language = inferLanguage(program.full_title);
+  const tuition = inferTuition(program.full_title);
+  const fullName = `${university} - ${department}`;
+
+  const base = {
+    id: app.getNextId(),
+    degree,
+    score_type: 'SAY',
+    university,
+    department,
+    full_name: fullName,
+    faculty: 'Fakülte / Meslek Yüksekokulu',
+    language,
+    tuition_status: tuition,
+    city,
+    transport_desc: matchSource?.transport_desc || null,
+    transport_score: matchSource?.transport_score ?? null,
+    transport_data_available: matchSource?.transport_data_available ?? false,
+    transport_data_note: matchSource?.transport_data_note || NO_DATA_NOTE,
+    uniar_score: matchSource?.uniar_score ?? null,
+    uniar_desc: matchSource?.uniar_desc || null,
+    uniar_data_available: matchSource?.uniar_data_available ?? false,
+    uniar_data_note: matchSource?.uniar_data_note || NO_DATA_NOTE,
+    prestige_score: matchSource?.prestige_score ?? null,
+    prestige_desc: matchSource?.prestige_desc || null,
+    prestige_data_available: matchSource?.prestige_data_available ?? false,
+    prestige_data_note: matchSource?.prestige_data_note || NO_DATA_NOTE,
+    academic_score: matchSource?.academic_score ?? null,
+    academic_desc: matchSource?.academic_desc || null,
+    academic_data_available: matchSource?.academic_data_available ?? false,
+    academic_data_note: matchSource?.academic_data_note || NO_DATA_NOTE,
+    last_rank: rank || null,
+    prediction: predRank ? {
+      tahmini_skor: predRank,
+      model: 'manual_entry',
+      confidence: 'low',
+      prediction_generated_at: new Date().toISOString()
+    } : null,
+    history_rankings: rank ? [rank] : [],
+    history_quotas: [],
+    notes: sanitizePlainText(notes || '-'),
+    isFavorite: true,
+    program_id: program.program_id
+  };
+
+  base.rating = app.calculateRating(base);
+  return sanitizeItem(base);
+};
+
+const resetAddProgramModal = () => {
+  selectedAddProgram = null;
+
+  const searchInput = document.getElementById('search-add-program');
+  const resultsContainer = document.getElementById('search-add-results');
+  const detailsForm = document.getElementById('add-program-details-form');
+  const matchingBadge = document.getElementById('matching-badge');
+
+  if (searchInput) searchInput.value = '';
+  if (resultsContainer) {
+    resultsContainer.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--muted-foreground); font-size: 0.8125rem;">Aramak için yazın veya filtreleri kullanın...</div>';
+  }
+  if (detailsForm) {
+    detailsForm.classList.add('hidden');
+    document.getElementById('add-program-rank').value = '';
+    document.getElementById('add-program-pred').value = '';
+    document.getElementById('add-program-notes').value = '';
+    document.getElementById('selected-program-title').textContent = '-';
+  }
+  if (matchingBadge) matchingBadge.style.display = 'none';
+};
+
+const renderAddProgramSearchResults = (programs) => {
+  const container = document.getElementById('search-add-results');
+  if (!container) return;
+
+  if (programs.length === 0) {
+    container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--muted-foreground); font-size: 0.8125rem;">Sonuç bulunamadı veya program zaten listede.</div>';
+    return;
+  }
+
+  container.innerHTML = programs.slice(0, 50).map(prog => `
+    <button type="button" class="add-program-result-item${selectedAddProgram?.program_id === prog.program_id ? ' selected' : ''}" data-program-id="${ea(prog.program_id)}">
+      <span class="add-program-result-title">${eh(prog.full_title)}</span>
+      <span class="add-program-result-meta">
+        <span>${eh(prog.city)}</span>
+        <span>${eh(inferDegree(prog.full_title))}</span>
+      </span>
+    </button>
+  `).join('');
+
+  container.querySelectorAll('.add-program-result-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const programId = btn.dataset.programId;
+      const program = programs.find(p => p.program_id === programId);
+      if (!program) return;
+
+      selectedAddProgram = program;
+      container.querySelectorAll('.add-program-result-item').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      const detailsForm = document.getElementById('add-program-details-form');
+      const titleEl = document.getElementById('selected-program-title');
+      const matchingBadge = document.getElementById('matching-badge');
+      const matchSource = findMatchingUniversityProgram(parseProgramTitle(program.full_title).university);
+
+      if (titleEl) titleEl.textContent = program.full_title;
+      if (matchingBadge) {
+        matchingBadge.style.display = matchSource ? 'block' : 'none';
+      }
+      if (detailsForm) detailsForm.classList.remove('hidden');
+    });
+  });
+};
+
+const searchAddPrograms = async () => {
+  const rawQuery = document.getElementById('search-add-program')?.value.trim() || '';
+  const query = rawQuery.toLocaleLowerCase('tr-TR');
+  const cityFilter = document.getElementById('add-program-city')?.value || '';
+  const degreeFilter = document.getElementById('add-program-degree')?.value || 'all';
+
+  const queryTerms = query.split(/\s+/).filter(Boolean);
+  const index = await loadProgramIndex();
+  const filtered = index.filter(prog => {
+    if (isProgramAlreadyAdded(prog)) return false;
+    if (cityFilter && prog.city !== cityFilter) return false;
+    if (degreeFilter === 'Lisans' && inferDegree(prog.full_title) !== 'Lisans (4Y)') return false;
+    if (degreeFilter === 'Önlisans' && inferDegree(prog.full_title) !== 'Önlisans (2Y)') return false;
+
+    if (queryTerms.length === 0) return true;
+
+    const haystack = `${prog.full_title} ${prog.city}`.toLocaleLowerCase('tr-TR');
+    return queryTerms.every(term => haystack.includes(term));
+  });
+
+  renderAddProgramSearchResults(filtered);
+};
+
+const populateAddProgramCityDropdown = async () => {
+  const citySelect = document.getElementById('add-program-city');
+  if (!citySelect) return;
+
+  const index = await loadProgramIndex();
+  const cities = [...new Set(index.map(p => p.city))].sort((a, b) => a.localeCompare(b, 'tr'));
+  citySelect.innerHTML = '<option value="">Tümü</option>';
+  cities.forEach(city => {
+    const opt = document.createElement('option');
+    opt.value = city;
+    opt.textContent = city;
+    citySelect.appendChild(opt);
+  });
+};
+
+const openAddProgramModal = async () => {
+  const modal = document.getElementById('add-program-modal');
+  if (!modal) return;
+
+  resetAddProgramModal();
+  await populateAddProgramCityDropdown();
+  modal.classList.remove('hidden');
+  document.getElementById('search-add-program')?.focus();
+};
+
+const closeAddProgramModal = () => {
+  const modal = document.getElementById('add-program-modal');
+  if (modal) modal.classList.add('hidden');
+  resetAddProgramModal();
+};
+
+function setupAddProgramModal() {
+  const openBtn = document.getElementById('btn-open-add-program-modal');
+  const closeBtn = document.getElementById('add-program-close-btn');
+  const modal = document.getElementById('add-program-modal');
+  const searchInput = document.getElementById('search-add-program');
+  const citySelect = document.getElementById('add-program-city');
+  const degreeSelect = document.getElementById('add-program-degree');
+  const saveBtn = document.getElementById('btn-save-new-program');
+
+  if (!openBtn || !modal) return;
+
+  openBtn.addEventListener('click', openAddProgramModal);
+  closeBtn?.addEventListener('click', closeAddProgramModal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeAddProgramModal();
+  });
+
+  const handleSearchInput = () => {
+    clearTimeout(addProgramSearchTimer);
+    addProgramSearchTimer = setTimeout(searchAddPrograms, 250);
+  };
+
+  searchInput?.addEventListener('input', handleSearchInput);
+  citySelect?.addEventListener('change', searchAddPrograms);
+  degreeSelect?.addEventListener('change', searchAddPrograms);
+
+  saveBtn?.addEventListener('click', () => {
+    if (!selectedAddProgram) {
+      alert('Lütfen önce bir program seçin.');
+      return;
+    }
+
+    const rank = parseInt(document.getElementById('add-program-rank')?.value, 10) || null;
+    const predRank = parseInt(document.getElementById('add-program-pred')?.value, 10) || null;
+    const notes = document.getElementById('add-program-notes')?.value.trim() || '-';
+    const { university } = parseProgramTitle(selectedAddProgram.full_title);
+    const matchSource = findMatchingUniversityProgram(university);
+
+    const newItem = buildNewProgramItem(selectedAddProgram, rank, predRank, notes, matchSource);
+    app.addProgramItem(newItem);
+
+    if (!app.favoriteOrder.includes(newItem.id)) {
+      app.favoriteOrder.push(newItem.id);
+      app.saveFavoriteOrder();
+    }
+
+    closeAddProgramModal();
+    renderMasterTable();
+    renderFavoritesList();
+    populateDropdowns();
+    renderCompareHub();
+  });
 }
 
 function setupModalEvents() {
@@ -1875,11 +2142,11 @@ function initCompareHubDropdowns() {
       
       // Populate Option 1 (exclude if selected in Option 2)
       if (val !== val2) {
-        html1 += `<option value="${val}" ${val === val1 ? 'selected' : ''}>${text}</option>`;
+        html1 += `<option value="${ea(val)}" ${val === val1 ? 'selected' : ''}>${eh(text)}</option>`;
       }
       // Populate Option 2 (exclude if selected in Option 1)
       if (val !== val1) {
-        html2 += `<option value="${val}" ${val === val2 ? 'selected' : ''}>${text}</option>`;
+        html2 += `<option value="${ea(val)}" ${val === val2 ? 'selected' : ''}>${eh(text)}</option>`;
       }
     });
 
@@ -1940,12 +2207,12 @@ function renderProgramComparison() {
   selectedItems.forEach(item => {
     html += `
       <th class="value-col">
-        <div style="font-weight:800; color:var(--foreground);">${item.university}</div>
-        <div style="font-size:0.8125rem; font-weight:600; color:var(--muted-foreground); margin-top:0.25rem;">${item.department}</div>
+        <div style="font-weight:800; color:var(--foreground);">${eh(item.university)}</div>
+        <div style="font-size:0.8125rem; font-weight:600; color:var(--muted-foreground); margin-top:0.25rem;">${eh(item.department)}</div>
         <div style="margin-top:0.75rem; display:flex; gap:0.375rem; flex-wrap:wrap;">
-          <span class="badge badge-outline">${item.degree}</span>
-          <span class="badge badge-secondary">${item.language}</span>
-          <span class="badge badge-secondary">${item.city}</span>
+          <span class="badge badge-outline">${eh(item.degree)}</span>
+          <span class="badge badge-secondary">${eh(item.language)}</span>
+          <span class="badge badge-secondary">${eh(item.city)}</span>
         </div>
       </th>
     `;
@@ -1971,7 +2238,7 @@ function renderProgramComparison() {
       <div style="display:flex; align-items:center; gap:0.5rem;">
         <span class="badge badge-dark">${item.transport_score} / 10</span>
       </div>
-      <p class="compare-desc-text">${item.transport_desc}</p>
+      <p class="compare-desc-text">${eh(item.transport_desc)}</p>
     </div>
   `);
 
@@ -1980,7 +2247,7 @@ function renderProgramComparison() {
       <div style="display:flex; align-items:center; gap:0.5rem;">
         <span class="badge badge-dark">${item.uniar_score} / 10</span>
       </div>
-      <p class="compare-desc-text">${item.uniar_desc}</p>
+      <p class="compare-desc-text">${eh(item.uniar_desc)}</p>
     </div>
   `);
 
@@ -1989,7 +2256,7 @@ function renderProgramComparison() {
       <div style="display:flex; align-items:center; gap:0.5rem;">
         <span class="badge badge-dark">${item.prestige_score} / 10</span>
       </div>
-      <p class="compare-desc-text">${item.prestige_desc}</p>
+      <p class="compare-desc-text">${eh(item.prestige_desc)}</p>
     </div>
   `);
 
@@ -1998,7 +2265,7 @@ function renderProgramComparison() {
       <div style="display:flex; align-items:center; gap:0.5rem;">
         <span class="badge badge-dark">${item.academic_score} / 10</span>
       </div>
-      <p class="compare-desc-text">${item.academic_desc}</p>
+      <p class="compare-desc-text">${eh(item.academic_desc)}</p>
     </div>
   `);
 
@@ -2016,7 +2283,7 @@ function renderProgramComparison() {
   });
 
   html += renderRow('Notlarım & Detaylar', item => `
-    <p style="font-size:0.75rem; white-space:pre-wrap; margin-bottom:0.75rem;">${item.notes || 'Not eklenmemiş.'}</p>
+    <p style="font-size:0.75rem; white-space:pre-wrap; margin-bottom:0.75rem;">${eh(item.notes || 'Not eklenmemiş.')}</p>
     <button class="btn btn-outline btn-sm btn-inspect-compare" data-id="${item.id}">Detay Kartını Aç</button>
   `);
 
@@ -2078,9 +2345,9 @@ function renderUniversityComparison() {
   selectedUnisData.forEach(uni => {
     html += `
       <th class="value-col">
-        <div style="font-weight:800; color:var(--foreground);">${uni.name}</div>
+        <div style="font-weight:800; color:var(--foreground);">${eh(uni.name)}</div>
         <div style="margin-top:0.75rem;">
-          <span class="badge badge-outline">${uni.cities}</span>
+          <span class="badge badge-outline">${eh(uni.cities)}</span>
           <span class="badge badge-secondary">${uni.count} Tercih Programı</span>
         </div>
       </th>
@@ -2159,7 +2426,7 @@ function renderUniversityComparison() {
       listHtml += `
         <li class="compare-program-item">
           <div style="flex:1; margin-right:0.5rem;">
-            <div style="font-weight:600; font-size:0.75rem;">${prog.department}</div>
+            <div style="font-weight:600; font-size:0.75rem;">${eh(prog.department)}</div>
             <div style="font-size:0.7rem; color:var(--muted-foreground);">Tahmin: ${pred} | Puan: ${prog.rating || '-'}</div>
           </div>
           <button class="btn btn-ghost btn-sm btn-inspect-compare" data-id="${prog.id}" style="padding: 0.2rem 0.4rem; height: auto;">Gözat</button>
@@ -2233,7 +2500,7 @@ function renderDepartmentComparison() {
   selectedDeptsData.forEach(dept => {
     html += `
       <th class="value-col">
-        <div style="font-weight:800; color:var(--foreground);">${dept.name}</div>
+        <div style="font-weight:800; color:var(--foreground);">${eh(dept.name)}</div>
         <div style="margin-top:0.75rem;">
           <span class="badge badge-secondary">${dept.count} Farklı Üniversite</span>
         </div>
@@ -2323,8 +2590,8 @@ function renderDepartmentComparison() {
       listHtml += `
         <li class="compare-program-item">
           <div style="flex:1; margin-right:0.5rem;">
-            <div style="font-weight:600; font-size:0.75rem;">${prog.university.split(' (')[0]}</div>
-            <div style="font-size:0.7rem; color:var(--muted-foreground);">Geçen Yıl: ${lastR} | Şehir: ${prog.city}</div>
+            <div style="font-weight:600; font-size:0.75rem;">${eh(prog.university.split(' (')[0])}</div>
+            <div style="font-size:0.7rem; color:var(--muted-foreground);">Geçen Yıl: ${lastR} | Şehir: ${eh(prog.city)}</div>
           </div>
           <button class="btn btn-ghost btn-sm btn-inspect-compare" data-id="${prog.id}" style="padding: 0.2rem 0.4rem; height: auto;">Gözat</button>
         </li>
@@ -2342,5 +2609,52 @@ function renderDepartmentComparison() {
       openDetailModal(parseInt(btn.dataset.id));
     });
   });
+}
+
+// ==========================================================================
+// Platform Usage Statistics Page
+// ==========================================================================
+
+let statsRefreshTimer = null
+
+async function renderUsageStatsPage() {
+  const grid = document.getElementById('stats-simple-grid')
+  const footnote = document.getElementById('stats-footnote')
+
+  if (grid) {
+    grid.innerHTML = `
+      <div class="stats-big-card"><span class="stats-big-label">Yükleniyor...</span><span class="stats-big-value">—</span></div>
+      <div class="stats-big-card"><span class="stats-big-label">Yükleniyor...</span><span class="stats-big-value">—</span></div>
+      <div class="stats-big-card"><span class="stats-big-label">Yükleniyor...</span><span class="stats-big-value">—</span></div>
+      <div class="stats-big-card"><span class="stats-big-label">Yükleniyor...</span><span class="stats-big-value">—</span></div>
+    `
+  }
+
+  const data = await fetchSimpleStats()
+
+  const cards = [
+    { label: 'Toplam Ziyaretçi', value: formatStatNumber(data.totalVisitors), highlight: false },
+    { label: 'Şu An Aktif', value: data.liveUsers !== null ? formatStatNumber(data.liveUsers) : '—', highlight: true },
+    { label: 'Oluşturulan Liste', value: formatStatNumber(data.listsCreated), highlight: false },
+    { label: 'Sihirbaz Kullanımı', value: formatStatNumber(data.wizardUsed), highlight: false }
+  ]
+
+  if (grid) {
+    grid.innerHTML = cards.map((card) => `
+      <div class="stats-big-card${card.highlight ? ' live' : ''}">
+        <span class="stats-big-label">${card.label}</span>
+        <span class="stats-big-value">${card.value}</span>
+      </div>
+    `).join('')
+  }
+
+  if (footnote) {
+    footnote.textContent = data.remoteAvailable
+      ? 'Anonim kullanım sayıları — kişisel bilgi toplanmaz.'
+      : 'İstatistikler yalnızca bu cihazda görüntülenir.'
+  }
+
+  if (statsRefreshTimer) clearInterval(statsRefreshTimer)
+  statsRefreshTimer = setInterval(renderUsageStatsPage, 30000)
 }
 
