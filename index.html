@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YKS Tercih Veritabanı & Ultimate Karar Platformu</title>
+
+  <!-- Clean Monospace & Sans-Serif Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+
+  <!-- Minimal High-Contrast Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <span class="brand-badge">YKS 2026</span>
+        <div class="brand-text">
+          <h1>YKS Tercih & Karar Platformu</h1>
+          <p class="subtitle">96 Bölüm | Ulaşım, ÜNİAR, Prestij ve Akademik Kadro Metrikleri</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Display Mode Toggle Switch: Puanlar (1-10) vs Açıklamalar -->
+        <div class="view-mode-toggle">
+          <span class="toggle-lbl">Görünüm:</span>
+          <button id="btn-toggle-view-mode" class="toggle-switch-btn" data-mode="scores">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Puanlar (1-10)
+          </button>
+        </div>
+
+        <button class="btn btn-outline" id="btn-export-md">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Markdown Aktar
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="main-nav-tabs">
+      <button class="nav-tab active" data-tab="tab-main-list">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Ana Tercih Listesi
+        <span id="stat-total-count" class="tab-badge">96</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-favorites">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Favorilerim
+        <span id="stat-fav-count" class="tab-badge">0</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-pairwise">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg>
+        Tercih Sihirbazı (A / B Karşılaştırma)
+      </button>
+      <button class="nav-tab" data-tab="tab-compare-hub">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>
+        Karşılaştırma Laboratuvarı
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="app-main">
+
+    <!-- TAB 1: Ana Tercih Listesi -->
+    <section class="tab-content active" id="tab-main-list">
+      <div class="table-card">
+        
+        <!-- Dynamic Profile Weight Controller -->
+        <div class="weight-controller-box">
+          <div class="weight-controller-header">
+            <h3>⚡ Dinamik Profil Karar Motoru</h3>
+            <p>Tercih puanlarınızı hedeflerinize göre ağırlıklandırın.</p>
+          </div>
+          <div class="weight-controls-row">
+            <div class="filter-group">
+              <label for="profile-select" style="font-weight: 600;">Tercih Profili:</label>
+              <select id="profile-select" class="compact-select">
+                <option value="career">💼 Kariyer Odaklı (Prestij & İstihdam)</option>
+                <option value="academic">🔬 Akademi Odaklı (Araştırma & Kadro)</option>
+                <option value="student">🎭 Öğrenci Hayatı Odaklı (Sosyallik & Ulaşım)</option>
+                <option value="software">💻 Yazılım/Bilişim Odaklı (Sektör & Ekosistem)</option>
+                <option value="custom">⚙️ Özel Ağırlıklı (Manuel)</option>
+              </select>
+            </div>
+            <div id="sliders-container" class="sliders-grid">
+              <div class="slider-item">
+                <span class="slider-label">Prestij: <strong id="val-w-prestige">40</strong>%</span>
+                <input type="range" id="slide-w-prestige" min="0" max="100" value="40" class="weight-slider">
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Akademik Kadro: <strong id="val-w-academic">30</strong>%</span>
+                <input type="range" id="slide-w-academic" min="0" max="100" value="30" class="weight-slider">
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Ulaşım & KYK: <strong id="val-w-transport">15</strong>%</span>
+                <input type="range" id="slide-w-transport" min="0" max="100" value="15" class="weight-slider">
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Öğrenci Hayatı: <strong id="val-w-student">15</strong>%</span>
+                <input type="range" id="slide-w-student" min="0" max="100" value="15" class="weight-slider">
+              </div>
+              <div class="slider-item sum-item">
+                <span class="slider-label">Ağırlık Toplamı: <strong id="val-w-sum">100</strong>%</span>
+                <div class="sum-bar-bg"><div id="sum-bar-fill" class="sum-bar-fill ok" style="width: 100%;"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Search & Filter Controls -->
+        <div class="filter-bar">
+          <div class="segment-controls">
+            <button class="seg-btn active" data-filter-degree="all">Tümü</button>
+            <button class="seg-btn" data-filter-degree="Lisans (4Y)">Lisans (4Y)</button>
+            <button class="seg-btn" data-filter-degree="Önlisans (2Y)">Önlisans (2Y)</button>
+          </div>
+
+          <div class="filter-group" style="flex: 1; max-width: 320px;">
+            <input type="text" id="global-search" class="compact-input" placeholder="Ara: Bölüm, üniversite, şehir..." style="width: 100%;">
+          </div>
+
+          <div class="filter-group">
+            <label>Şehir:</label>
+            <select id="filter-city" class="compact-select"><option value="">Tümü</option></select>
+          </div>
+
+          <div class="filter-group">
+            <label>Dil:</label>
+            <select id="filter-lang" class="compact-select">
+              <option value="">Tümü</option>
+              <option value="Türkçe">Türkçe</option>
+              <option value="%100 İngilizce">%100 İngilizce</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Burs:</label>
+            <select id="filter-tuition" class="compact-select">
+              <option value="">Tümü</option>
+              <option value="Devlet (Ücretsiz)">Devlet (Ücretsiz)</option>
+              <option value="%50 İndirimli">%50 İndirimli</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Min Puan:</label>
+            <select id="filter-min-rating" class="compact-select">
+              <option value="0">Tümü (1 - 100)</option>
+              <option value="90">90+ (Zirve)</option>
+              <option value="80">80+ (Çok Yüksek)</option>
+              <option value="70">70+ (Yüksek)</option>
+              <option value="60">60+ (Orta-Üst)</option>
+              <option value="50">50+ (Orta)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Sıralama:</label>
+            <select id="sort-order" class="compact-select">
+              <option value="rating-desc">Genel Puan (En Yüksek)</option>
+              <option value="rating-asc">Genel Puan (En Düşük)</option>
+              <option value="prestige-desc">Prestij Puanı</option>
+              <option value="academic-desc">Akademik Kadro</option>
+              <option value="transport-desc">Ulaşım & KYK</option>
+              <option value="uniar-desc">ÜNİAR Memnuniyet</option>
+              <option value="tahmin-asc">Tahmini Sıralama</option>
+              <option value="y5-asc">Geçen Yıl Sıralama</option>
+              <option value="id">ID Sıralaması</option>
+            </select>
+          </div>
+
+          <div class="filter-group" style="margin-left: auto;">
+            <button id="btn-restore-all" class="btn btn-outline btn-sm" title="Sıfırla">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              Sıfırla
+            </button>
+          </div>
+        </div>
+
+        <!-- Ultra High-Density Compact Table -->
+        <div class="table-wrapper">
+          <table class="compact-table" id="master-table">
+            <thead>
+              <tr>
+                <th style="width: 36px; text-align: center;">Fav</th>
+                <th style="width: 60px; cursor: pointer;" data-sort="id">ID & Tür</th>
+                <th style="width: 280px;">Üniversite / Bölüm / Fakülte</th>
+                <th style="width: 160px;">Şehir / Dil / Burs</th>
+                <th style="width: 130px; cursor: pointer;" data-sort="transport-desc">Ulaşım & KYK</th>
+                <th style="width: 130px; cursor: pointer;" data-sort="uniar-desc">ÜNİAR</th>
+                <th style="width: 130px; cursor: pointer;" data-sort="prestige-desc">Prestij</th>
+                <th style="width: 130px; cursor: pointer;" data-sort="academic-desc">Akademik Kadro</th>
+                <th style="width: 140px; cursor: pointer;" data-sort="tahmin-asc">Geçen Yıl / Tahmin</th>
+                <th style="width: 70px; cursor: pointer;" data-sort="rating-desc">Puanım</th>
+                <th style="width: 100px;">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="master-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: Favorilerim -->
+    <section class="tab-content" id="tab-favorites">
+      <div class="fav-card">
+        <div class="fav-header">
+          <div>
+            <h2>Favori Tercih Listeniz (<span id="fav-count-header">0</span> Bölüm)</h2>
+            <p>Bölümleri sürükleyerek veya yön butonları ile sıraya dizin.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" id="btn-start-wizard-from-fav">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+              Sihirbazı Başlat (A / B)
+            </button>
+            <button class="btn btn-outline" id="btn-reset-fav-order">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              Sırayı Sıfırla
+            </button>
+            <button class="btn btn-destructive" id="btn-clear-all-favs">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Tümünü Temizle
+            </button>
+          </div>
+        </div>
+
+        <div id="fav-list-container" class="fav-drag-list">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Tercih Sihirbazı -->
+    <section class="tab-content" id="tab-pairwise">
+      <div class="wizard-container">
+        
+        <div class="wizard-header card">
+          <div>
+            <h2>Tercih Sihirbazı (İkili Karşılaştırma)</h2>
+            <p>Favorilerinizi 2'şerli kartlar halinde karşılaştırarak ideal kişisel listenizi oluşturun.</p>
+          </div>
+          <div class="wizard-controls">
+            <button class="btn btn-primary" id="btn-start-wizard">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Sihirbazı Başlat / Yenile
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State Container when < 2 Favorites -->
+        <div id="wizard-empty-state" class="card hidden" style="padding: 2.5rem; text-align: center;">
+          <h3 style="margin-bottom: 0.5rem; color: var(--foreground);">Henüz Yeterli Favori Bölüm Eklenmedi</h3>
+          <p style="color: var(--muted-foreground); max-width: 500px; margin: 0 auto 1.5rem auto; font-size: 0.8125rem;">
+            Sihirbazı başlatmak için en az 2 bölümü favorilerinize eklemelisiniz.
+          </p>
+          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-primary" id="btn-auto-fav-top5">Tüm Bölümleri Favorilere Ekle & Başlat</button>
+            <button class="btn btn-outline" id="btn-go-to-main-list">Ana Tercih Listesine Git</button>
+          </div>
+        </div>
+
+        <!-- Active Duel Area -->
+        <div id="wizard-active-duel" class="duel-area hidden">
+          <div class="wizard-layout-grid">
+            <div class="wizard-main-pane">
+              <div class="duel-progress" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                  <span id="duel-step-text">Karşılaştırma 1 / 10</span>
+                  <div class="progress-bar-bg"><div id="duel-progress-fill" class="progress-bar-fill"></div></div>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <button id="btn-wizard-show-results" class="btn btn-primary btn-sm hidden">Sonuçları Göster</button>
+                  <button id="btn-wizard-undo" class="btn btn-outline btn-sm" disabled>
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                    Geri Al
+                  </button>
+                </div>
+              </div>
+
+              <h3 class="duel-title">Hangisini Tercih Edersiniz?</h3>
+
+              <div class="duel-cards-grid">
+                
+                <!-- Option A Card -->
+                <div class="duel-card option-card" id="option-a-card" data-choice="A">
+                  <span class="option-badge">SEÇENEK A</span>
+                  <h3 id="opt-a-title" class="opt-title">-</h3>
+                  <span id="opt-a-sub" class="opt-sub">-</span>
+
+                  <div class="opt-metrics-grid">
+                    <div class="opt-metric"><span>Ulaşım / KYK:</span> <strong id="opt-a-trans">-</strong></div>
+                    <div class="opt-metric"><span>ÜNİAR Memnuniyet:</span> <strong id="opt-a-uniar">-</strong></div>
+                    <div class="opt-metric"><span>Prestij:</span> <strong id="opt-a-prestige">-</strong></div>
+                    <div class="opt-metric"><span>Akademik Kadro:</span> <strong id="opt-a-academic">-</strong></div>
+                    <div class="opt-metric"><span>Tahmini Sıralama:</span> <strong id="opt-a-pred">-</strong></div>
+                  </div>
+
+                  <button class="btn btn-primary btn-select-choice">Seçenek A'yı Seç (Tuş: 1 / A / Left)</button>
+                </div>
+
+                <div class="duel-vs">VS</div>
+
+                <!-- Option B Card -->
+                <div class="duel-card option-card" id="option-b-card" data-choice="B">
+                  <span class="option-badge">SEÇENEK B</span>
+                  <h3 id="opt-b-title" class="opt-title">-</h3>
+                  <span id="opt-b-sub" class="opt-sub">-</span>
+
+                  <div class="opt-metrics-grid">
+                    <div class="opt-metric"><span>Ulaşım / KYK:</span> <strong id="opt-b-trans">-</strong></div>
+                    <div class="opt-metric"><span>ÜNİAR Memnuniyet:</span> <strong id="opt-b-uniar">-</strong></div>
+                    <div class="opt-metric"><span>Prestij:</span> <strong id="opt-b-prestige">-</strong></div>
+                    <div class="opt-metric"><span>Akademik Kadro:</span> <strong id="opt-b-academic">-</strong></div>
+                    <div class="opt-metric"><span>Tahmini Sıralama:</span> <strong id="opt-b-pred">-</strong></div>
+                  </div>
+
+                  <button class="btn btn-primary btn-select-choice">Seçenek B'yi Seç (Tuş: 2 / B / Right)</button>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="wizard-side-pane">
+              <div class="side-pane-header">
+                <h3>Karşılaştırma Listesi</h3>
+                <p>Soruları inceleyin veya doğrudan cevabını değiştirmek için tıklayın.</p>
+              </div>
+              <div id="wizard-questions-list" class="questions-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Final Ranked Results Area -->
+        <div id="wizard-final-results" class="wizard-results card hidden" style="padding: 1.5rem;">
+          <div class="results-header">
+            <h2>Karşılaştırma Sonucu & Sıralama</h2>
+            <p>Seçimlerinize göre oluşan nihai tercih listeniz:</p>
+          </div>
+
+          <div class="final-ranked-table-wrapper" style="margin-top: 1rem;">
+            <table class="compact-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px; text-align: center;">Sıra</th>
+                  <th>Üniversite & Bölüm Adı</th>
+                  <th>Şehir</th>
+                  <th>Galibiyet</th>
+                </tr>
+              </thead>
+              <tbody id="wizard-final-tbody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 4: Karşılaştırma Laboratuvarı -->
+    <section class="tab-content" id="tab-compare-hub">
+      <div class="compare-container">
+        
+        <div class="compare-header card">
+          <div>
+            <h2>Evrensel Karşılaştırma Laboratuvarı</h2>
+            <p>Tercih programlarını, üniversiteleri ve bölümleri detaylı metrikleriyle yan yana analiz edin.</p>
+          </div>
+          <div class="compare-tab-selectors segment-controls">
+            <button class="seg-btn active" data-compare-mode="program">Programlar</button>
+            <button class="seg-btn" data-compare-mode="university">Üniversiteler</button>
+            <button class="seg-btn" data-compare-mode="department">Bölümler</button>
+          </div>
+        </div>
+
+        <!-- Section: Program Karşılaştırma -->
+        <div id="compare-pane-program" class="compare-pane">
+          <div class="compare-search-box card">
+            <div class="compare-dual-grid">
+              <div class="compare-select-block">
+                <label for="compare-program-select-1">1. Program</label>
+                <div class="select-wrapper">
+                  <select id="compare-program-select-1" class="compact-select compare-dropdown">
+                    <option value="">-- 1. Programı Seçin --</option>
+                  </select>
+                </div>
+              </div>
+              <div class="compare-vs-badge">VS</div>
+              <div class="compare-select-block">
+                <label for="compare-program-select-2">2. Program</label>
+                <div class="select-wrapper">
+                  <select id="compare-program-select-2" class="compact-select compare-dropdown">
+                    <option value="">-- 2. Programı Seçin --</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="compare-program-results" class="compare-results-wrapper">
+            <!-- Dynamic comparison table rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Section: Üniversite Karşılaştırma -->
+        <div id="compare-pane-university" class="compare-pane hidden">
+          <div class="compare-search-box card">
+            <div class="compare-dual-grid">
+              <div class="compare-select-block">
+                <label for="compare-university-select-1">1. Üniversite</label>
+                <div class="select-wrapper">
+                  <select id="compare-university-select-1" class="compact-select compare-dropdown">
+                    <option value="">-- 1. Üniversiteyi Seçin --</option>
+                  </select>
+                </div>
+              </div>
+              <div class="compare-vs-badge">VS</div>
+              <div class="compare-select-block">
+                <label for="compare-university-select-2">2. Üniversite</label>
+                <div class="select-wrapper">
+                  <select id="compare-university-select-2" class="compact-select compare-dropdown">
+                    <option value="">-- 2. Üniversiteyi Seçin --</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="compare-university-results" class="compare-results-wrapper">
+            <!-- Dynamic comparison table rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Section: Bölüm Karşılaştırma -->
+        <div id="compare-pane-department" class="compare-pane hidden">
+          <div class="compare-search-box card">
+            <div class="compare-dual-grid">
+              <div class="compare-select-block">
+                <label for="compare-department-select-1">1. Bölüm</label>
+                <div class="select-wrapper">
+                  <select id="compare-department-select-1" class="compact-select compare-dropdown">
+                    <option value="">-- 1. Bölümü Seçin --</option>
+                  </select>
+                </div>
+              </div>
+              <div class="compare-vs-badge">VS</div>
+              <div class="compare-select-block">
+                <label for="compare-department-select-2">2. Bölüm</label>
+                <div class="select-wrapper">
+                  <select id="compare-department-select-2" class="compact-select compare-dropdown">
+                    <option value="">-- 2. Bölümü Seçin --</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="compare-department-results" class="compare-results-wrapper">
+            <!-- Dynamic comparison table rendered via JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Persistent Footer Disclaimer -->
+  <footer class="app-footer" style="padding: 1.5rem; text-align: center; border-top: 1px solid var(--border); margin-top: 3rem; background: var(--muted); font-size: 0.8125rem; color: var(--muted-foreground);">
+    <p>⚡ <strong>YKS Tercih & Karar Platformu:</strong> Bu sistem tercih sürecinizde yalnızca rehberlik ve destek amaçlıdır. Sistemdeki veriler ve regresyon modelleri tahmini değerler sunar ve hata riski barındırabilir.</p>
+    <p style="margin-top: 0.25rem;">Nihai kararlarınızın sorumluluğu tamamen size aittir; tercihlerinizi göndermeden önce mutlaka resmi <strong>ÖSYM Tercih Kılavuzu</strong> ve <strong>YÖK Atlas</strong> verileriyle teyit ediniz.</p>
+  </footer>
+
+  <!-- Department Detail Modal Drawer -->
+  <div id="dept-detail-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 id="modal-dept-title">Bölüm Detayı</h2>
+          <p id="modal-dept-sub" class="modal-sub"></p>
+        </div>
+        <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-detail-layout">
+          <!-- Left Column: Primary info, Trend, Notes, and general eval -->
+          <div class="modal-detail-left">
+            <div class="info-row-grid">
+              <div class="info-row-item">
+                <span class="lbl">Fakülte / Yüksekokul</span>
+                <span id="modal-faculty" class="val">-</span>
+              </div>
+              <div class="info-row-item">
+                <span class="lbl">Öğretim Dili & Burs</span>
+                <span id="modal-lang-tuition" class="val">-</span>
+              </div>
+            </div>
+
+            <div class="eval-block">
+              <div class="eval-block-header">
+                <h3>Genel Değerlendirme & Analiz</h3>
+                <span id="modal-eval-badge" class="ai-badge hidden">✨ Gemini AI</span>
+              </div>
+              <div id="modal-general-eval">-</div>
+            </div>
+
+            <div class="history-table-box">
+              <h3>Son 4 Yıl Sıralama ve Kontenjan Değişimi</h3>
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Yıl</th>
+                    <th>2022</th>
+                    <th>2023</th>
+                    <th>2024</th>
+                    <th>2025</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr id="modal-rank-row">
+                    <td><strong>Sıralama</strong></td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                  </tr>
+                  <tr id="modal-quota-row">
+                    <td><strong>Kontenjan</strong></td>
+                    <td>-</td><td>-</td><td>-</td><td>-</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <h3>Değerlendirme ve Notlar</h3>
+              <p id="modal-notes" class="desc-text" style="background: var(--secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.875rem; min-height: 50px;"></p>
+            </div>
+          </div>
+
+          <!-- Right Column: Metric cards with score progress bar and long details -->
+          <div class="modal-detail-right">
+            <h3>14 Boyutlu Kanıta Dayalı Karar Metrikleri</h3>
+            <div id="modal-detailed-scores-grid" class="metrics-grid">
+              <!-- Rendered via JS dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div id="export-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Markdown Master Veritabanı</h2>
+        <button id="export-close-btn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 0.8125rem; color: var(--muted-foreground);">Markdown Tablo Formatı</span>
+          <button class="btn btn-primary" id="btn-copy-code">Panoya Kopyala</button>
+        </div>
+        <pre><code id="export-code-box"></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Disclaimer Modal -->
+  <div id="disclaimer-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 500px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.125rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 700;">
+          ⚠️ Yasal Sorumluluk Reddi & Bilgilendirme
+        </h2>
+      </div>
+      <div class="modal-body" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+        <p style="font-size: 0.875rem; line-height: 1.6; color: var(--foreground); font-weight: 500;">
+          Bu platformda yer alan tüm sıralama, kontenjan, puan ve veri analizleri <strong>tahmini ve öngörüye dayalı kararlar</strong> içerir.
+        </p>
+        <p style="font-size: 0.875rem; line-height: 1.6; color: var(--muted-foreground);">
+          Verilerin doğruluğunda ve hesaplanan regresyon tahminlerinde hata veya sapma riski bulunmaktadır. Bu platform, tercih sürecinizde yalnızca <strong>destek, rehberlik ve karar verme kolaylığı sağlamak amacıyla</strong> tasarlanmıştır.
+        </p>
+        <div style="background: var(--muted); border-left: 3px solid var(--primary); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.8125rem; color: var(--muted-foreground); line-height: 1.5;">
+          <strong>Önemli:</strong> Bu uygulamadaki veriler resmi tercih kılavuzu yerine geçmez. Tercihlerinizi yapmadan önce lütfen resmi <strong>ÖSYM Tercih Kılavuzu</strong> ve <strong>YÖK Atlas</strong> sistemindeki güncel verileri kontrol edip teyit ediniz.
+        </div>
+        <button id="btn-accept-disclaimer" class="btn btn-primary" style="width: 100%; padding: 0.75rem; margin-top: 0.5rem; display: flex; justify-content: center; align-items: center;">
+          Okudum, Kabul Ediyorum
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>

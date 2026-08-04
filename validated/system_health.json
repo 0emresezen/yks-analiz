@@ -1,0 +1,13 @@
+{
+  "yok_api_online": true,
+  "latest_yok_year": 2025,
+  "uniar_portal_online": false,
+  "latest_uniar_year": 2024,
+  "local_uniar_year": 2024,
+  "sources_up_to_date": true,
+  "status": "HEALTHY",
+  "new_data_available": false,
+  "last_checked": "2026-08-04T21:06:41.870024",
+  "parser_success_rate": 100.0,
+  "validation_success_rate": 100.0
+}

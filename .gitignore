@@ -1,0 +1,43 @@
+# Environments
+.env
+.env.local
+.env.*.local
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Python environment
+venv/
+.venv/
+env/
+ENV/
+pyvenv.cfg
+.python-version
+pip-log.txt
+pip-delete-this-directory.txt
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# IDE / System files
+.DS_Store
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Agent files
+.gemini/
+antigravity/
+.vercel
