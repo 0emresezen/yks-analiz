@@ -1,4 +1,4 @@
-import { MASTER_DATABASE as RAW_DATABASE } from './data.js';
+import { initDataModule, getProgramById } from './data.js';
 import {
   escapeHtml as eh,
   escapeAttr as ea,
@@ -62,7 +62,16 @@ export function sanitizeItem(item) {
   return newItem;
 }
 
-const MASTER_DATABASE = RAW_DATABASE.map(sanitizeItem);
+const PAGE_SIZE = 100;
+let MASTER_DATABASE = [];
+
+const itemId = (raw) => String(raw);
+
+const bootstrapDatabase = async () => {
+  const raw = await initDataModule();
+  MASTER_DATABASE = raw.map(sanitizeItem);
+  return MASTER_DATABASE;
+};
 
 // SVG Icon Helper Constants (Pure Monochrome / Emoji-Free)
 const SVG_STAR_FILLED = `<svg class="icon-svg" style="fill:currentColor; color:#18181b;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
@@ -97,6 +106,7 @@ class MasterApp {
     this.tuitionFilter = '';
     this.minRatingFilter = 0; // 0, 5, 6, 7, 8, 9
     this.sortOrder = 'rating-desc';
+    this.currentPage = 1;
 
     // Favorites Order Array of IDs
     this.favoriteOrder = this.loadFavoriteOrder();
@@ -107,6 +117,7 @@ class MasterApp {
     this.wizardScores = {}; // id -> win count
     this.wizardHeadToHead = {}; // id1_vs_id2 -> winnerId
     this.wizardChoices = []; // index -> 'A' | 'B' | null
+    this.wizardListFilter = 'all'; // 'all' | 'answered' | 'pending'
 
     // Comparison State
     const cleanCompare = (val) => {
@@ -157,14 +168,7 @@ class MasterApp {
   }
 
   loadState() {
-    const masterIds = new Set(MASTER_DATABASE.map(x => x.id));
-    let customPrograms = [];
     let deletedIds = [];
-
-    try {
-      const custom = localStorage.getItem('yks_custom_programs');
-      if (custom) customPrograms = JSON.parse(custom);
-    } catch (e) {}
 
     try {
       const deleted = localStorage.getItem('yks_deleted_ids');
@@ -173,40 +177,37 @@ class MasterApp {
 
     const deletedSet = new Set(deletedIds);
     const saved = localStorage.getItem('yks_master_v8_employability_data');
+    const savedFavorites = localStorage.getItem('yks_favorite_ids');
+    let favoriteIds = new Set();
+    try {
+      if (savedFavorites) favoriteIds = new Set(JSON.parse(savedFavorites));
+    } catch (e) {}
 
     const mergeSavedFields = (item) => {
       const rating = this.calculateRating(item);
-      if (!saved) return { ...item, rating, isFavorite: true };
+      const isFavorite = favoriteIds.has(item.id) || favoriteIds.has(String(item.id));
+
+      if (!saved) return { ...item, rating, isFavorite };
 
       try {
         const parsed = JSON.parse(saved);
-        const match = parsed.find(x => x.id === item.id);
+        const match = parsed.find(x => String(x.id) === String(item.id));
         if (match) {
           return {
             ...item,
             rating,
             notes: typeof match.notes === 'string' ? sanitizePlainText(match.notes) : match.notes,
-            isFavorite: typeof match.isFavorite === 'boolean' ? match.isFavorite : true
+            isFavorite: typeof match.isFavorite === 'boolean' ? match.isFavorite : isFavorite
           };
         }
       } catch (e) {}
 
-      return { ...item, rating, isFavorite: true };
+      return { ...item, rating, isFavorite };
     };
 
-    const baseData = MASTER_DATABASE
+    return MASTER_DATABASE
       .filter(item => !deletedSet.has(item.id))
       .map(mergeSavedFields);
-
-    const customData = customPrograms.map(item => {
-      const sanitized = sanitizeItem(item);
-      return {
-        ...sanitized,
-        rating: this.calculateRating(sanitized)
-      };
-    });
-
-    return [...baseData, ...customData];
   }
 
   saveState() {
@@ -241,7 +242,8 @@ class MasterApp {
   }
 
   toggleFavorite(id) {
-    const item = this.data.find(x => x.id === id);
+    const key = itemId(id);
+    const item = this.data.find(x => itemId(x.id) === key);
     if (!item) return;
 
     item.isFavorite = !item.isFavorite;
@@ -268,19 +270,20 @@ class MasterApp {
   }
 
   deleteItem(id) {
-    const index = this.data.findIndex(x => x.id === id);
+    const key = itemId(id);
+    const index = this.data.findIndex(x => itemId(x.id) === key);
     if (index === -1) return null;
     const item = this.data[index];
-    const wasFavorite = item.isFavorite || this.favoriteOrder.includes(id);
-    const masterIds = new Set(MASTER_DATABASE.map(x => x.id));
+    const wasFavorite = item.isFavorite || this.favoriteOrder.map(itemId).includes(key);
+    const masterIds = new Set(MASTER_DATABASE.map(x => itemId(x.id)));
 
     this.data.splice(index, 1);
-    this.favoriteOrder = this.favoriteOrder.filter(x => x !== id);
+    this.favoriteOrder = this.favoriteOrder.filter(x => itemId(x) !== key);
 
-    if (masterIds.has(id)) {
+    if (masterIds.has(key)) {
       const deletedIds = JSON.parse(localStorage.getItem('yks_deleted_ids') || '[]');
-      if (!deletedIds.includes(id)) {
-        deletedIds.push(id);
+      if (!deletedIds.map(itemId).includes(key)) {
+        deletedIds.push(key);
         localStorage.setItem('yks_deleted_ids', JSON.stringify(deletedIds));
       }
     }
@@ -374,11 +377,12 @@ class MasterApp {
     // Search Query
     if (this.searchQuery) {
       const q = this.searchQuery.toLowerCase();
-      result = result.filter(x => 
+      result = result.filter(x =>
         x.full_name.toLowerCase().includes(q) ||
-        x.faculty.toLowerCase().includes(q) ||
+        (x.faculty || '').toLowerCase().includes(q) ||
         x.city.toLowerCase().includes(q) ||
-        x.transport_desc.toLowerCase().includes(q) ||
+        (x.transport_desc || '').toLowerCase().includes(q) ||
+        (x.department_group || '').toLowerCase().includes(q) ||
         (x.notes && x.notes.toLowerCase().includes(q))
       );
     }
@@ -443,11 +447,87 @@ class MasterApp {
       this.wizardHeadToHead[`${winner.id}_vs_${loser.id}`] = winner.id;
     });
   }
+
+  getWizardFavoriteHash() {
+    return [...this.favoriteOrder].sort((a, b) => a - b).join(',');
+  }
+
+  saveWizardState() {
+    if (!this.wizardPairs.length) return;
+    try {
+      localStorage.setItem('yks_wizard_state_v1', JSON.stringify({
+        hash: this.getWizardFavoriteHash(),
+        pairIds: this.wizardPairs.map(([a, b]) => [a.id, b.id]),
+        choices: this.wizardChoices,
+        currentIndex: this.wizardCurrentIndex,
+        listFilter: this.wizardListFilter
+      }));
+    } catch (e) {}
+  }
+
+  restoreWizardState() {
+    try {
+      const raw = localStorage.getItem('yks_wizard_state_v1');
+      if (!raw) return false;
+
+      const state = JSON.parse(raw);
+      if (state.hash !== this.getWizardFavoriteHash()) return false;
+      if (!Array.isArray(state.pairIds) || !state.pairIds.length) return false;
+
+      const pairs = state.pairIds.map(([idA, idB]) => {
+        const itemA = this.data.find(x => x.id === idA);
+        const itemB = this.data.find(x => x.id === idB);
+        if (!itemA || !itemB) return null;
+        return [itemA, itemB];
+      });
+
+      if (pairs.some(p => !p)) return false;
+
+      this.wizardPairs = pairs;
+      this.wizardChoices = Array.isArray(state.choices)
+        ? state.choices.map(c => (c === 'A' || c === 'B' ? c : null))
+        : Array(pairs.length).fill(null);
+      this.wizardCurrentIndex = Number.isInteger(state.currentIndex)
+        ? Math.min(Math.max(state.currentIndex, 0), pairs.length - 1)
+        : 0;
+      this.wizardListFilter = ['all', 'answered', 'pending'].includes(state.listFilter)
+        ? state.listFilter
+        : 'all';
+      this.recalculateWizardScores();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  clearWizardState() {
+    try {
+      localStorage.removeItem('yks_wizard_state_v1');
+    } catch (e) {}
+  }
 }
 
 const app = new MasterApp();
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  const loader = document.getElementById('app-loading');
+  try {
+    if (loader) loader.classList.remove('hidden');
+    await bootstrapDatabase();
+    app.data = app.loadState();
+    const subtitle = document.querySelector('.subtitle');
+    if (subtitle) {
+      subtitle.textContent = `${MASTER_DATABASE.length.toLocaleString('tr-TR')} Program | Deterministik Karar Motoru`;
+    }
+    const totalBadge = document.getElementById('stat-total-count');
+    if (totalBadge) totalBadge.textContent = MASTER_DATABASE.length.toLocaleString('tr-TR');
+  } catch (e) {
+    console.error('Veritabanı yükleme hatası:', e);
+    alert('Analiz veritabanı yüklenemedi. Lütfen build_analysis_database.py çalıştırın.');
+  } finally {
+    if (loader) loader.classList.add('hidden');
+  }
+
   trackVisit();
   startPresence();
   app.syncFavoritesList();
@@ -528,6 +608,7 @@ function setupFilterEvents() {
       document.querySelectorAll('.filter-bar .seg-btn[data-filter-degree]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       app.filterDegree = btn.dataset.filterDegree;
+      resetTablePage();
       renderMasterTable();
     });
   });
@@ -536,6 +617,7 @@ function setupFilterEvents() {
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       app.searchQuery = e.target.value;
+      resetTablePage();
       renderMasterTable();
     });
   }
@@ -546,11 +628,11 @@ function setupFilterEvents() {
   const minRatingSelect = document.getElementById('filter-min-rating');
   const sortSelect = document.getElementById('sort-order');
 
-  if (citySelect) citySelect.addEventListener('change', (e) => { app.cityFilter = e.target.value; renderMasterTable(); });
-  if (langSelect) langSelect.addEventListener('change', (e) => { app.langFilter = e.target.value; renderMasterTable(); });
-  if (tuitionSelect) tuitionSelect.addEventListener('change', (e) => { app.tuitionFilter = e.target.value; renderMasterTable(); });
-  if (minRatingSelect) minRatingSelect.addEventListener('change', (e) => { app.minRatingFilter = parseFloat(e.target.value) || 0; renderMasterTable(); });
-  if (sortSelect) sortSelect.addEventListener('change', (e) => { app.sortOrder = e.target.value; renderMasterTable(); });
+  if (citySelect) citySelect.addEventListener('change', (e) => { app.cityFilter = e.target.value; resetTablePage(); renderMasterTable(); });
+  if (langSelect) langSelect.addEventListener('change', (e) => { app.langFilter = e.target.value; resetTablePage(); renderMasterTable(); });
+  if (tuitionSelect) tuitionSelect.addEventListener('change', (e) => { app.tuitionFilter = e.target.value; resetTablePage(); renderMasterTable(); });
+  if (minRatingSelect) minRatingSelect.addEventListener('change', (e) => { app.minRatingFilter = parseFloat(e.target.value) || 0; resetTablePage(); renderMasterTable(); });
+  if (sortSelect) sortSelect.addEventListener('change', (e) => { app.sortOrder = e.target.value; resetTablePage(); renderMasterTable(); });
 
   const restoreBtn = document.getElementById('btn-restore-all');
   if (restoreBtn) {
@@ -574,6 +656,43 @@ function setupFilterEvents() {
         renderMasterTable();
       }
     });
+  });
+}
+
+function resetTablePage() {
+  app.currentPage = 1;
+}
+
+function renderTablePagination(total, totalPages, startIndex) {
+  const container = document.getElementById('table-pagination');
+  if (!container) return;
+
+  if (total === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const end = Math.min(startIndex + PAGE_SIZE, total);
+  container.innerHTML = `
+    <span>${(startIndex + 1).toLocaleString('tr-TR')}–${end.toLocaleString('tr-TR')} / ${total.toLocaleString('tr-TR')} program</span>
+    <div class="pagination-actions">
+      <button class="btn btn-outline btn-sm" id="btn-page-prev" ${app.currentPage <= 1 ? 'disabled' : ''}>Önceki</button>
+      <span>Sayfa ${app.currentPage} / ${totalPages}</span>
+      <button class="btn btn-outline btn-sm" id="btn-page-next" ${app.currentPage >= totalPages ? 'disabled' : ''}>Sonraki</button>
+    </div>
+  `;
+
+  document.getElementById('btn-page-prev')?.addEventListener('click', () => {
+    if (app.currentPage > 1) {
+      app.currentPage -= 1;
+      renderMasterTable();
+    }
+  });
+  document.getElementById('btn-page-next')?.addEventListener('click', () => {
+    if (app.currentPage < totalPages) {
+      app.currentPage += 1;
+      renderMasterTable();
+    }
   });
 }
 
@@ -631,7 +750,12 @@ function renderMasterTable() {
     return;
   }
 
-  items.forEach(item => {
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  if (app.currentPage > totalPages) app.currentPage = totalPages;
+  const startIndex = (app.currentPage - 1) * PAGE_SIZE;
+  const pageItems = items.slice(startIndex, startIndex + PAGE_SIZE);
+
+  pageItems.forEach(item => {
     const tr = document.createElement('tr');
 
     const lastRankStr = item.last_rank ? item.last_rank.toLocaleString('tr-TR') : '-';
@@ -698,10 +822,12 @@ function renderMasterTable() {
     tbody.appendChild(tr);
   });
 
+  renderTablePagination(items.length, totalPages, startIndex);
+
   // Attach Star Toggle
   tbody.querySelectorAll('.fav-star-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const id = parseInt(e.currentTarget.dataset.id, 10);
+      const id = itemId(e.currentTarget.dataset.id);
       app.toggleFavorite(id);
       renderMasterTable();
     });
@@ -709,15 +835,13 @@ function renderMasterTable() {
 
   tbody.querySelectorAll('.detail-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const id = parseInt(e.currentTarget.dataset.id, 10);
-      openDetailModal(id);
+      openDetailModal(itemId(e.currentTarget.dataset.id));
     });
   });
 
-  // Attach Delete Button Handler
   tbody.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const id = parseInt(e.currentTarget.dataset.id, 10);
+      const id = itemId(e.currentTarget.dataset.id);
       const info = app.deleteItem(id);
       if (info) {
         renderMasterTable();
@@ -964,7 +1088,14 @@ function renderFavoritesList() {
 function setupPairwiseWizard() {
   const startBtn = document.getElementById('btn-start-wizard');
   if (startBtn) {
-    startBtn.addEventListener('click', startPairwiseWizard);
+    startBtn.addEventListener('click', () => {
+      const answered = getWizardAnsweredCount();
+      if (answered > 0) {
+        const restart = confirm('Mevcut cevaplarınız silinecek. Sihirbazı sıfırdan başlatmak istiyor musunuz?');
+        if (!restart) return;
+      }
+      startPairwiseWizard(true);
+    });
   }
 
   document.getElementById('option-a-card')?.addEventListener('click', (e) => {
@@ -988,6 +1119,15 @@ function setupPairwiseWizard() {
   });
 
   document.getElementById('btn-toggle-wizard-side')?.addEventListener('click', toggleWizardSidePane);
+
+  document.querySelectorAll('[data-wizard-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      app.wizardListFilter = btn.dataset.wizardFilter || 'all';
+      app.saveWizardState();
+      syncWizardListFilterUI();
+      renderWizardQuestionsList();
+    });
+  });
 
   // Keyboard navigation
   document.addEventListener('keydown', (e) => {
@@ -1178,6 +1318,7 @@ function handleDuelChoice(choice) {
 
   app.wizardChoices[app.wizardCurrentIndex] = choice;
   app.recalculateWizardScores();
+  app.saveWizardState();
 
   app.wizardCurrentIndex++;
 
@@ -1200,62 +1341,134 @@ function handleWizardUndo() {
     app.wizardCurrentIndex--;
     app.wizardChoices[app.wizardCurrentIndex] = null;
     app.recalculateWizardScores();
+    app.saveWizardState();
     renderDuelStep();
   }
+}
+
+function getWizardShortName(fullName) {
+  return (fullName || '').split(' - ')[0];
+}
+
+function getWizardAnsweredCount() {
+  return app.wizardChoices.filter(c => c !== null).length;
+}
+
+function updateWizardHistoryBadge() {
+  const toggleBtn = document.getElementById('btn-toggle-wizard-side');
+  if (!toggleBtn) return;
+
+  const answered = getWizardAnsweredCount();
+  const total = app.wizardPairs.length;
+  const badge = toggleBtn.querySelector('.wizard-history-badge');
+
+  if (!total || answered === 0) {
+    badge?.remove();
+    return;
+  }
+
+  const label = badge || document.createElement('span');
+  label.className = 'wizard-history-badge';
+  label.textContent = `${answered}/${total}`;
+  if (!badge) toggleBtn.appendChild(label);
+}
+
+function syncWizardListFilterUI() {
+  document.querySelectorAll('[data-wizard-filter]').forEach(btn => {
+    const isActive = btn.dataset.wizardFilter === app.wizardListFilter;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', String(isActive));
+  });
+}
+
+function getFilteredWizardEntries() {
+  return app.wizardPairs
+    .map((pair, idx) => ({ pair, idx, choice: app.wizardChoices[idx] }))
+    .filter(({ choice }) => {
+      if (app.wizardListFilter === 'answered') return choice !== null;
+      if (app.wizardListFilter === 'pending') return choice === null;
+      return true;
+    });
+}
+
+function buildWizardQuestionItem(pair, idx, choice, isActive, { readOnly = false } = {}) {
+  const [itemA, itemB] = pair;
+  const uNameA = getWizardShortName(itemA.full_name);
+  const uNameB = getWizardShortName(itemB.full_name);
+  const winnerName = choice === 'A' ? uNameA : choice === 'B' ? uNameB : null;
+  const statusText = winnerName ? `→ ${winnerName}` : 'Bekliyor';
+
+  const itemDiv = document.createElement('div');
+  itemDiv.className = `question-item${isActive ? ' active' : ''}${choice ? ' answered' : ''}`;
+  itemDiv.dataset.index = idx;
+
+  itemDiv.innerHTML = `
+    <div class="question-item-header">
+      <span>Soru ${idx + 1}</span>
+      <span class="question-item-status">${statusText}</span>
+    </div>
+    <div class="question-item-options">
+      <button type="button" class="q-opt-btn ${choice === 'A' ? 'selected' : ''}" data-choice="A" title="${eh(itemA.full_name)}" ${readOnly ? 'tabindex="-1"' : ''}>${eh(uNameA)}</button>
+      <span class="question-item-vs">vs</span>
+      <button type="button" class="q-opt-btn ${choice === 'B' ? 'selected' : ''}" data-choice="B" title="${eh(itemB.full_name)}" ${readOnly ? 'tabindex="-1"' : ''}>${eh(uNameB)}</button>
+    </div>
+  `;
+
+  return itemDiv;
+}
+
+function attachWizardQuestionItemHandlers(itemDiv, idx, { readOnly = false, onAfterChange } = {}) {
+  itemDiv.addEventListener('click', (e) => {
+    const optBtn = e.target.closest('.q-opt-btn');
+    if (optBtn && !readOnly) {
+      e.stopPropagation();
+      app.wizardChoices[idx] = optBtn.dataset.choice;
+      app.recalculateWizardScores();
+      app.saveWizardState();
+
+      if (app.wizardChoices.every(c => c !== null)) {
+        const resultsArea = document.getElementById('wizard-final-results');
+        if (resultsArea && !resultsArea.classList.contains('hidden')) {
+          finishWizard();
+          return;
+        }
+      }
+
+      if (typeof onAfterChange === 'function') onAfterChange();
+      return;
+    }
+
+    app.wizardCurrentIndex = idx;
+    if (readOnly) {
+      document.getElementById('wizard-final-results')?.classList.add('hidden');
+      document.getElementById('wizard-active-duel')?.classList.remove('hidden');
+    }
+    renderDuelStep();
+  });
 }
 
 function renderWizardQuestionsList() {
   const listContainer = document.getElementById('wizard-questions-list');
   if (!listContainer) return;
 
+  const entries = getFilteredWizardEntries();
   listContainer.innerHTML = '';
-  app.wizardPairs.forEach((pair, idx) => {
-    const [itemA, itemB] = pair;
-    const choice = app.wizardChoices[idx];
+
+  if (!entries.length) {
+    const emptyMsg = app.wizardListFilter === 'answered'
+      ? 'Henüz cevaplanmış karşılaştırma yok.'
+      : app.wizardListFilter === 'pending'
+        ? 'Tüm karşılaştırmalar cevaplandı.'
+        : 'Karşılaştırma bulunamadı.';
+    listContainer.innerHTML = `<div class="wizard-list-empty">${emptyMsg}</div>`;
+    updateWizardHistoryBadge();
+    return;
+  }
+
+  entries.forEach(({ pair, idx, choice }) => {
     const isActive = idx === app.wizardCurrentIndex;
-
-    const uNameA = itemA.full_name.split(' - ')[0];
-    const uNameB = itemB.full_name.split(' - ')[0];
-
-    const itemDiv = document.createElement('div');
-    itemDiv.className = `question-item ${isActive ? 'active' : ''}`;
-    itemDiv.dataset.index = idx;
-
-    itemDiv.innerHTML = `
-      <div class="question-item-header">
-        <span>Soru ${idx + 1}</span>
-        <span>${choice ? 'Seçildi' : 'Bekliyor'}</span>
-      </div>
-      <div class="question-item-options">
-        <button class="q-opt-btn ${choice === 'A' ? 'selected' : ''}" data-choice="A" title="${itemA.full_name}">${uNameA}</button>
-        <span style="font-size: 0.65rem; font-family: var(--font-mono); color: var(--muted-foreground);">vs</span>
-        <button class="q-opt-btn ${choice === 'B' ? 'selected' : ''}" data-choice="B" title="${itemB.full_name}">${uNameB}</button>
-      </div>
-    `;
-
-    itemDiv.addEventListener('click', (e) => {
-      const optBtn = e.target.closest('.q-opt-btn');
-      if (optBtn) {
-        e.stopPropagation();
-        const selectedChoice = optBtn.dataset.choice;
-        app.wizardChoices[idx] = selectedChoice;
-        app.recalculateWizardScores();
-        
-        // If results table is active, finishWizard will update it
-        if (app.wizardChoices.every(c => c !== null)) {
-          const resultsArea = document.getElementById('wizard-final-results');
-          if (resultsArea && !resultsArea.classList.contains('hidden')) {
-            finishWizard();
-          }
-        }
-        
-        renderDuelStep();
-      } else {
-        app.wizardCurrentIndex = idx;
-        renderDuelStep();
-      }
-    });
-
+    const itemDiv = buildWizardQuestionItem(pair, idx, choice, isActive);
+    attachWizardQuestionItemHandlers(itemDiv, idx, { onAfterChange: renderDuelStep });
     listContainer.appendChild(itemDiv);
   });
 
@@ -1263,6 +1476,32 @@ function renderWizardQuestionsList() {
   if (activeEl) {
     activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
+
+  updateWizardHistoryBadge();
+}
+
+function renderWizardResultsAnswersList() {
+  const listContainer = document.getElementById('wizard-results-answers-list');
+  const section = document.getElementById('wizard-results-answers');
+  if (!listContainer || !section) return;
+
+  const answeredEntries = app.wizardPairs
+    .map((pair, idx) => ({ pair, idx, choice: app.wizardChoices[idx] }))
+    .filter(({ choice }) => choice !== null);
+
+  if (!answeredEntries.length) {
+    section.classList.add('hidden');
+    return;
+  }
+
+  section.classList.remove('hidden');
+  listContainer.innerHTML = '';
+
+  answeredEntries.forEach(({ pair, idx, choice }) => {
+    const itemDiv = buildWizardQuestionItem(pair, idx, choice, false, { readOnly: true });
+    attachWizardQuestionItemHandlers(itemDiv, idx, { readOnly: true });
+    listContainer.appendChild(itemDiv);
+  });
 }
 
 function finishWizard() {
@@ -1348,8 +1587,10 @@ function finishWizard() {
     renderDuelStep();
   };
 
-  document.getElementById('btn-restart-wizard').onclick = startPairwiseWizard;
+  document.getElementById('btn-restart-wizard').onclick = () => startPairwiseWizard(true);
 
+  renderWizardResultsAnswersList();
+  app.saveWizardState();
   resultsArea.classList.remove('hidden');
   trackListCreated();
 }
@@ -1504,7 +1745,7 @@ function getOverallMetricDescription(item, key, score) {
 // Modal Details Logic
 function openDetailModal(id) {
   const overlay = document.getElementById('dept-detail-modal');
-  const item = app.data.find(x => x.id === id);
+  const item = app.data.find(x => itemId(x.id) === itemId(id));
   if (!item) return;
 
   document.getElementById('modal-dept-title').textContent = item.full_name;
@@ -1682,9 +1923,87 @@ function openDetailModal(id) {
 // Add Program Modal — YÖK Atlas program_index üzerinden bölüm ekleme
 // ==========================================================================
 
+let programSearchCache = null;
 let programIndexCache = null;
+let departmentsIndexCache = null;
 let selectedAddProgram = null;
 let addProgramSearchTimer = null;
+const MIN_SEARCH_CHARS = 2;
+const MAX_SEARCH_RESULTS = 40;
+
+const trLower = (s) => {
+  if (!s) return '';
+  return s
+    .replace(/İ/g, 'i').replace(/I/g, 'ı')
+    .replace(/Ğ/g, 'ğ').replace(/Ü/g, 'ü')
+    .replace(/Ş/g, 'ş').replace(/Ö/g, 'ö').replace(/Ç/g, 'ç')
+    .toLowerCase();
+};
+
+const loadProgramSearchIndex = async () => {
+  if (programSearchCache) return programSearchCache;
+  try {
+    const response = await fetch('/data/program_search.json');
+    if (response.ok) {
+      programSearchCache = await response.json();
+      return programSearchCache;
+    }
+  } catch (e) {
+    console.warn('program_search.json yüklenemedi, program_index fallback');
+  }
+  const fallback = await loadProgramIndex();
+  programSearchCache = fallback.map(p => ({
+    id: p.program_id,
+    t: p.full_title,
+    u: p.university || '',
+    d: p.department || '',
+    g: p.department_group || '',
+    c: p.city || '',
+    s: p.score_type || '',
+    b: p.scholarship_rate || '',
+    h: trLower(`${p.full_title} ${p.university || ''} ${p.department_group || ''} ${p.city || ''}`),
+  }));
+  return programSearchCache;
+};
+
+const loadProgramIndex = async () => {
+  if (programIndexCache) return programIndexCache;
+  try {
+    const response = await fetch('/data/program_index.json');
+    if (!response.ok) throw new Error('program_index yüklenemedi');
+    programIndexCache = await response.json();
+    return programIndexCache;
+  } catch (e) {
+    console.error('Program index yükleme hatası:', e);
+    return [];
+  }
+};
+
+const expandSearchEntry = (entry) => ({
+  program_id: entry.id,
+  full_title: entry.t,
+  university: entry.u,
+  department: entry.d,
+  department_group: entry.g,
+  city: entry.c,
+  score_type: entry.s,
+  scholarship_rate: entry.b,
+});
+
+const scoreSearchMatch = (entry, queryTerms) => {
+  const haystack = entry.h || trLower(`${entry.t} ${entry.u} ${entry.g} ${entry.d}`);
+  const deptGroup = trLower(entry.g || '');
+  const dept = trLower(entry.d || '');
+
+  let score = 0;
+  for (const term of queryTerms) {
+    if (!haystack.includes(term)) return -1;
+    if (deptGroup.includes(term) || dept.includes(term)) score += 10;
+    else if (trLower(entry.u).includes(term)) score += 5;
+    else score += 1;
+  }
+  return score;
+};
 
 const parseProgramTitle = (fullTitle) => {
   const parts = fullTitle.split(' - ');
@@ -1742,20 +2061,23 @@ const isProgramAlreadyAdded = (program) => {
   return app.data.some(item => normalizeTitle(item.full_name) === normalized);
 };
 
-const loadProgramIndex = async () => {
-  if (programIndexCache) return programIndexCache;
-  try {
-    const response = await fetch('/data/program_index.json');
-    if (!response.ok) throw new Error('program_index yüklenemedi');
-    programIndexCache = await response.json();
-    return programIndexCache;
-  } catch (e) {
-    console.error('Program index yükleme hatası:', e);
-    return [];
-  }
-};
-
 const buildNewProgramItem = (program, rank, predRank, notes, matchSource) => {
+  const existing = getProgramById(program.program_id)
+  if (existing) {
+    return sanitizeItem({
+      ...existing,
+      last_rank: rank || existing.last_rank,
+      prediction: predRank ? {
+        tahmini_skor: predRank,
+        model: 'manual_entry',
+        confidence: 'low',
+        prediction_generated_at: new Date().toISOString()
+      } : existing.prediction,
+      notes: sanitizePlainText(notes || existing.notes || '-'),
+      isFavorite: true,
+    })
+  }
+
   const { university, department } = parseProgramTitle(program.full_title);
   const city = normalizeCity(program.city);
   const degree = inferDegree(program.full_title);
@@ -1818,7 +2140,7 @@ const resetAddProgramModal = () => {
 
   if (searchInput) searchInput.value = '';
   if (resultsContainer) {
-    resultsContainer.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--muted-foreground); font-size: 0.8125rem;">Aramak için yazın veya filtreleri kullanın...</div>';
+    resultsContainer.innerHTML = '<div class="search-empty-state">Aramaya başlamak için bölüm veya üniversite adı yazın.</div>';
   }
   if (detailsForm) {
     detailsForm.classList.add('hidden');
@@ -1830,21 +2152,28 @@ const resetAddProgramModal = () => {
   if (matchingBadge) matchingBadge.style.display = 'none';
 };
 
-const renderAddProgramSearchResults = (programs) => {
+const renderAddProgramSearchResults = (programs, totalMatches = 0) => {
   const container = document.getElementById('search-add-results');
   if (!container) return;
 
   if (programs.length === 0) {
-    container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--muted-foreground); font-size: 0.8125rem;">Sonuç bulunamadı veya program zaten listede.</div>';
+    container.innerHTML = '<div class="search-empty-state">Sonuç bulunamadı. Farklı bir bölüm veya üniversite adı deneyin.</div>';
     return;
   }
 
-  container.innerHTML = programs.slice(0, 50).map(prog => `
-    <button type="button" class="add-program-result-item${selectedAddProgram?.program_id === prog.program_id ? ' selected' : ''}" data-program-id="${ea(prog.program_id)}">
+  const truncated = typeof totalMatches === 'string' || totalMatches > programs.length;
+  const countHtml = truncated
+    ? `<div class="search-match-count">${totalMatches} eşleşme — ilk ${programs.length} gösteriliyor</div>`
+    : `<div class="search-match-count">${programs.length} program bulundu</div>`;
+
+  container.innerHTML = countHtml + programs.slice(0, MAX_SEARCH_RESULTS).map(prog => `
+    <button type="button" class="add-program-result-item${selectedAddProgram?.program_id === prog.program_id ? ' selected' : ''}" data-program-id="${ea(prog.program_id)}" role="option">
       <span class="add-program-result-title">${eh(prog.full_title)}</span>
       <span class="add-program-result-meta">
+        <span>${eh(prog.department_group || prog.department || '')}</span>
         <span>${eh(prog.city)}</span>
-        <span>${eh(inferDegree(prog.full_title))}</span>
+        <span>${eh(prog.score_type || '')}</span>
+        ${prog.scholarship_rate ? `<span>${eh(prog.scholarship_rate)}</span>` : ''}
       </span>
     </button>
   `).join('');
@@ -1875,38 +2204,59 @@ const renderAddProgramSearchResults = (programs) => {
 
 const searchAddPrograms = async () => {
   const rawQuery = document.getElementById('search-add-program')?.value.trim() || '';
-  const query = rawQuery.toLocaleLowerCase('tr-TR');
+  const query = trLower(rawQuery);
   const cityFilter = document.getElementById('add-program-city')?.value || '';
   const degreeFilter = document.getElementById('add-program-degree')?.value || 'all';
+  const container = document.getElementById('search-add-results');
 
-  const queryTerms = query.split(/\s+/).filter(Boolean);
-  const index = await loadProgramIndex();
-  const filtered = index.filter(prog => {
-    if (isProgramAlreadyAdded(prog)) return false;
-    if (cityFilter && prog.city !== cityFilter) return false;
-    if (degreeFilter === 'Lisans' && inferDegree(prog.full_title) !== 'Lisans (4Y)') return false;
-    if (degreeFilter === 'Önlisans' && inferDegree(prog.full_title) !== 'Önlisans (2Y)') return false;
+  if (query.length < MIN_SEARCH_CHARS) {
+    if (container) {
+      container.innerHTML = `<div class="search-empty-state">En az ${MIN_SEARCH_CHARS} harf yazın.</div>`;
+    }
+    return;
+  }
 
-    if (queryTerms.length === 0) return true;
+  const queryTerms = query.split(/\s+/).filter(t => t.length >= 2);
+  if (!queryTerms.length) {
+    if (container) {
+      container.innerHTML = '<div class="search-empty-state">Anlamlı bir arama terimi girin.</div>';
+    }
+    return;
+  }
 
-    const haystack = `${prog.full_title} ${prog.city}`.toLocaleLowerCase('tr-TR');
-    return queryTerms.every(term => haystack.includes(term));
-  });
+  const index = await loadProgramSearchIndex();
+  const scored = [];
 
-  renderAddProgramSearchResults(filtered);
+  for (const entry of index) {
+    const prog = expandSearchEntry(entry);
+    if (isProgramAlreadyAdded(prog)) continue;
+    if (cityFilter && prog.city !== cityFilter) continue;
+    if (degreeFilter === 'Lisans' && inferDegree(prog.full_title) !== 'Lisans (4Y)') continue;
+    if (degreeFilter === 'Önlisans' && inferDegree(prog.full_title) !== 'Önlisans (2Y)') continue;
+
+    const matchScore = scoreSearchMatch(entry, queryTerms);
+    if (matchScore >= 0) {
+      scored.push({ prog, matchScore });
+      if (scored.length >= MAX_SEARCH_RESULTS * 4) break;
+    }
+  }
+
+  scored.sort((a, b) => b.matchScore - a.matchScore);
+  const results = scored.slice(0, MAX_SEARCH_RESULTS).map(s => s.prog);
+  renderAddProgramSearchResults(results, scored.length >= MAX_SEARCH_RESULTS * 4 ? '160+' : scored.length);
 };
 
 const populateAddProgramCityDropdown = async () => {
   const citySelect = document.getElementById('add-program-city');
   if (!citySelect) return;
 
-  const index = await loadProgramIndex();
-  const cities = [...new Set(index.map(p => p.city))].sort((a, b) => a.localeCompare(b, 'tr'));
+  const index = await loadProgramSearchIndex();
+  const cities = [...new Set(index.map(p => p.c).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'tr'));
   citySelect.innerHTML = '<option value="">Tümü</option>';
   cities.forEach(city => {
     const opt = document.createElement('option');
     opt.value = city;
-    opt.textContent = city;
+    opt.textContent = normalizeCity(city);
     citySelect.appendChild(opt);
   });
 };
@@ -1916,7 +2266,7 @@ const openAddProgramModal = async () => {
   if (!modal) return;
 
   resetAddProgramModal();
-  await populateAddProgramCityDropdown();
+  await Promise.all([loadProgramSearchIndex(), populateAddProgramCityDropdown()]);
   modal.classList.remove('hidden');
   document.getElementById('search-add-program')?.focus();
 };
@@ -1932,6 +2282,7 @@ function setupAddProgramModal() {
   const closeBtn = document.getElementById('add-program-close-btn');
   const modal = document.getElementById('add-program-modal');
   const searchInput = document.getElementById('search-add-program');
+  const searchBtn = document.getElementById('btn-search-add-program');
   const citySelect = document.getElementById('add-program-city');
   const degreeSelect = document.getElementById('add-program-degree');
   const saveBtn = document.getElementById('btn-save-new-program');
@@ -1945,14 +2296,36 @@ function setupAddProgramModal() {
     if (e.target === modal) closeAddProgramModal();
   });
 
+  const runSearch = () => {
+    clearTimeout(addProgramSearchTimer);
+    searchAddPrograms();
+  };
+
   const handleSearchInput = () => {
     clearTimeout(addProgramSearchTimer);
-    addProgramSearchTimer = setTimeout(searchAddPrograms, 250);
+    addProgramSearchTimer = setTimeout(searchAddPrograms, 180);
   };
 
   searchInput?.addEventListener('input', handleSearchInput);
-  citySelect?.addEventListener('change', searchAddPrograms);
-  degreeSelect?.addEventListener('change', searchAddPrograms);
+  searchBtn?.addEventListener('click', runSearch);
+  searchInput?.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      clearTimeout(addProgramSearchTimer);
+      await searchAddPrograms();
+      document.querySelector('.add-program-result-item')?.click();
+    }
+  });
+  citySelect?.addEventListener('change', () => {
+    if ((searchInput?.value.trim().length || 0) >= MIN_SEARCH_CHARS) {
+      runSearch();
+    }
+  });
+  degreeSelect?.addEventListener('change', () => {
+    if ((searchInput?.value.trim().length || 0) >= MIN_SEARCH_CHARS) {
+      runSearch();
+    }
+  });
 
   saveBtn?.addEventListener('click', () => {
     if (!selectedAddProgram) {
@@ -2292,7 +2665,7 @@ function renderProgramComparison() {
 
   results.querySelectorAll('.btn-inspect-compare').forEach(btn => {
     btn.addEventListener('click', () => {
-      openDetailModal(parseInt(btn.dataset.id));
+      openDetailModal(itemId(btn.dataset.id));
     });
   });
 }
@@ -2442,7 +2815,7 @@ function renderUniversityComparison() {
 
   results.querySelectorAll('.btn-inspect-compare').forEach(btn => {
     btn.addEventListener('click', () => {
-      openDetailModal(parseInt(btn.dataset.id));
+      openDetailModal(itemId(btn.dataset.id));
     });
   });
 }
@@ -2606,7 +2979,7 @@ function renderDepartmentComparison() {
 
   results.querySelectorAll('.btn-inspect-compare').forEach(btn => {
     btn.addEventListener('click', () => {
-      openDetailModal(parseInt(btn.dataset.id));
+      openDetailModal(itemId(btn.dataset.id));
     });
   });
 }

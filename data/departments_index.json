@@ -1,0 +1,2538 @@
+[
+  {
+    "name": "Abaza Dili ve Edebiyatı",
+    "key": "abaza dili ve edebiyatı"
+  },
+  {
+    "name": "Acil Durum ve Afet Yönetimi",
+    "key": "acil durum ve afet yönetimi"
+  },
+  {
+    "name": "Acil Yardım ve Afet Yönetimi",
+    "key": "acil yardım ve afet yönetimi"
+  },
+  {
+    "name": "Adli Bilimler",
+    "key": "adli bilimler"
+  },
+  {
+    "name": "Adli Bilişim Mühendisliği",
+    "key": "adli bilişim mühendisliği"
+  },
+  {
+    "name": "Aktüerya Bilimleri",
+    "key": "aktüerya bilimleri"
+  },
+  {
+    "name": "Akıllı Altyapılar Teknikerliği",
+    "key": "akıllı altyapılar teknikerliği"
+  },
+  {
+    "name": "Akıllı Sera Teknolojileri",
+    "key": "akıllı sera teknolojileri"
+  },
+  {
+    "name": "Akıllı Tarım ve Gıda Yönetimi",
+    "key": "akıllı tarım ve gıda yönetimi"
+  },
+  {
+    "name": "Alman Dili ve Edebiyatı",
+    "key": "alman dili ve edebiyatı"
+  },
+  {
+    "name": "Almanca Mütercim ve Tercümanlık",
+    "key": "almanca mütercim ve tercümanlık"
+  },
+  {
+    "name": "Almanca Öğretmenliği",
+    "key": "almanca öğretmenliği"
+  },
+  {
+    "name": "Alternatif Enerji Kaynakları Teknolojisi",
+    "key": "alternatif enerji kaynakları teknolojisi"
+  },
+  {
+    "name": "Ameliyathane Hizmetleri",
+    "key": "ameliyathane hizmetleri"
+  },
+  {
+    "name": "Amerikan Kültürü ve Edebiyatı",
+    "key": "amerikan kültürü ve edebiyatı"
+  },
+  {
+    "name": "Anestezi",
+    "key": "anestezi"
+  },
+  {
+    "name": "Animasyon ve Video Üretimi",
+    "key": "animasyon ve video üretimi"
+  },
+  {
+    "name": "Antrenörlük Eğitimi",
+    "key": "antrenörlük eğitimi"
+  },
+  {
+    "name": "Antropoloji",
+    "key": "antropoloji"
+  },
+  {
+    "name": "Arap Dili ve Edebiyatı",
+    "key": "arap dili ve edebiyatı"
+  },
+  {
+    "name": "Arapça Mütercim ve Tercümanlık",
+    "key": "arapça mütercim ve tercümanlık"
+  },
+  {
+    "name": "Arapça Öğretmenliği",
+    "key": "arapça öğretmenliği"
+  },
+  {
+    "name": "Arka-Yüz Yazılım Geliştirme",
+    "key": "arka-yüz yazılım geliştirme"
+  },
+  {
+    "name": "Arkeoloji",
+    "key": "arkeoloji"
+  },
+  {
+    "name": "Arkeoloji ve Sanat Tarihi",
+    "key": "arkeoloji ve sanat tarihi"
+  },
+  {
+    "name": "Arnavut Dili ve Edebiyatı",
+    "key": "arnavut dili ve edebiyatı"
+  },
+  {
+    "name": "Arıcılık",
+    "key": "arıcılık"
+  },
+  {
+    "name": "Astronomi ve Uzay Bilimleri",
+    "key": "astronomi ve uzay bilimleri"
+  },
+  {
+    "name": "Atçılık ve Antrenörlüğü",
+    "key": "atçılık ve antrenörlüğü"
+  },
+  {
+    "name": "Avcılık ve Yaban Hayatı",
+    "key": "avcılık ve yaban hayatı"
+  },
+  {
+    "name": "Ayakkabı Tasarım ve Üretimi",
+    "key": "ayakkabı tasarım ve üretimi"
+  },
+  {
+    "name": "Ayakkabı Tasarımı ve Üretimi",
+    "key": "ayakkabı tasarımı ve üretimi"
+  },
+  {
+    "name": "Azerbaycan Türkçesi ve Edebiyatı",
+    "key": "azerbaycan türkçesi ve edebiyatı"
+  },
+  {
+    "name": "Açık Deniz Sondaj Teknolojisi",
+    "key": "açık deniz sondaj teknolojisi"
+  },
+  {
+    "name": "Açık Deniz Tabanı Uygulamaları Teknolojisi",
+    "key": "açık deniz tabanı uygulamaları teknolojisi"
+  },
+  {
+    "name": "Ağaç İşleri Endüstri Mühendisliği",
+    "key": "ağaç işleri endüstri mühendisliği"
+  },
+  {
+    "name": "Ağız ve Diş Sağlığı",
+    "key": "ağız ve diş sağlığı"
+  },
+  {
+    "name": "Aşçılık",
+    "key": "aşçılık"
+  },
+  {
+    "name": "Bahçe Bitkileri",
+    "key": "bahçe bitkileri"
+  },
+  {
+    "name": "Bahçe Tarımı",
+    "key": "bahçe tarımı"
+  },
+  {
+    "name": "Bahçe ve Tarla Bitkileri",
+    "key": "bahçe ve tarla bitkileri"
+  },
+  {
+    "name": "Balıkçılık Teknolojisi",
+    "key": "balıkçılık teknolojisi"
+  },
+  {
+    "name": "Balıkçılık Teknolojisi Mühendisliği",
+    "key": "balıkçılık teknolojisi mühendisliği"
+  },
+  {
+    "name": "Bankacılık",
+    "key": "bankacılık"
+  },
+  {
+    "name": "Bankacılık ve Finans",
+    "key": "bankacılık ve finans"
+  },
+  {
+    "name": "Bankacılık ve Sigortacılık",
+    "key": "bankacılık ve sigortacılık"
+  },
+  {
+    "name": "Basım Teknolojileri",
+    "key": "basım teknolojileri"
+  },
+  {
+    "name": "Basım ve Yayım Teknolojileri",
+    "key": "basım ve yayım teknolojileri"
+  },
+  {
+    "name": "Basın ve Yayın",
+    "key": "basın ve yayın"
+  },
+  {
+    "name": "Bağcılık",
+    "key": "bağcılık"
+  },
+  {
+    "name": "Bağcılık ve Bağ Ürünleri Teknolojisi",
+    "key": "bağcılık ve bağ ürünleri teknolojisi"
+  },
+  {
+    "name": "Beden Eğitimi ve Spor Öğretmenliği",
+    "key": "beden eğitimi ve spor öğretmenliği"
+  },
+  {
+    "name": "Beslenme ve Diyetetik",
+    "key": "beslenme ve diyetetik"
+  },
+  {
+    "name": "Bilgi Güvenliği Teknolojisi",
+    "key": "bilgi güvenliği teknolojisi"
+  },
+  {
+    "name": "Bilgi ve Belge Yönetimi",
+    "key": "bilgi ve belge yönetimi"
+  },
+  {
+    "name": "Bilgisayar Bilimleri",
+    "key": "bilgisayar bilimleri"
+  },
+  {
+    "name": "Bilgisayar Bilimleri ve Mühendisliği",
+    "key": "bilgisayar bilimleri ve mühendisliği"
+  },
+  {
+    "name": "Bilgisayar Destekli Tasarım ve Animasyon",
+    "key": "bilgisayar destekli tasarım ve animasyon"
+  },
+  {
+    "name": "Bilgisayar Mühendisliği",
+    "key": "bilgisayar mühendisliği"
+  },
+  {
+    "name": "Bilgisayar Operatörlüğü",
+    "key": "bilgisayar operatörlüğü"
+  },
+  {
+    "name": "Bilgisayar Programcılığı",
+    "key": "bilgisayar programcılığı"
+  },
+  {
+    "name": "Bilgisayar Teknolojisi",
+    "key": "bilgisayar teknolojisi"
+  },
+  {
+    "name": "Bilgisayar Teknolojisi ve Bilişim Sistemleri",
+    "key": "bilgisayar teknolojisi ve bilişim sistemleri"
+  },
+  {
+    "name": "Bilgisayar ve Öğretim Teknolojileri Öğretmenliği",
+    "key": "bilgisayar ve öğretim teknolojileri öğretmenliği"
+  },
+  {
+    "name": "Bilim Tarihi",
+    "key": "bilim tarihi"
+  },
+  {
+    "name": "Bilişim Güvenliği Teknolojisi",
+    "key": "bilişim güvenliği teknolojisi"
+  },
+  {
+    "name": "Bilişim Sistemleri Mühendisliği",
+    "key": "bilişim sistemleri mühendisliği"
+  },
+  {
+    "name": "Bilişim Sistemleri ve Teknolojileri",
+    "key": "bilişim sistemleri ve teknolojileri"
+  },
+  {
+    "name": "Bitki Koruma",
+    "key": "bitki koruma"
+  },
+  {
+    "name": "Bitkisel Üretim ve Teknolojileri",
+    "key": "bitkisel üretim ve teknolojileri"
+  },
+  {
+    "name": "Biyokimya",
+    "key": "biyokimya"
+  },
+  {
+    "name": "Biyoloji",
+    "key": "biyoloji"
+  },
+  {
+    "name": "Biyoloji Öğretmenliği",
+    "key": "biyoloji öğretmenliği"
+  },
+  {
+    "name": "Biyomedikal Cihaz Teknolojisi",
+    "key": "biyomedikal cihaz teknolojisi"
+  },
+  {
+    "name": "Biyomedikal Mühendisliği",
+    "key": "biyomedikal mühendisliği"
+  },
+  {
+    "name": "Biyomühendislik",
+    "key": "biyomühendislik"
+  },
+  {
+    "name": "Biyosistem Mühendisliği",
+    "key": "biyosistem mühendisliği"
+  },
+  {
+    "name": "Biyoteknoloji",
+    "key": "biyoteknoloji"
+  },
+  {
+    "name": "Biyoteknoloji ve Genetik",
+    "key": "biyoteknoloji ve genetik"
+  },
+  {
+    "name": "Boya Teknolojisi",
+    "key": "boya teknolojisi"
+  },
+  {
+    "name": "Boşnak Dili ve Edebiyatı",
+    "key": "boşnak dili ve edebiyatı"
+  },
+  {
+    "name": "Bulgar Dili ve Edebiyatı",
+    "key": "bulgar dili ve edebiyatı"
+  },
+  {
+    "name": "Bulgarca Mütercim ve Tercümanlık",
+    "key": "bulgarca mütercim ve tercümanlık"
+  },
+  {
+    "name": "Bulut Bilişim Operatörlüğü",
+    "key": "bulut bilişim operatörlüğü"
+  },
+  {
+    "name": "Büro Yönetimi ve Yönetici Asistanlığı",
+    "key": "büro yönetimi ve yönetici asistanlığı"
+  },
+  {
+    "name": "Büyük Veri Analistliği",
+    "key": "büyük veri analistliği"
+  },
+  {
+    "name": "Bıçakçılık ve El Aletleri Üretim Teknolojisi",
+    "key": "bıçakçılık ve el aletleri üretim teknolojisi"
+  },
+  {
+    "name": "Cevher Hazırlama Mühendisliği",
+    "key": "cevher hazırlama mühendisliği"
+  },
+  {
+    "name": "Ceza İnfaz ve Güvenlik Hizmetleri",
+    "key": "ceza infaz ve güvenlik hizmetleri"
+  },
+  {
+    "name": "Cnc Programlama ve Operatörlüğü",
+    "key": "cnc programlama ve operatörlüğü"
+  },
+  {
+    "name": "Coğrafi Bilgi Sistemleri",
+    "key": "coğrafi bilgi sistemleri"
+  },
+  {
+    "name": "Coğrafya",
+    "key": "coğrafya"
+  },
+  {
+    "name": "Coğrafya Öğretmenliği",
+    "key": "coğrafya öğretmenliği"
+  },
+  {
+    "name": "Deniz Brokerliği",
+    "key": "deniz brokerliği"
+  },
+  {
+    "name": "Deniz Ulaştırma ve İşletme",
+    "key": "deniz ulaştırma ve işletme"
+  },
+  {
+    "name": "Deniz Ulaştırma İşletme Mühendisliği",
+    "key": "deniz ulaştırma işletme mühendisliği"
+  },
+  {
+    "name": "Deniz ve Liman İşletmeciliği",
+    "key": "deniz ve liman işletmeciliği"
+  },
+  {
+    "name": "Denizcilik İşletmeleri Yönetimi",
+    "key": "denizcilik işletmeleri yönetimi"
+  },
+  {
+    "name": "Deri Mühendisliği",
+    "key": "deri mühendisliği"
+  },
+  {
+    "name": "Deri Teknolojisi",
+    "key": "deri teknolojisi"
+  },
+  {
+    "name": "Dezenfeksiyon, Sterilizasyon ve Antisepsi Teknikerliği",
+    "key": "dezenfeksiyon, sterilizasyon ve antisepsi teknikerliği"
+  },
+  {
+    "name": "Dijital Dönüşüm Elektroniği",
+    "key": "dijital dönüşüm elektroniği"
+  },
+  {
+    "name": "Dijital Fabrika Teknolojileri",
+    "key": "dijital fabrika teknolojileri"
+  },
+  {
+    "name": "Dijital Oyun Tasarımı",
+    "key": "dijital oyun tasarımı"
+  },
+  {
+    "name": "Dijital Oyun Teknolojileri",
+    "key": "dijital oyun teknolojileri"
+  },
+  {
+    "name": "Dijital Sağlık Sistemleri Teknikerliği",
+    "key": "dijital sağlık sistemleri teknikerliği"
+  },
+  {
+    "name": "Dijital Tarım Teknolojileri",
+    "key": "dijital tarım teknolojileri"
+  },
+  {
+    "name": "Dijital Yapımcılık ve Yayıncılık",
+    "key": "dijital yapımcılık ve yayıncılık"
+  },
+  {
+    "name": "Dil ve Konuşma Terapisi",
+    "key": "dil ve konuşma terapisi"
+  },
+  {
+    "name": "Dilbilimi",
+    "key": "dilbilimi"
+  },
+  {
+    "name": "Diyaliz",
+    "key": "diyaliz"
+  },
+  {
+    "name": "Diş Hekimliği",
+    "key": "diş hekimliği"
+  },
+  {
+    "name": "Diş Protez Teknolojisi",
+    "key": "diş protez teknolojisi"
+  },
+  {
+    "name": "Doğa Koruma ve Biyoçeşitlilik Yönetimi",
+    "key": "doğa koruma ve biyoçeşitlilik yönetimi"
+  },
+  {
+    "name": "Doğal Yapı Taşları Teknolojisi",
+    "key": "doğal yapı taşları teknolojisi"
+  },
+  {
+    "name": "Doğalgaz ve Tesisatı Teknolojisi",
+    "key": "doğalgaz ve tesisatı teknolojisi"
+  },
+  {
+    "name": "Döküm",
+    "key": "döküm"
+  },
+  {
+    "name": "Dış Ticaret",
+    "key": "dış ticaret"
+  },
+  {
+    "name": "E-Ticaret",
+    "key": "e-ticaret"
+  },
+  {
+    "name": "E-Ticaret ve Pazarlama",
+    "key": "e-ticaret ve pazarlama"
+  },
+  {
+    "name": "E-İşletme ve E-Ticaret  ",
+    "key": "e-işletme ve e-ticaret  "
+  },
+  {
+    "name": "Ebelik",
+    "key": "ebelik"
+  },
+  {
+    "name": "Eczacılık",
+    "key": "eczacılık"
+  },
+  {
+    "name": "Eczane Hizmetleri",
+    "key": "eczane hizmetleri"
+  },
+  {
+    "name": "Egzersiz ve Spor Bilimleri",
+    "key": "egzersiz ve spor bilimleri"
+  },
+  {
+    "name": "Ekonometri",
+    "key": "ekonometri"
+  },
+  {
+    "name": "Ekonomi",
+    "key": "ekonomi"
+  },
+  {
+    "name": "Ekonomi ve Finans",
+    "key": "ekonomi ve finans"
+  },
+  {
+    "name": "El Sanatları",
+    "key": "el sanatları"
+  },
+  {
+    "name": "Elektrik",
+    "key": "elektrik"
+  },
+  {
+    "name": "Elektrik Enerjisi Üretim, İletim ve Dağıtımı",
+    "key": "elektrik enerjisi üretim, iletim ve dağıtımı"
+  },
+  {
+    "name": "Elektrik Makineleri Bakım ve Onarımı",
+    "key": "elektrik makineleri bakım ve onarımı"
+  },
+  {
+    "name": "Elektrik Mühendisliği",
+    "key": "elektrik mühendisliği"
+  },
+  {
+    "name": "Elektrik-Elektronik Mühendisliği",
+    "key": "elektrik-elektronik mühendisliği"
+  },
+  {
+    "name": "Elektrikli Cihaz Teknolojisi",
+    "key": "elektrikli cihaz teknolojisi"
+  },
+  {
+    "name": "Elektronik Haberleşme Teknolojisi",
+    "key": "elektronik haberleşme teknolojisi"
+  },
+  {
+    "name": "Elektronik Mühendisliği",
+    "key": "elektronik mühendisliği"
+  },
+  {
+    "name": "Elektronik Teknolojisi",
+    "key": "elektronik teknolojisi"
+  },
+  {
+    "name": "Elektronik Ticaret ve Yönetimi",
+    "key": "elektronik ticaret ve yönetimi"
+  },
+  {
+    "name": "Elektronik ve Haberleşme Mühendisliği",
+    "key": "elektronik ve haberleşme mühendisliği"
+  },
+  {
+    "name": "Elektronörofizyoloji",
+    "key": "elektronörofizyoloji"
+  },
+  {
+    "name": "Emlak Yönetimi",
+    "key": "emlak yönetimi"
+  },
+  {
+    "name": "Endüstri Mühendisliği",
+    "key": "endüstri mühendisliği"
+  },
+  {
+    "name": "Endüstri Ürünleri Tasarımı",
+    "key": "endüstri ürünleri tasarımı"
+  },
+  {
+    "name": "Endüstriyel Cam ve Seramik",
+    "key": "endüstriyel cam ve seramik"
+  },
+  {
+    "name": "Endüstriyel Hammaddeler İşleme Teknolojisi",
+    "key": "endüstriyel hammaddeler işleme teknolojisi"
+  },
+  {
+    "name": "Endüstriyel Kalıpçılık",
+    "key": "endüstriyel kalıpçılık"
+  },
+  {
+    "name": "Endüstriyel Tasarım",
+    "key": "endüstriyel tasarım"
+  },
+  {
+    "name": "Endüstriyel Tasarım Mühendisliği",
+    "key": "endüstriyel tasarım mühendisliği"
+  },
+  {
+    "name": "Enerji Bilimi ve Teknolojileri",
+    "key": "enerji bilimi ve teknolojileri"
+  },
+  {
+    "name": "Enerji Sistemleri Mühendisliği",
+    "key": "enerji sistemleri mühendisliği"
+  },
+  {
+    "name": "Enerji Tesisleri İşletmeciliği",
+    "key": "enerji tesisleri işletmeciliği"
+  },
+  {
+    "name": "Enerji Yönetimi",
+    "key": "enerji yönetimi"
+  },
+  {
+    "name": "Engelli Bakımı ve Rehabilitasyon",
+    "key": "engelli bakımı ve rehabilitasyon"
+  },
+  {
+    "name": "Engelliler İçin Gölge Öğreticilik",
+    "key": "engelliler için gölge öğreticilik"
+  },
+  {
+    "name": "Ergoterapi",
+    "key": "ergoterapi"
+  },
+  {
+    "name": "Ermeni Dili ve Kültürü",
+    "key": "ermeni dili ve kültürü"
+  },
+  {
+    "name": "Eser Koruma",
+    "key": "eser koruma"
+  },
+  {
+    "name": "Eski Yunan Dili ve Edebiyatı",
+    "key": "eski yunan dili ve edebiyatı"
+  },
+  {
+    "name": "Et ve Ürünleri Teknolojisi",
+    "key": "et ve ürünleri teknolojisi"
+  },
+  {
+    "name": "Evde Hasta Bakımı",
+    "key": "evde hasta bakımı"
+  },
+  {
+    "name": "Fars Dili ve Edebiyatı",
+    "key": "fars dili ve edebiyatı"
+  },
+  {
+    "name": "Farsça Mütercim ve Tercümanlık",
+    "key": "farsça mütercim ve tercümanlık"
+  },
+  {
+    "name": "Felsefe",
+    "key": "felsefe"
+  },
+  {
+    "name": "Felsefe Grubu Öğretmenliği",
+    "key": "felsefe grubu öğretmenliği"
+  },
+  {
+    "name": "Felsefe ve Yapay Zeka",
+    "key": "felsefe ve yapay zeka"
+  },
+  {
+    "name": "Fen Bilgisi Öğretmenliği",
+    "key": "fen bilgisi öğretmenliği"
+  },
+  {
+    "name": "Fiber Tekne İmalatı ve Kompozit Kalıp Teknolojileri",
+    "key": "fiber tekne imalatı ve kompozit kalıp teknolojileri"
+  },
+  {
+    "name": "Fidan Yetiştiriciliği",
+    "key": "fidan yetiştiriciliği"
+  },
+  {
+    "name": "Film Tasarımı ve Yönetimi",
+    "key": "film tasarımı ve yönetimi"
+  },
+  {
+    "name": "Filoloji (İngiliz Dili ve Edebiyatı)",
+    "key": "filoloji (ingiliz dili ve edebiyatı)"
+  },
+  {
+    "name": "Finans ve Bankacılık",
+    "key": "finans ve bankacılık"
+  },
+  {
+    "name": "Finansal Teknoloji",
+    "key": "finansal teknoloji"
+  },
+  {
+    "name": "Fizik",
+    "key": "fizik"
+  },
+  {
+    "name": "Fizik Mühendisliği",
+    "key": "fizik mühendisliği"
+  },
+  {
+    "name": "Fizik Öğretmenliği",
+    "key": "fizik öğretmenliği"
+  },
+  {
+    "name": "Fizyoterapi",
+    "key": "fizyoterapi"
+  },
+  {
+    "name": "Fizyoterapi ve Rehabilitasyon",
+    "key": "fizyoterapi ve rehabilitasyon"
+  },
+  {
+    "name": "Fotonik",
+    "key": "fotonik"
+  },
+  {
+    "name": "Fotoğraf",
+    "key": "fotoğraf"
+  },
+  {
+    "name": "Fotoğraf ve Video",
+    "key": "fotoğraf ve video"
+  },
+  {
+    "name": "Fotoğrafçılık ve Kameramanlık",
+    "key": "fotoğrafçılık ve kameramanlık"
+  },
+  {
+    "name": "Fransız Dili ve Edebiyatı",
+    "key": "fransız dili ve edebiyatı"
+  },
+  {
+    "name": "Fransızca Mütercim ve Tercümanlık",
+    "key": "fransızca mütercim ve tercümanlık"
+  },
+  {
+    "name": "Fransızca Öğretmenliği",
+    "key": "fransızca öğretmenliği"
+  },
+  {
+    "name": "Fındık Eksperliği",
+    "key": "fındık eksperliği"
+  },
+  {
+    "name": "Gastronomi  ",
+    "key": "gastronomi  "
+  },
+  {
+    "name": "Gastronomi ve Mutfak Sanatları",
+    "key": "gastronomi ve mutfak sanatları"
+  },
+  {
+    "name": "Gayrimenkul Geliştirme ve Yönetimi",
+    "key": "gayrimenkul geliştirme ve yönetimi"
+  },
+  {
+    "name": "Gazetecilik",
+    "key": "gazetecilik"
+  },
+  {
+    "name": "Geleneksel El Sanatları",
+    "key": "geleneksel el sanatları"
+  },
+  {
+    "name": "Geleneksel Tekstillerin Korunması ve Restorasyonu",
+    "key": "geleneksel tekstillerin korunması ve restorasyonu"
+  },
+  {
+    "name": "Geleneksel Türk Sanatları",
+    "key": "geleneksel türk sanatları"
+  },
+  {
+    "name": "Gemi Makineleri İşletme Mühendisliği",
+    "key": "gemi makineleri işletme mühendisliği"
+  },
+  {
+    "name": "Gemi Makineleri İşletmeciliği",
+    "key": "gemi makineleri işletmeciliği"
+  },
+  {
+    "name": "Gemi ve Deniz Teknolojisi Mühendisliği",
+    "key": "gemi ve deniz teknolojisi mühendisliği"
+  },
+  {
+    "name": "Gemi ve Yat Tasarımı",
+    "key": "gemi ve yat tasarımı"
+  },
+  {
+    "name": "Gemi İnşaatı",
+    "key": "gemi inşaatı"
+  },
+  {
+    "name": "Gemi İnşaatı ve Gemi Makineleri Mühendisliği",
+    "key": "gemi inşaatı ve gemi makineleri mühendisliği"
+  },
+  {
+    "name": "Genetik ve Biyomühendislik",
+    "key": "genetik ve biyomühendislik"
+  },
+  {
+    "name": "Geoteknik",
+    "key": "geoteknik"
+  },
+  {
+    "name": "Gerontoloji",
+    "key": "gerontoloji"
+  },
+  {
+    "name": "Giyim Üretim Teknolojisi",
+    "key": "giyim üretim teknolojisi"
+  },
+  {
+    "name": "Grafik",
+    "key": "grafik"
+  },
+  {
+    "name": "Grafik Sanatlar",
+    "key": "grafik sanatlar"
+  },
+  {
+    "name": "Grafik Tasarımı",
+    "key": "grafik tasarımı"
+  },
+  {
+    "name": "Görsel Sanatlar",
+    "key": "görsel sanatlar"
+  },
+  {
+    "name": "Görsel Sanatlar ve İletişim Tasarımı",
+    "key": "görsel sanatlar ve iletişim tasarımı"
+  },
+  {
+    "name": "Görsel İletişim",
+    "key": "görsel iletişim"
+  },
+  {
+    "name": "Görsel İletişim Tasarımı",
+    "key": "görsel iletişim tasarımı"
+  },
+  {
+    "name": "Gümrük İşletme",
+    "key": "gümrük işletme"
+  },
+  {
+    "name": "Gürcü Dili ve Edebiyatı",
+    "key": "gürcü dili ve edebiyatı"
+  },
+  {
+    "name": "Gıda Kalite Kontrolü ve Analizi",
+    "key": "gıda kalite kontrolü ve analizi"
+  },
+  {
+    "name": "Gıda Mühendisliği",
+    "key": "gıda mühendisliği"
+  },
+  {
+    "name": "Gıda Teknolojisi",
+    "key": "gıda teknolojisi"
+  },
+  {
+    "name": "Halkbilimi",
+    "key": "halkbilimi"
+  },
+  {
+    "name": "Halkla İlişkiler ve Pazarlama İletişimi",
+    "key": "halkla ilişkiler ve pazarlama iletişimi"
+  },
+  {
+    "name": "Halkla İlişkiler ve Reklamcılık",
+    "key": "halkla ilişkiler ve reklamcılık"
+  },
+  {
+    "name": "Halkla İlişkiler ve Tanıtım",
+    "key": "halkla ilişkiler ve tanıtım"
+  },
+  {
+    "name": "Halıcılık ve Kilimcilik",
+    "key": "halıcılık ve kilimcilik"
+  },
+  {
+    "name": "Harita Mühendisliği",
+    "key": "harita mühendisliği"
+  },
+  {
+    "name": "Harita ve Kadastro",
+    "key": "harita ve kadastro"
+  },
+  {
+    "name": "Hassas Tarım ve Tarımsal Robotlar",
+    "key": "hassas tarım ve tarımsal robotlar"
+  },
+  {
+    "name": "Hasta Bakımı",
+    "key": "hasta bakımı"
+  },
+  {
+    "name": "Hava Aracı İmalat Teknolojileri",
+    "key": "hava aracı imalat teknolojileri"
+  },
+  {
+    "name": "Hava Lojistiği",
+    "key": "hava lojistiği"
+  },
+  {
+    "name": "Havacılık Elektrik ve Elektroniği",
+    "key": "havacılık elektrik ve elektroniği"
+  },
+  {
+    "name": "Havacılık Elektroniği Teknolojileri",
+    "key": "havacılık elektroniği teknolojileri"
+  },
+  {
+    "name": "Havacılık Yönetimi",
+    "key": "havacılık yönetimi"
+  },
+  {
+    "name": "Havacılık ve Uzay Mühendisliği",
+    "key": "havacılık ve uzay mühendisliği"
+  },
+  {
+    "name": "Hayvancılık Teknolojileri ve İşletmeciliği",
+    "key": "hayvancılık teknolojileri ve işletmeciliği"
+  },
+  {
+    "name": "Hayvansal Üretim ve Teknolojileri",
+    "key": "hayvansal üretim ve teknolojileri"
+  },
+  {
+    "name": "Hemşirelik",
+    "key": "hemşirelik"
+  },
+  {
+    "name": "Hibrid ve Elektrikli Taşıtlar Teknolojisi",
+    "key": "hibrid ve elektrikli taşıtlar teknolojisi"
+  },
+  {
+    "name": "Hidrojen ve Enerji Depolama Teknikerliği",
+    "key": "hidrojen ve enerji depolama teknikerliği"
+  },
+  {
+    "name": "Hidrojeoloji Mühendisliği",
+    "key": "hidrojeoloji mühendisliği"
+  },
+  {
+    "name": "Hidrolik ve Pnömatik Teknikerliği",
+    "key": "hidrolik ve pnömatik teknikerliği"
+  },
+  {
+    "name": "Hindoloji",
+    "key": "hindoloji"
+  },
+  {
+    "name": "Hititoloji",
+    "key": "hititoloji"
+  },
+  {
+    "name": "Hukuk",
+    "key": "hukuk"
+  },
+  {
+    "name": "Hungaroloji",
+    "key": "hungaroloji"
+  },
+  {
+    "name": "Japon Dili ve Edebiyatı",
+    "key": "japon dili ve edebiyatı"
+  },
+  {
+    "name": "Japonca Mütercim ve Tercümanlık",
+    "key": "japonca mütercim ve tercümanlık"
+  },
+  {
+    "name": "Japonca Öğretmenliği",
+    "key": "japonca öğretmenliği"
+  },
+  {
+    "name": "Jeofizik Mühendisliği",
+    "key": "jeofizik mühendisliği"
+  },
+  {
+    "name": "Jeoloji Mühendisliği",
+    "key": "jeoloji mühendisliği"
+  },
+  {
+    "name": "Kamu Yönetimi",
+    "key": "kamu yönetimi"
+  },
+  {
+    "name": "Kanatlı Hayvan Yetiştiriciliği",
+    "key": "kanatlı hayvan yetiştiriciliği"
+  },
+  {
+    "name": "Karayolu Yük Taşıtı Sürücülüğü",
+    "key": "karayolu yük taşıtı sürücülüğü"
+  },
+  {
+    "name": "Karbon Yönetimi Teknikerliği",
+    "key": "karbon yönetimi teknikerliği"
+  },
+  {
+    "name": "Karşılaştırmalı Edebiyat",
+    "key": "karşılaştırmalı edebiyat"
+  },
+  {
+    "name": "Kaynak Teknolojisi",
+    "key": "kaynak teknolojisi"
+  },
+  {
+    "name": "Kenevir Dokumacılığı",
+    "key": "kenevir dokumacılığı"
+  },
+  {
+    "name": "Kentsel Tasarım ve Peyzaj Mimarlığı",
+    "key": "kentsel tasarım ve peyzaj mimarlığı"
+  },
+  {
+    "name": "Kimya",
+    "key": "kimya"
+  },
+  {
+    "name": "Kimya Mühendisliği",
+    "key": "kimya mühendisliği"
+  },
+  {
+    "name": "Kimya Teknolojisi",
+    "key": "kimya teknolojisi"
+  },
+  {
+    "name": "Kimya Öğretmenliği",
+    "key": "kimya öğretmenliği"
+  },
+  {
+    "name": "Kimya-Biyoloji Mühendisliği",
+    "key": "kimya-biyoloji mühendisliği"
+  },
+  {
+    "name": "Klasik Arkeoloji",
+    "key": "klasik arkeoloji"
+  },
+  {
+    "name": "Kontrol ve Otomasyon Mühendisliği",
+    "key": "kontrol ve otomasyon mühendisliği"
+  },
+  {
+    "name": "Kontrol ve Otomasyon Teknolojisi",
+    "key": "kontrol ve otomasyon teknolojisi"
+  },
+  {
+    "name": "Kooperatifçilik",
+    "key": "kooperatifçilik"
+  },
+  {
+    "name": "Kore Dili ve Edebiyatı",
+    "key": "kore dili ve edebiyatı"
+  },
+  {
+    "name": "Kozmetik Teknolojisi",
+    "key": "kozmetik teknolojisi"
+  },
+  {
+    "name": "Kurgu, Ses ve Görüntü Yönetimi",
+    "key": "kurgu, ses ve görüntü yönetimi"
+  },
+  {
+    "name": "Kurumsal Bilişim Uzmanlığı",
+    "key": "kurumsal bilişim uzmanlığı"
+  },
+  {
+    "name": "Kuyumculuk ve Mücevher Tasarımı",
+    "key": "kuyumculuk ve mücevher tasarımı"
+  },
+  {
+    "name": "Kuyumculuk ve Takı Tasarımı",
+    "key": "kuyumculuk ve takı tasarımı"
+  },
+  {
+    "name": "Kültür Varlıklarını Koruma ve Onarım",
+    "key": "kültür varlıklarını koruma ve onarım"
+  },
+  {
+    "name": "Kültür ve İletişim Bilimleri",
+    "key": "kültür ve iletişim bilimleri"
+  },
+  {
+    "name": "Kültürel Miras ve Turizm",
+    "key": "kültürel miras ve turizm"
+  },
+  {
+    "name": "Kümes Hayvanları Yetiştiriciliği",
+    "key": "kümes hayvanları yetiştiriciliği"
+  },
+  {
+    "name": "Küresel Siyaset ve Uluslararası İlişkiler",
+    "key": "küresel siyaset ve uluslararası ilişkiler"
+  },
+  {
+    "name": "Kürt Dili ve Edebiyatı",
+    "key": "kürt dili ve edebiyatı"
+  },
+  {
+    "name": "Kırgız Dili ve Edebiyatı",
+    "key": "kırgız dili ve edebiyatı"
+  },
+  {
+    "name": "Laborant ve Veteriner Sağlık",
+    "key": "laborant ve veteriner sağlık"
+  },
+  {
+    "name": "Laboratuvar Hayvanları",
+    "key": "laboratuvar hayvanları"
+  },
+  {
+    "name": "Laboratuvar Teknolojisi",
+    "key": "laboratuvar teknolojisi"
+  },
+  {
+    "name": "Latin Dili ve Edebiyatı",
+    "key": "latin dili ve edebiyatı"
+  },
+  {
+    "name": "Leh Dili ve Edebiyatı",
+    "key": "leh dili ve edebiyatı"
+  },
+  {
+    "name": "Lojistik",
+    "key": "lojistik"
+  },
+  {
+    "name": "Lojistik Yönetimi",
+    "key": "lojistik yönetimi"
+  },
+  {
+    "name": "Maden Mühendisliği",
+    "key": "maden mühendisliği"
+  },
+  {
+    "name": "Madencilik Teknolojisi",
+    "key": "madencilik teknolojisi"
+  },
+  {
+    "name": "Mahkeme Büro Hizmetleri",
+    "key": "mahkeme büro hizmetleri"
+  },
+  {
+    "name": "Makine",
+    "key": "makine"
+  },
+  {
+    "name": "Makine Mühendisliği",
+    "key": "makine mühendisliği"
+  },
+  {
+    "name": "Makine Resim ve Konstrüksiyonu",
+    "key": "makine resim ve konstrüksiyonu"
+  },
+  {
+    "name": "Maliye",
+    "key": "maliye"
+  },
+  {
+    "name": "Malzeme Bilimi ve Mühendisliği",
+    "key": "malzeme bilimi ve mühendisliği"
+  },
+  {
+    "name": "Malzeme Bilimi ve Nanoteknoloji Mühendisliği",
+    "key": "malzeme bilimi ve nanoteknoloji mühendisliği"
+  },
+  {
+    "name": "Malzeme Bilimi ve Teknolojileri",
+    "key": "malzeme bilimi ve teknolojileri"
+  },
+  {
+    "name": "Mantarcılık",
+    "key": "mantarcılık"
+  },
+  {
+    "name": "Marina ve Yat İşletmeciliği",
+    "key": "marina ve yat işletmeciliği"
+  },
+  {
+    "name": "Marka İletişimi",
+    "key": "marka iletişimi"
+  },
+  {
+    "name": "Matematik",
+    "key": "matematik"
+  },
+  {
+    "name": "Matematik Mühendisliği",
+    "key": "matematik mühendisliği"
+  },
+  {
+    "name": "Matematik ve Bilgisayar Bilimleri",
+    "key": "matematik ve bilgisayar bilimleri"
+  },
+  {
+    "name": "Matematik Öğretmenliği",
+    "key": "matematik öğretmenliği"
+  },
+  {
+    "name": "Medya ve Görsel Sanatlar",
+    "key": "medya ve görsel sanatlar"
+  },
+  {
+    "name": "Medya ve İletişim",
+    "key": "medya ve iletişim"
+  },
+  {
+    "name": "Mekatronik",
+    "key": "mekatronik"
+  },
+  {
+    "name": "Mekatronik Mühendisliği",
+    "key": "mekatronik mühendisliği"
+  },
+  {
+    "name": "Mermer Teknolojisi",
+    "key": "mermer teknolojisi"
+  },
+  {
+    "name": "Metalurji",
+    "key": "metalurji"
+  },
+  {
+    "name": "Metalurji ve Malzeme Mühendisliği",
+    "key": "metalurji ve malzeme mühendisliği"
+  },
+  {
+    "name": "Meyve ve Sebze İşleme Teknolojisi",
+    "key": "meyve ve sebze işleme teknolojisi"
+  },
+  {
+    "name": "Mimari Dekoratif Sanatlar",
+    "key": "mimari dekoratif sanatlar"
+  },
+  {
+    "name": "Mimari Restorasyon",
+    "key": "mimari restorasyon"
+  },
+  {
+    "name": "Mimarlık",
+    "key": "mimarlık"
+  },
+  {
+    "name": "Mobil Güvenlik Teknolojileri",
+    "key": "mobil güvenlik teknolojileri"
+  },
+  {
+    "name": "Mobil Teknolojileri",
+    "key": "mobil teknolojileri"
+  },
+  {
+    "name": "Mobilya ve Dekorasyon",
+    "key": "mobilya ve dekorasyon"
+  },
+  {
+    "name": "Moda Tasarımı",
+    "key": "moda tasarımı"
+  },
+  {
+    "name": "Moda Yönetimi",
+    "key": "moda yönetimi"
+  },
+  {
+    "name": "Moleküler Biyoloji ve Genetik",
+    "key": "moleküler biyoloji ve genetik"
+  },
+  {
+    "name": "Moleküler Biyoteknoloji",
+    "key": "moleküler biyoteknoloji"
+  },
+  {
+    "name": "Muhasebe ve Finans Yönetimi",
+    "key": "muhasebe ve finans yönetimi"
+  },
+  {
+    "name": "Muhasebe ve Vergi Uygulamaları",
+    "key": "muhasebe ve vergi uygulamaları"
+  },
+  {
+    "name": "Mühendislik ve Doğa Bilimleri Programları",
+    "key": "mühendislik ve doğa bilimleri programları"
+  },
+  {
+    "name": "Mütercim-Tercümanlık (Rusça)",
+    "key": "mütercim-tercümanlık (rusça)"
+  },
+  {
+    "name": "Müzecilik",
+    "key": "müzecilik"
+  },
+  {
+    "name": "Nanobilim ve Nanoteknoloji",
+    "key": "nanobilim ve nanoteknoloji"
+  },
+  {
+    "name": "Nanoteknoloji Mühendisliği",
+    "key": "nanoteknoloji mühendisliği"
+  },
+  {
+    "name": "Nükleer Enerji Mühendisliği",
+    "key": "nükleer enerji mühendisliği"
+  },
+  {
+    "name": "Nükleer Teknoloji ve Radyasyon Güvenliği",
+    "key": "nükleer teknoloji ve radyasyon güvenliği"
+  },
+  {
+    "name": "Nükleer Tıp Teknikleri",
+    "key": "nükleer tıp teknikleri"
+  },
+  {
+    "name": "Odyoloji",
+    "key": "odyoloji"
+  },
+  {
+    "name": "Odyometri",
+    "key": "odyometri"
+  },
+  {
+    "name": "Ofis Teknolojileri ve Veri Yönetimi",
+    "key": "ofis teknolojileri ve veri yönetimi"
+  },
+  {
+    "name": "Okul Öncesi Öğretmenliği",
+    "key": "okul öncesi öğretmenliği"
+  },
+  {
+    "name": "Optik ve Akustik Mühendisliği",
+    "key": "optik ve akustik mühendisliği"
+  },
+  {
+    "name": "Optisyenlik",
+    "key": "optisyenlik"
+  },
+  {
+    "name": "Optoelektronik ve Elektro Optik Teknolojileri",
+    "key": "optoelektronik ve elektro optik teknolojileri"
+  },
+  {
+    "name": "Organik Tarım",
+    "key": "organik tarım"
+  },
+  {
+    "name": "Organik Tarım İşletmeciliği",
+    "key": "organik tarım işletmeciliği"
+  },
+  {
+    "name": "Orman Endüstrisi Mühendisliği",
+    "key": "orman endüstrisi mühendisliği"
+  },
+  {
+    "name": "Orman Mühendisliği",
+    "key": "orman mühendisliği"
+  },
+  {
+    "name": "Ormancılık ve Orman Ürünleri",
+    "key": "ormancılık ve orman ürünleri"
+  },
+  {
+    "name": "Ortez ve Protez",
+    "key": "ortez ve protez"
+  },
+  {
+    "name": "Ortopedik Protez ve Ortez",
+    "key": "ortopedik protez ve ortez"
+  },
+  {
+    "name": "Otel Yöneticiliği",
+    "key": "otel yöneticiliği"
+  },
+  {
+    "name": "Otobüs Kaptanlığı",
+    "key": "otobüs kaptanlığı"
+  },
+  {
+    "name": "Otomotiv Gövde ve Yüzey İşlem Teknolojileri",
+    "key": "otomotiv gövde ve yüzey işlem teknolojileri"
+  },
+  {
+    "name": "Otomotiv Mühendisliği",
+    "key": "otomotiv mühendisliği"
+  },
+  {
+    "name": "Otomotiv Teknolojisi",
+    "key": "otomotiv teknolojisi"
+  },
+  {
+    "name": "Otonom Sistemler Teknikerliği",
+    "key": "otonom sistemler teknikerliği"
+  },
+  {
+    "name": "Otopsi Yardımcılığı",
+    "key": "otopsi yardımcılığı"
+  },
+  {
+    "name": "Oyun Geliştirme ve Programlama",
+    "key": "oyun geliştirme ve programlama"
+  },
+  {
+    "name": "Paramedik",
+    "key": "paramedik"
+  },
+  {
+    "name": "Pastacılık ve Ekmekçilik",
+    "key": "pastacılık ve ekmekçilik"
+  },
+  {
+    "name": "Patlayıcı ve Enerjetik Malzemeler Teknikerliği",
+    "key": "patlayıcı ve enerjetik malzemeler teknikerliği"
+  },
+  {
+    "name": "Patoloji Laboratuvar Teknikleri",
+    "key": "patoloji laboratuvar teknikleri"
+  },
+  {
+    "name": "Pazarlama",
+    "key": "pazarlama"
+  },
+  {
+    "name": "Perakende Satış ve Mağaza Yönetimi",
+    "key": "perakende satış ve mağaza yönetimi"
+  },
+  {
+    "name": "Perfüzyon",
+    "key": "perfüzyon"
+  },
+  {
+    "name": "Petrol ve Doğalgaz Mühendisliği",
+    "key": "petrol ve doğalgaz mühendisliği"
+  },
+  {
+    "name": "Peyzaj Mimarlığı",
+    "key": "peyzaj mimarlığı"
+  },
+  {
+    "name": "Peyzaj ve Süs Bitkileri Yetiştiriciliği",
+    "key": "peyzaj ve süs bitkileri yetiştiriciliği"
+  },
+  {
+    "name": "Pilotaj",
+    "key": "pilotaj"
+  },
+  {
+    "name": "Podoloji",
+    "key": "podoloji"
+  },
+  {
+    "name": "Polimer Malzeme Mühendisliği",
+    "key": "polimer malzeme mühendisliği"
+  },
+  {
+    "name": "Polimer Teknolojisi",
+    "key": "polimer teknolojisi"
+  },
+  {
+    "name": "Politika ve Ekonomi",
+    "key": "politika ve ekonomi"
+  },
+  {
+    "name": "Posta Hizmetleri",
+    "key": "posta hizmetleri"
+  },
+  {
+    "name": "Protohistorya ve Ön Asya Arkeolojisi",
+    "key": "protohistorya ve ön asya arkeolojisi"
+  },
+  {
+    "name": "Psikoloji",
+    "key": "psikoloji"
+  },
+  {
+    "name": "Psikolojik Danışmanlık ve Rehberlik",
+    "key": "psikolojik danışmanlık ve rehberlik"
+  },
+  {
+    "name": "Psikolojik Danışmanlık ve Rehberlik Öğretmenliği",
+    "key": "psikolojik danışmanlık ve rehberlik öğretmenliği"
+  },
+  {
+    "name": "Radyo ve Televizyon Teknolojisi",
+    "key": "radyo ve televizyon teknolojisi"
+  },
+  {
+    "name": "Radyo, Televizyon ve Sinema",
+    "key": "radyo, televizyon ve sinema"
+  },
+  {
+    "name": "Radyoterapi",
+    "key": "radyoterapi"
+  },
+  {
+    "name": "Rafineri ve Petro-Kimya Teknolojisi",
+    "key": "rafineri ve petro-kimya teknolojisi"
+  },
+  {
+    "name": "Raylı Sistemler Elektrik ve Elektronik",
+    "key": "raylı sistemler elektrik ve elektronik"
+  },
+  {
+    "name": "Raylı Sistemler Makine Teknolojisi",
+    "key": "raylı sistemler makine teknolojisi"
+  },
+  {
+    "name": "Raylı Sistemler Makinistliği",
+    "key": "raylı sistemler makinistliği"
+  },
+  {
+    "name": "Raylı Sistemler Mühendisliği",
+    "key": "raylı sistemler mühendisliği"
+  },
+  {
+    "name": "Raylı Sistemler Yol Teknolojisi",
+    "key": "raylı sistemler yol teknolojisi"
+  },
+  {
+    "name": "Raylı Sistemler İşletmeciliği",
+    "key": "raylı sistemler işletmeciliği"
+  },
+  {
+    "name": "Rehberlik ve Psikolojik Danışmanlık",
+    "key": "rehberlik ve psikolojik danışmanlık"
+  },
+  {
+    "name": "Reklam Tasarımı ve İletişimi",
+    "key": "reklam tasarımı ve iletişimi"
+  },
+  {
+    "name": "Reklamcılık",
+    "key": "reklamcılık"
+  },
+  {
+    "name": "Rekreasyon",
+    "key": "rekreasyon"
+  },
+  {
+    "name": "Rekreasyon Yönetimi",
+    "key": "rekreasyon yönetimi"
+  },
+  {
+    "name": "Robotik ve Otonom Sistemler Mühendisliği",
+    "key": "robotik ve otonom sistemler mühendisliği"
+  },
+  {
+    "name": "Robotik ve Yapay Zeka",
+    "key": "robotik ve yapay zeka"
+  },
+  {
+    "name": "Rus Dili ve Edebiyatı",
+    "key": "rus dili ve edebiyatı"
+  },
+  {
+    "name": "Rus Dili ve Edebiyatı Öğretmenliği",
+    "key": "rus dili ve edebiyatı öğretmenliği"
+  },
+  {
+    "name": "Rusça Mütercim ve Tercümanlık",
+    "key": "rusça mütercim ve tercümanlık"
+  },
+  {
+    "name": "Sahne Işık ve Ses Teknolojileri",
+    "key": "sahne ışık ve ses teknolojileri"
+  },
+  {
+    "name": "Sahne ve Dekor Tasarımı",
+    "key": "sahne ve dekor tasarımı"
+  },
+  {
+    "name": "Sanal ve Artırılmış Gerçeklik",
+    "key": "sanal ve artırılmış gerçeklik"
+  },
+  {
+    "name": "Sanat Tarihi",
+    "key": "sanat tarihi"
+  },
+  {
+    "name": "Sanat ve Kültür Yönetimi",
+    "key": "sanat ve kültür yönetimi"
+  },
+  {
+    "name": "Sanat ve Sosyal Bilimler Programları",
+    "key": "sanat ve sosyal bilimler programları"
+  },
+  {
+    "name": "Saç Bakımı ve Güzellik Hizmetleri",
+    "key": "saç bakımı ve güzellik hizmetleri"
+  },
+  {
+    "name": "Saç ve Güzellik Uygulamaları",
+    "key": "saç ve güzellik uygulamaları"
+  },
+  {
+    "name": "Sağlık Bilgi Sistemleri Teknikerliği",
+    "key": "sağlık bilgi sistemleri teknikerliği"
+  },
+  {
+    "name": "Sağlık Kurumları İşletmeciliği",
+    "key": "sağlık kurumları işletmeciliği"
+  },
+  {
+    "name": "Sağlık Turizmi İşletmeciliği",
+    "key": "sağlık turizmi işletmeciliği"
+  },
+  {
+    "name": "Sağlık Yönetimi",
+    "key": "sağlık yönetimi"
+  },
+  {
+    "name": "Seracılık",
+    "key": "seracılık"
+  },
+  {
+    "name": "Seramik ve Cam Tasarımı",
+    "key": "seramik ve cam tasarımı"
+  },
+  {
+    "name": "Sermaye Piyasası",
+    "key": "sermaye piyasası"
+  },
+  {
+    "name": "Seyahat İşletmeciliği",
+    "key": "seyahat işletmeciliği"
+  },
+  {
+    "name": "Seyahat İşletmeciliği ve Turizm Rehberliği",
+    "key": "seyahat işletmeciliği ve turizm rehberliği"
+  },
+  {
+    "name": "Siber Güvenlik",
+    "key": "siber güvenlik"
+  },
+  {
+    "name": "Siber Güvenlik Analistliği ve Operatörlüğü",
+    "key": "siber güvenlik analistliği ve operatörlüğü"
+  },
+  {
+    "name": "Siber Güvenlik Mühendisliği",
+    "key": "siber güvenlik mühendisliği"
+  },
+  {
+    "name": "Sigortacılık",
+    "key": "sigortacılık"
+  },
+  {
+    "name": "Sigortacılık ve Aktüerya Bilimleri",
+    "key": "sigortacılık ve aktüerya bilimleri"
+  },
+  {
+    "name": "Sigortacılık ve Risk Yönetimi",
+    "key": "sigortacılık ve risk yönetimi"
+  },
+  {
+    "name": "Sigortacılık ve Sosyal Güvenlik",
+    "key": "sigortacılık ve sosyal güvenlik"
+  },
+  {
+    "name": "Silah Sanayi Teknikerliği",
+    "key": "silah sanayi teknikerliği"
+  },
+  {
+    "name": "Sinema ve Dijital Medya",
+    "key": "sinema ve dijital medya"
+  },
+  {
+    "name": "Sinema ve Televizyon",
+    "key": "sinema ve televizyon"
+  },
+  {
+    "name": "Sinoloji",
+    "key": "sinoloji"
+  },
+  {
+    "name": "Sivil Hava Ulaştırma İşletmeciliği",
+    "key": "sivil hava ulaştırma işletmeciliği"
+  },
+  {
+    "name": "Sivil Havacılık Kabin Hizmetleri",
+    "key": "sivil havacılık kabin hizmetleri"
+  },
+  {
+    "name": "Sivil Savunma ve İtfaiyecilik",
+    "key": "sivil savunma ve itfaiyecilik"
+  },
+  {
+    "name": "Siyaset Bilimi",
+    "key": "siyaset bilimi"
+  },
+  {
+    "name": "Siyaset Bilimi ve Kamu Yönetimi",
+    "key": "siyaset bilimi ve kamu yönetimi"
+  },
+  {
+    "name": "Siyaset Bilimi ve Uluslararası İlişkiler",
+    "key": "siyaset bilimi ve uluslararası ilişkiler"
+  },
+  {
+    "name": "Sondaj Teknolojisi",
+    "key": "sondaj teknolojisi"
+  },
+  {
+    "name": "Sosyal Bilgiler Öğretmenliği",
+    "key": "sosyal bilgiler öğretmenliği"
+  },
+  {
+    "name": "Sosyal Güvenlik",
+    "key": "sosyal güvenlik"
+  },
+  {
+    "name": "Sosyal Hizmet",
+    "key": "sosyal hizmet"
+  },
+  {
+    "name": "Sosyal Hizmetler",
+    "key": "sosyal hizmetler"
+  },
+  {
+    "name": "Sosyal Medya Yöneticiliği",
+    "key": "sosyal medya yöneticiliği"
+  },
+  {
+    "name": "Sosyoloji",
+    "key": "sosyoloji"
+  },
+  {
+    "name": "Su Altı Kaynak Teknolojisi",
+    "key": "su altı kaynak teknolojisi"
+  },
+  {
+    "name": "Su Altı Teknolojisi",
+    "key": "su altı teknolojisi"
+  },
+  {
+    "name": "Su Bilimleri ve Mühendisliği",
+    "key": "su bilimleri ve mühendisliği"
+  },
+  {
+    "name": "Su ve Atık Yönetimi Teknikerliği",
+    "key": "su ve atık yönetimi teknikerliği"
+  },
+  {
+    "name": "Su Ürünleri Endüstrisi Mühendisliği",
+    "key": "su ürünleri endüstrisi mühendisliği"
+  },
+  {
+    "name": "Su Ürünleri Mühendisliği",
+    "key": "su ürünleri mühendisliği"
+  },
+  {
+    "name": "Su Ürünleri İşleme Teknolojisi",
+    "key": "su ürünleri işleme teknolojisi"
+  },
+  {
+    "name": "Sulama Teknolojisi",
+    "key": "sulama teknolojisi"
+  },
+  {
+    "name": "Sümeroloji",
+    "key": "sümeroloji"
+  },
+  {
+    "name": "Süryani Dili ve Edebiyatı",
+    "key": "süryani dili ve edebiyatı"
+  },
+  {
+    "name": "Süt Teknolojisi",
+    "key": "süt teknolojisi"
+  },
+  {
+    "name": "Süt ve Besi Hayvancılığı",
+    "key": "süt ve besi hayvancılığı"
+  },
+  {
+    "name": "Süt ve Ürünleri Teknolojisi",
+    "key": "süt ve ürünleri teknolojisi"
+  },
+  {
+    "name": "Sınıf Öğretmenliği",
+    "key": "sınıf öğretmenliği"
+  },
+  {
+    "name": "Sırp Dili ve Edebiyatı",
+    "key": "sırp dili ve edebiyatı"
+  },
+  {
+    "name": "Tahribatsız Muayene",
+    "key": "tahribatsız muayene"
+  },
+  {
+    "name": "Takı Tasarımı ve İmalatı",
+    "key": "takı tasarımı ve imalatı"
+  },
+  {
+    "name": "Talaşlı Üretim Teknikerliği",
+    "key": "talaşlı üretim teknikerliği"
+  },
+  {
+    "name": "Tapu Kadastro",
+    "key": "tapu kadastro"
+  },
+  {
+    "name": "Tapu ve Kadastro",
+    "key": "tapu ve kadastro"
+  },
+  {
+    "name": "Tarih",
+    "key": "tarih"
+  },
+  {
+    "name": "Tarih ve Yapay Zeka",
+    "key": "tarih ve yapay zeka"
+  },
+  {
+    "name": "Tarih Öncesi Arkeolojisi",
+    "key": "tarih öncesi arkeolojisi"
+  },
+  {
+    "name": "Tarih Öğretmenliği",
+    "key": "tarih öğretmenliği"
+  },
+  {
+    "name": "Tarla Bitkileri",
+    "key": "tarla bitkileri"
+  },
+  {
+    "name": "Tarım Ekonomisi",
+    "key": "tarım ekonomisi"
+  },
+  {
+    "name": "Tarım Makineleri",
+    "key": "tarım makineleri"
+  },
+  {
+    "name": "Tarım Makineleri ve Teknolojileri",
+    "key": "tarım makineleri ve teknolojileri"
+  },
+  {
+    "name": "Tarım Makineleri ve Teknolojileri Mühendisliği",
+    "key": "tarım makineleri ve teknolojileri mühendisliği"
+  },
+  {
+    "name": "Tarım Teknolojisi",
+    "key": "tarım teknolojisi"
+  },
+  {
+    "name": "Tarım Ticareti ve İşletmeciliği",
+    "key": "tarım ticareti ve işletmeciliği"
+  },
+  {
+    "name": "Tarımsal Biyoteknoloji",
+    "key": "tarımsal biyoteknoloji"
+  },
+  {
+    "name": "Tarımsal Genetik Mühendisliği",
+    "key": "tarımsal genetik mühendisliği"
+  },
+  {
+    "name": "Tarımsal Yapılar ve Sulama",
+    "key": "tarımsal yapılar ve sulama"
+  },
+  {
+    "name": "Tarımsal İşletmecilik",
+    "key": "tarımsal işletmecilik"
+  },
+  {
+    "name": "Teknoloji ve Bilgi Yönetimi",
+    "key": "teknoloji ve bilgi yönetimi"
+  },
+  {
+    "name": "Tekstil Mühendisliği",
+    "key": "tekstil mühendisliği"
+  },
+  {
+    "name": "Tekstil Tasarımı",
+    "key": "tekstil tasarımı"
+  },
+  {
+    "name": "Tekstil Teknolojisi",
+    "key": "tekstil teknolojisi"
+  },
+  {
+    "name": "Tekstil ve Halı Makineleri",
+    "key": "tekstil ve halı makineleri"
+  },
+  {
+    "name": "Tekstil ve Moda Tasarımı",
+    "key": "tekstil ve moda tasarımı"
+  },
+  {
+    "name": "Tele-Sağlık Teknikerliği",
+    "key": "tele-sağlık teknikerliği"
+  },
+  {
+    "name": "Televizyon Haberciliği ve Programcılığı",
+    "key": "televizyon haberciliği ve programcılığı"
+  },
+  {
+    "name": "Tespih Tasarımı ve İmalatı",
+    "key": "tespih tasarımı ve imalatı"
+  },
+  {
+    "name": "Tiyatro Eleştirmenliği ve Dramaturji",
+    "key": "tiyatro eleştirmenliği ve dramaturji"
+  },
+  {
+    "name": "Tohum Bilimi ve Teknolojisi",
+    "key": "tohum bilimi ve teknolojisi"
+  },
+  {
+    "name": "Tohumculuk Teknolojisi",
+    "key": "tohumculuk teknolojisi"
+  },
+  {
+    "name": "Toprak Bilimi ve Bitki Besleme",
+    "key": "toprak bilimi ve bitki besleme"
+  },
+  {
+    "name": "Turist Rehberliği",
+    "key": "turist rehberliği"
+  },
+  {
+    "name": "Turizm Animasyonu",
+    "key": "turizm animasyonu"
+  },
+  {
+    "name": "Turizm Rehberliği",
+    "key": "turizm rehberliği"
+  },
+  {
+    "name": "Turizm ve Gastronomi Yönetimi Programları",
+    "key": "turizm ve gastronomi yönetimi programları"
+  },
+  {
+    "name": "Turizm ve Otel Yönetimi  ",
+    "key": "turizm ve otel yönetimi  "
+  },
+  {
+    "name": "Turizm ve Otel İşletmeciliği",
+    "key": "turizm ve otel işletmeciliği"
+  },
+  {
+    "name": "Turizm ve Seyahat Hizmetleri",
+    "key": "turizm ve seyahat hizmetleri"
+  },
+  {
+    "name": "Turizm İşletmeciliği",
+    "key": "turizm işletmeciliği"
+  },
+  {
+    "name": "Türk Dili ve Edebiyatı",
+    "key": "türk dili ve edebiyatı"
+  },
+  {
+    "name": "Türk Dili ve Edebiyatı Öğretmenliği",
+    "key": "türk dili ve edebiyatı öğretmenliği"
+  },
+  {
+    "name": "Türk Halkbilimi",
+    "key": "türk halkbilimi"
+  },
+  {
+    "name": "Türk İslam Arkeolojisi",
+    "key": "türk islam arkeolojisi"
+  },
+  {
+    "name": "Türkoloji",
+    "key": "türkoloji"
+  },
+  {
+    "name": "Türkçe Öğretmenliği",
+    "key": "türkçe öğretmenliği"
+  },
+  {
+    "name": "Tütün Eksperliği",
+    "key": "tütün eksperliği"
+  },
+  {
+    "name": "Tıbbi Dokümantasyon ve Sekreterlik",
+    "key": "tıbbi dokümantasyon ve sekreterlik"
+  },
+  {
+    "name": "Tıbbi Görüntüleme Teknikleri",
+    "key": "tıbbi görüntüleme teknikleri"
+  },
+  {
+    "name": "Tıbbi Laboratuvar Teknikleri",
+    "key": "tıbbi laboratuvar teknikleri"
+  },
+  {
+    "name": "Tıbbi Tanıtım ve Pazarlama",
+    "key": "tıbbi tanıtım ve pazarlama"
+  },
+  {
+    "name": "Tıbbi Veri İşleme Teknikerliği",
+    "key": "tıbbi veri işleme teknikerliği"
+  },
+  {
+    "name": "Tıbbi ve Aromatik Bitkiler",
+    "key": "tıbbi ve aromatik bitkiler"
+  },
+  {
+    "name": "Tıp",
+    "key": "tıp"
+  },
+  {
+    "name": "Ukrayna Dili ve Edebiyatı",
+    "key": "ukrayna dili ve edebiyatı"
+  },
+  {
+    "name": "Ulaştırma ve Trafik Hizmetleri",
+    "key": "ulaştırma ve trafik hizmetleri"
+  },
+  {
+    "name": "Uluslararası Finans",
+    "key": "uluslararası finans"
+  },
+  {
+    "name": "Uluslararası Finans ve Bankacılık",
+    "key": "uluslararası finans ve bankacılık"
+  },
+  {
+    "name": "Uluslararası Girişimcilik",
+    "key": "uluslararası girişimcilik"
+  },
+  {
+    "name": "Uluslararası Ticaret",
+    "key": "uluslararası ticaret"
+  },
+  {
+    "name": "Uluslararası Ticaret ve Finans",
+    "key": "uluslararası ticaret ve finans"
+  },
+  {
+    "name": "Uluslararası Ticaret ve Finansman",
+    "key": "uluslararası ticaret ve finansman"
+  },
+  {
+    "name": "Uluslararası Ticaret ve Lojistik",
+    "key": "uluslararası ticaret ve lojistik"
+  },
+  {
+    "name": "Uluslararası Ticaret ve İşletmecilik",
+    "key": "uluslararası ticaret ve işletmecilik"
+  },
+  {
+    "name": "Uluslararası İlişkiler",
+    "key": "uluslararası ilişkiler"
+  },
+  {
+    "name": "Uluslararası İşletme Yönetimi",
+    "key": "uluslararası işletme yönetimi"
+  },
+  {
+    "name": "Un ve Unlu Mamuller Teknolojisi",
+    "key": "un ve unlu mamuller teknolojisi"
+  },
+  {
+    "name": "Urdu Dili ve Edebiyatı",
+    "key": "urdu dili ve edebiyatı"
+  },
+  {
+    "name": "Uygulamalı Bankacılık ve Finans  ",
+    "key": "uygulamalı bankacılık ve finans  "
+  },
+  {
+    "name": "Uzaktan Algılama ve Coğrafi Bilgi Sistemleri",
+    "key": "uzaktan algılama ve coğrafi bilgi sistemleri"
+  },
+  {
+    "name": "Uzay Bilimleri ve Teknolojileri",
+    "key": "uzay bilimleri ve teknolojileri"
+  },
+  {
+    "name": "Uzay Mühendisliği",
+    "key": "uzay mühendisliği"
+  },
+  {
+    "name": "Uçak Bakım ve Onarım",
+    "key": "uçak bakım ve onarım"
+  },
+  {
+    "name": "Uçak Elektrik ve Elektroniği",
+    "key": "uçak elektrik ve elektroniği"
+  },
+  {
+    "name": "Uçak Gövde ve Motor Bakımı",
+    "key": "uçak gövde ve motor bakımı"
+  },
+  {
+    "name": "Uçak Mühendisliği",
+    "key": "uçak mühendisliği"
+  },
+  {
+    "name": "Uçak Teknolojisi",
+    "key": "uçak teknolojisi"
+  },
+  {
+    "name": "Uçuş Harekat Yöneticiliği",
+    "key": "uçuş harekat yöneticiliği"
+  },
+  {
+    "name": "Veri Bilimi ve Analitiği",
+    "key": "veri bilimi ve analitiği"
+  },
+  {
+    "name": "Veri Görselleştirme ve Bilgi Tasarımı",
+    "key": "veri görselleştirme ve bilgi tasarımı"
+  },
+  {
+    "name": "Veri Mühendisliği",
+    "key": "veri mühendisliği"
+  },
+  {
+    "name": "Veteriner",
+    "key": "veteriner"
+  },
+  {
+    "name": "Web Tasarımı ve Kodlama",
+    "key": "web tasarımı ve kodlama"
+  },
+  {
+    "name": "Yaban Hayatı Ekolojisi ve Yönetimi",
+    "key": "yaban hayatı ekolojisi ve yönetimi"
+  },
+  {
+    "name": "Yapay Zeka Destekli Kodlama",
+    "key": "yapay zeka destekli kodlama"
+  },
+  {
+    "name": "Yapay Zeka Destekli Tasarım ve Animasyon",
+    "key": "yapay zeka destekli tasarım ve animasyon"
+  },
+  {
+    "name": "Yapay Zeka Destekli Web Tasarımı ve Kodlama",
+    "key": "yapay zeka destekli web tasarımı ve kodlama"
+  },
+  {
+    "name": "Yapay Zeka Mühendisliği",
+    "key": "yapay zeka mühendisliği"
+  },
+  {
+    "name": "Yapay Zeka Operatörlüğü",
+    "key": "yapay zeka operatörlüğü"
+  },
+  {
+    "name": "Yapay Zeka ve Makine Öğrenmesi",
+    "key": "yapay zeka ve makine öğrenmesi"
+  },
+  {
+    "name": "Yapay Zeka ve Veri Analizi",
+    "key": "yapay zeka ve veri analizi"
+  },
+  {
+    "name": "Yapay Zeka ve Veri Mühendisliği",
+    "key": "yapay zeka ve veri mühendisliği"
+  },
+  {
+    "name": "Yapı Denetimi",
+    "key": "yapı denetimi"
+  },
+  {
+    "name": "Yapı Ressamlığı",
+    "key": "yapı ressamlığı"
+  },
+  {
+    "name": "Yapı Tesisat Teknolojisi",
+    "key": "yapı tesisat teknolojisi"
+  },
+  {
+    "name": "Yapı Yalıtım Teknolojisi",
+    "key": "yapı yalıtım teknolojisi"
+  },
+  {
+    "name": "Yapı Yüzeyi Tasarım Teknikerliği",
+    "key": "yapı yüzeyi tasarım teknikerliği"
+  },
+  {
+    "name": "Yat Kaptanlığı",
+    "key": "yat kaptanlığı"
+  },
+  {
+    "name": "Yazılım Geliştirme",
+    "key": "yazılım geliştirme"
+  },
+  {
+    "name": "Yazılım Mühendisliği",
+    "key": "yazılım mühendisliği"
+  },
+  {
+    "name": "Yağ Endüstrisi",
+    "key": "yağ endüstrisi"
+  },
+  {
+    "name": "Yaşlı Bakımı",
+    "key": "yaşlı bakımı"
+  },
+  {
+    "name": "Yeni Medya",
+    "key": "yeni medya"
+  },
+  {
+    "name": "Yeni Medya ve Gazetecilik",
+    "key": "yeni medya ve gazetecilik"
+  },
+  {
+    "name": "Yeni Medya ve İletişim",
+    "key": "yeni medya ve iletişim"
+  },
+  {
+    "name": "Yenilenebilir Enerji Teknikerliği",
+    "key": "yenilenebilir enerji teknikerliği"
+  },
+  {
+    "name": "Yerel Yönetimler",
+    "key": "yerel yönetimler"
+  },
+  {
+    "name": "Yeşil ve Ekolojik Bina Teknikerliği",
+    "key": "yeşil ve ekolojik bina teknikerliği"
+  },
+  {
+    "name": "Yiyecek ve İçecek İşletmeciliği",
+    "key": "yiyecek ve içecek işletmeciliği"
+  },
+  {
+    "name": "Yunan Dili ve Edebiyatı",
+    "key": "yunan dili ve edebiyatı"
+  },
+  {
+    "name": "Yönetim Bilimleri Programları",
+    "key": "yönetim bilimleri programları"
+  },
+  {
+    "name": "Yönetim Bilişim Sistemleri",
+    "key": "yönetim bilişim sistemleri"
+  },
+  {
+    "name": "Zaza Dili ve Edebiyatı",
+    "key": "zaza dili ve edebiyatı"
+  },
+  {
+    "name": "Zeytincilik ve Zeytin İşleme Teknolojisi",
+    "key": "zeytincilik ve zeytin işleme teknolojisi"
+  },
+  {
+    "name": "Ziraat Mühendisliği Programları",
+    "key": "ziraat mühendisliği programları"
+  },
+  {
+    "name": "Zootekni",
+    "key": "zootekni"
+  },
+  {
+    "name": "Çalışma Ekonomisi ve Endüstri İlişkileri",
+    "key": "çalışma ekonomisi ve endüstri ilişkileri"
+  },
+  {
+    "name": "Çay Tarımı ve İşleme Teknolojisi",
+    "key": "çay tarımı ve işleme teknolojisi"
+  },
+  {
+    "name": "Çağdaş Türk Lehçeleri ve Edebiyatları",
+    "key": "çağdaş türk lehçeleri ve edebiyatları"
+  },
+  {
+    "name": "Çağdaş Yunan Dili ve Edebiyatı",
+    "key": "çağdaş yunan dili ve edebiyatı"
+  },
+  {
+    "name": "Çağrı Merkezi Hizmetleri",
+    "key": "çağrı merkezi hizmetleri"
+  },
+  {
+    "name": "Çerkez Dili ve Edebiyatı",
+    "key": "çerkez dili ve edebiyatı"
+  },
+  {
+    "name": "Çerkez Dili ve Kültürü",
+    "key": "çerkez dili ve kültürü"
+  },
+  {
+    "name": "Çeviribilimi",
+    "key": "çeviribilimi"
+  },
+  {
+    "name": "Çevre Koruma ve Kontrol",
+    "key": "çevre koruma ve kontrol"
+  },
+  {
+    "name": "Çevre Mühendisliği",
+    "key": "çevre mühendisliği"
+  },
+  {
+    "name": "Çevre Sağlığı",
+    "key": "çevre sağlığı"
+  },
+  {
+    "name": "Çevre Sağlığı ve Çevresel Risk Yönetimi Teknikerliği",
+    "key": "çevre sağlığı ve çevresel risk yönetimi teknikerliği"
+  },
+  {
+    "name": "Çevresel Ölçüm ve İzleme Sistemleri Teknikerliği",
+    "key": "çevresel ölçüm ve izleme sistemleri teknikerliği"
+  },
+  {
+    "name": "Çim Alan Tesisi ve Yönetimi",
+    "key": "çim alan tesisi ve yönetimi"
+  },
+  {
+    "name": "Çin Dili ve Edebiyatı",
+    "key": "çin dili ve edebiyatı"
+  },
+  {
+    "name": "Çince Mütercim ve Tercümanlık",
+    "key": "çince mütercim ve tercümanlık"
+  },
+  {
+    "name": "Çini Sanatı ve Tasarımı",
+    "key": "çini sanatı ve tasarımı"
+  },
+  {
+    "name": "Çizgi Film ve Animasyon",
+    "key": "çizgi film ve animasyon"
+  },
+  {
+    "name": "Çocuk Gelişimi",
+    "key": "çocuk gelişimi"
+  },
+  {
+    "name": "Çocuk Koruma ve Bakım Hizmetleri",
+    "key": "çocuk koruma ve bakım hizmetleri"
+  },
+  {
+    "name": "Çok Boyutlu Modelleme ve Animasyon",
+    "key": "çok boyutlu modelleme ve animasyon"
+  },
+  {
+    "name": "Ön-Yüz Yazılım Geliştirme",
+    "key": "ön-yüz yazılım geliştirme"
+  },
+  {
+    "name": "Özel Eğitim Öğretmenliği",
+    "key": "özel eğitim öğretmenliği"
+  },
+  {
+    "name": "Özel Güvenlik ve Koruma",
+    "key": "özel güvenlik ve koruma"
+  },
+  {
+    "name": "Üretimde Kalite Kontrol",
+    "key": "üretimde kalite kontrol"
+  },
+  {
+    "name": "İbrani Dili ve Kültürü",
+    "key": "ibrani dili ve kültürü"
+  },
+  {
+    "name": "İklim Bilimi ve Meteoroloji Mühendisliği",
+    "key": "iklim bilimi ve meteoroloji mühendisliği"
+  },
+  {
+    "name": "İklimlendirme ve Soğutma Teknolojisi",
+    "key": "iklimlendirme ve soğutma teknolojisi"
+  },
+  {
+    "name": "İkram Hizmetleri",
+    "key": "ikram hizmetleri"
+  },
+  {
+    "name": "İktisat",
+    "key": "iktisat"
+  },
+  {
+    "name": "İlahiyat",
+    "key": "ilahiyat"
+  },
+  {
+    "name": "İlaç Üretim Teknolojisi",
+    "key": "ilaç üretim teknolojisi"
+  },
+  {
+    "name": "İletişim",
+    "key": "iletişim"
+  },
+  {
+    "name": "İletişim Bilimleri",
+    "key": "iletişim bilimleri"
+  },
+  {
+    "name": "İletişim Tasarımı ve Yönetimi",
+    "key": "iletişim tasarımı ve yönetimi"
+  },
+  {
+    "name": "İletişim ve Tasarımı",
+    "key": "iletişim ve tasarımı"
+  },
+  {
+    "name": "İlk ve Acil Yardım",
+    "key": "ilk ve acil yardım"
+  },
+  {
+    "name": "İlköğretim Matematik Öğretmenliği",
+    "key": "ilköğretim matematik öğretmenliği"
+  },
+  {
+    "name": "İmalat Mühendisliği",
+    "key": "imalat mühendisliği"
+  },
+  {
+    "name": "İmalat Yürütme Sistemleri Operatörlüğü",
+    "key": "imalat yürütme sistemleri operatörlüğü"
+  },
+  {
+    "name": "İngiliz Dilbilimi",
+    "key": "ingiliz dilbilimi"
+  },
+  {
+    "name": "İngiliz Dili ve Edebiyatı",
+    "key": "ingiliz dili ve edebiyatı"
+  },
+  {
+    "name": "İngilizce Mütercim ve Tercümanlık",
+    "key": "ingilizce mütercim ve tercümanlık"
+  },
+  {
+    "name": "İngilizce Öğretmenliği",
+    "key": "ingilizce öğretmenliği"
+  },
+  {
+    "name": "İngilizce, Fransızca Mütercim ve Tercümanlık",
+    "key": "ingilizce, fransızca mütercim ve tercümanlık"
+  },
+  {
+    "name": "İnsan Kaynakları Yönetimi",
+    "key": "insan kaynakları yönetimi"
+  },
+  {
+    "name": "İnsansız Araç Teknikerliği",
+    "key": "insansız araç teknikerliği"
+  },
+  {
+    "name": "İnsansız Hava Aracı Teknolojisi ve Operatörlüğü",
+    "key": "insansız hava aracı teknolojisi ve operatörlüğü"
+  },
+  {
+    "name": "İnternet ve Ağ Teknolojileri",
+    "key": "internet ve ağ teknolojileri"
+  },
+  {
+    "name": "İnşaat Mühendisliği",
+    "key": "inşaat mühendisliği"
+  },
+  {
+    "name": "İnşaat Teknolojisi",
+    "key": "inşaat teknolojisi"
+  },
+  {
+    "name": "İslam İktisadı ve Finans",
+    "key": "islam iktisadı ve finans"
+  },
+  {
+    "name": "İslami İlimler",
+    "key": "islami ilimler"
+  },
+  {
+    "name": "İspanyol Dili ve Edebiyatı",
+    "key": "ispanyol dili ve edebiyatı"
+  },
+  {
+    "name": "İspanyolca Mütercim ve Tercümanlık",
+    "key": "ispanyolca mütercim ve tercümanlık"
+  },
+  {
+    "name": "İstatistik",
+    "key": "istatistik"
+  },
+  {
+    "name": "İstatistik ve Bilgisayar Bilimleri",
+    "key": "istatistik ve bilgisayar bilimleri"
+  },
+  {
+    "name": "İtalyan Dili ve Edebiyatı",
+    "key": "italyan dili ve edebiyatı"
+  },
+  {
+    "name": "İç Mekan Tasarımı",
+    "key": "iç mekan tasarımı"
+  },
+  {
+    "name": "İç Mimarlık",
+    "key": "iç mimarlık"
+  },
+  {
+    "name": "İç Mimarlık ve Mobilya Tasarımı",
+    "key": "iç mimarlık ve mobilya tasarımı"
+  },
+  {
+    "name": "İç Mimarlık ve Çevre Tasarımı",
+    "key": "iç mimarlık ve çevre tasarımı"
+  },
+  {
+    "name": "İş Makineleri Operatörlüğü",
+    "key": "iş makineleri operatörlüğü"
+  },
+  {
+    "name": "İş Sağlığı ve Güvenliği",
+    "key": "iş sağlığı ve güvenliği"
+  },
+  {
+    "name": "İş ve Uğraşı Terapisi",
+    "key": "iş ve uğraşı terapisi"
+  },
+  {
+    "name": "İşletme",
+    "key": "işletme"
+  },
+  {
+    "name": "İşletme Mühendisliği",
+    "key": "işletme mühendisliği"
+  },
+  {
+    "name": "İşletme Yönetimi",
+    "key": "işletme yönetimi"
+  },
+  {
+    "name": "İşletme ve Yapay Zeka",
+    "key": "işletme ve yapay zeka"
+  },
+  {
+    "name": "Şarap Üretim Teknolojisi",
+    "key": "şarap üretim teknolojisi"
+  },
+  {
+    "name": "Şehir ve Bölge Planlama",
+    "key": "şehir ve bölge planlama"
+  }
+]

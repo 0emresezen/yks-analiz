@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Tests for deterministic pipeline scoring and transform."""
+
+import unittest
+
+from pipeline.scoring import (
+    composite_rating,
+    scholarship_score_from_yok,
+    trend_score_from_rankings,
+    yok_rank_score,
+)
+from pipeline.transform import yok_record_to_base
+
+
+class TestTransform(unittest.TestCase):
+    def test_yok_record_to_base(self):
+        row = {
+            "program_id": "123456",
+            "university": "BOĞAZİÇİ ÜNİVERSİTESİ",
+            "department": "Bilgisayar Mühendisliği",
+            "department_group": "Bilgisayar Mühendisliği",
+            "full_title": "BOĞAZİÇİ ÜNİVERSİTESİ - Bilgisayar Mühendisliği",
+            "program_type": "LISANS",
+            "score_type": "SAY",
+            "scholarship_rate": "",
+            "university_type": "DEVLET",
+            "city": "İSTANBUL",
+            "rank_y1": 1500,
+            "rank_y2": 1600,
+            "rank_y3": 1700,
+            "rank_y4": 1800,
+            "rankings": [1800, 1700, 1600, 1500],
+            "yok_data_available": True,
+            "yok_data_note": "",
+        }
+        base = yok_record_to_base(row)
+        self.assertEqual(base["id"], "123456")
+        self.assertEqual(base["program_id"], "123456")
+        self.assertEqual(base["degree"], "Lisans (4Y)")
+        self.assertEqual(base["tuition_status"], "Devlet (Ücretsiz)")
+        self.assertEqual(len(base["history_rankings"]), 4)
+        self.assertFalse(base["isFavorite"])
+
+
+class TestScoring(unittest.TestCase):
+    def test_scholarship_devlet(self):
+        score, avail, _ = scholarship_score_from_yok("", "DEVLET")
+        self.assertEqual(score, 8.0)
+        self.assertTrue(avail)
+
+    def test_scholarship_burslu(self):
+        score, avail, _ = scholarship_score_from_yok("Burslu", "VAKIF")
+        self.assertEqual(score, 10.0)
+        self.assertTrue(avail)
+
+    def test_trend_improving(self):
+        score, avail, _ = trend_score_from_rankings([200000, 150000, 100000, 50000])
+        self.assertTrue(avail)
+        self.assertGreater(score, 7.0)
+
+    def test_trend_insufficient_data(self):
+        score, avail, _ = trend_score_from_rankings([50000])
+        self.assertIsNone(score)
+        self.assertFalse(avail)
+
+    def test_yok_rank_score(self):
+        score, avail, _ = yok_rank_score(8000)
+        self.assertTrue(avail)
+        self.assertGreater(score, 8.0)
+
+    def test_composite_rating_deterministic(self):
+        item = {
+            "uniar_score": 8.0,
+            "scholarship_score": 8.0,
+            "trend_score": 7.0,
+            "prestige_score": None,
+            "yok_rank_score": 9.0,
+        }
+        rating1, _ = composite_rating(item)
+        rating2, _ = composite_rating(item)
+        self.assertEqual(rating1, rating2)
+        self.assertIsNotNone(rating1)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -23,6 +23,10 @@
 </head>
 <body>
 
+  <div id="app-loading" class="app-loading hidden" aria-live="polite">
+    <div class="app-loading-inner">Veritabanı yükleniyor…</div>
+  </div>
+
   <!-- Minimal High-Contrast Header -->
   <header class="app-header">
     <div class="header-container">
@@ -30,7 +34,7 @@
         <span class="brand-badge">YKS 2026</span>
         <div class="brand-text">
           <h1>YKS Tercih & Karar Platformu</h1>
-          <p class="subtitle">96 Bölüm | Ulaşım, ÜNİAR, Prestij ve Akademik Kadro Metrikleri</p>
+          <p class="subtitle">Evrensel Program Veritabanı | Deterministik Karar Motoru</p>
         </div>
       </div>
 
@@ -181,6 +185,7 @@
             </tbody>
           </table>
         </div>
+        <div id="table-pagination" class="table-pagination" aria-label="Sayfalama"></div>
 
       </div>
     </section>
@@ -383,6 +388,11 @@
               <div class="side-pane-header">
                 <h3>Tercih Geçmişi</h3>
                 <p>Karşılaştırmalarınızı inceleyin veya cevabınızı değiştirmek için tıklayın.</p>
+                <div class="wizard-list-filters" role="tablist" aria-label="Karşılaştırma listesi filtresi">
+                  <button type="button" class="wizard-filter-btn active" data-wizard-filter="all" role="tab" aria-selected="true">Tümü</button>
+                  <button type="button" class="wizard-filter-btn" data-wizard-filter="answered" role="tab" aria-selected="false">Cevaplananlar</button>
+                  <button type="button" class="wizard-filter-btn" data-wizard-filter="pending" role="tab" aria-selected="false">Bekleyenler</button>
+                </div>
               </div>
               <div id="wizard-side-pane-body" class="side-pane-body">
                 <div id="wizard-questions-list" class="questions-list">
@@ -415,6 +425,14 @@
               </tbody>
             </table>
           </div>
+
+          <section id="wizard-results-answers" class="wizard-results-answers hidden" aria-label="Cevaplanan karşılaştırmalar">
+            <div class="wizard-results-answers-header">
+              <h3>Cevaplanan Karşılaştırmalar</h3>
+              <p>Verdiğiniz tüm A/B seçimleri. Düzenlemek için bir satıra tıklayın.</p>
+            </div>
+            <div id="wizard-results-answers-list" class="wizard-results-answers-list"></div>
+          </section>
         </div>
 
         <aside class="wizard-info-note card" aria-label="Tercih sihirbazı hakkında bilgi">
@@ -693,17 +711,29 @@
       <div class="modal-body" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
         
         <div class="filter-group">
-          <label for="search-add-program" style="font-weight: 600;">Program Ara (Üniversite veya Bölüm Adı):</label>
-          <input type="text" id="search-add-program" class="compact-input" placeholder="Örn: Yıldız Teknik Bilgisayar..." style="width: 100%; padding: 0.75rem; font-size: 0.875rem;">
+          <label for="search-add-program" style="font-weight: 600;">Bölüm veya Üniversite Ara</label>
+          <input
+            type="text"
+            id="search-add-program"
+            class="compact-input"
+            placeholder="En az 2 harf yazın — örn: bilgisayar, tıp, mimarlık..."
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Program ara"
+            aria-autocomplete="list"
+            aria-controls="search-add-results"
+            style="width: 100%; padding: 0.75rem; font-size: 0.875rem;"
+          >
+          <p id="search-add-hint" class="search-hint">Yazdıkça eşleşen programlar listelenir (21.000+ program).</p>
         </div>
 
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
           <div class="filter-group" style="flex: 1; min-width: 120px;">
-            <label style="font-size: 0.75rem;">Şehir Filtresi:</label>
+            <label for="add-program-city" style="font-size: 0.75rem;">Şehir (opsiyonel)</label>
             <select id="add-program-city" class="compact-select" style="width: 100%;"><option value="">Tümü</option></select>
           </div>
           <div class="filter-group" style="flex: 1; min-width: 120px;">
-            <label style="font-size: 0.75rem;">Derece:</label>
+            <label for="add-program-degree" style="font-size: 0.75rem;">Derece (opsiyonel)</label>
             <select id="add-program-degree" class="compact-select" style="width: 100%;">
               <option value="all">Tümü</option>
               <option value="Lisans">Lisans (4Y)</option>
@@ -712,10 +742,8 @@
           </div>
         </div>
 
-        <div id="search-add-results" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--secondary);">
-          <div style="padding: 1rem; text-align: center; color: var(--muted-foreground); font-size: 0.8125rem;">
-            Aramak için yazın veya filtreleri kullanın...
-          </div>
+        <div id="search-add-results" class="search-add-results" role="listbox" aria-label="Arama sonuçları">
+          <div class="search-empty-state">Aramaya başlamak için bölüm veya üniversite adı yazın.</div>
         </div>
 
         <div id="add-program-details-form" class="hidden" style="display: flex; flex-direction: column; gap: 0.75rem; border-top: 1px solid var(--border); padding-top: 1rem;">

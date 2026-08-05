@@ -6,4 +6,6 @@ thefuzz>=0.22.0
 python-Levenshtein>=0.27.0
 pdfplumber>=0.10.0
 pytesseract>=0.3.10
+pyarrow>=18.0.0
+yokatlas-py>=0.1.0
 

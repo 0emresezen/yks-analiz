@@ -182,8 +182,8 @@ for p in data:
         "city": city
     })
 
-os.makedirs("enes", exist_ok=True)
-with open("enes/program_index.json", "w", encoding="utf-8") as f:
+os.makedirs("data", exist_ok=True)
+with open("data/program_index.json", "w", encoding="utf-8") as f:
     json.dump(program_index, f, ensure_ascii=False, indent=2)
 
-print(f"Created enes/program_index.json with {len(program_index)} entries.")
+print(f"Created data/program_index.json with {len(program_index)} entries.")

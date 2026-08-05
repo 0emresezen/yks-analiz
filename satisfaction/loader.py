@@ -45,8 +45,9 @@ class SatisfactionLoader:
             except Exception as e:
                 logging.error(f"Error loading satisfaction cache: {e}. Falling back to parsing.")
 
-        # Rebuild cache by parsing PDFs
+        # Rebuild cache by parsing PDFs and web JSON
         records = cls.parse_pdf_directory()
+        records.extend(cls.parse_web_json_directory())
 
         if records:
             # Run validator and generate validation report
@@ -96,6 +97,32 @@ class SatisfactionLoader:
                     parsed_records = parser.parse_pdf(file_path, year)
                     logging.info(f"Extracted {len(parsed_records)} records from {filename}.")
                     records.extend(parsed_records)
+
+        return records
+
+    @classmethod
+    def parse_web_json_directory(cls) -> List[UniversitySatisfaction]:
+        """Scans raw/uniar for TÜMA web JSON exports."""
+        records: List[UniversitySatisfaction] = []
+        web_dir = os.path.join("raw", "uniar")
+        if not os.path.isdir(web_dir):
+            return records
+
+        from satisfaction.tuma_parser import load_web_json
+
+        for filename in sorted(os.listdir(web_dir)):
+            if not filename.startswith("tuma_") or not filename.endswith(".json"):
+                continue
+            file_path = os.path.join(web_dir, filename)
+            year_match = re.search(r"(\d{4})", filename)
+            year = int(year_match.group(1)) if year_match else None
+            logging.info("Loading web JSON: %s (year=%s)", file_path, year)
+            try:
+                parsed = load_web_json(file_path)
+                records.extend(parsed)
+                logging.info("Loaded %d records from %s", len(parsed), filename)
+            except Exception as e:
+                logging.error("Failed to load web JSON %s: %s", filename, e)
 
         return records
 

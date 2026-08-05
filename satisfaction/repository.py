@@ -10,7 +10,7 @@ import logging
 from typing import List, Dict, Any, Optional
 from satisfaction.models import UniversitySatisfaction
 from satisfaction.loader import SatisfactionLoader
-from satisfaction.matcher import UniversityMatcher
+from satisfaction.matcher import UniversityMatcher, classify_match_score, MatchAction
 
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s - %(message)s")
 
@@ -42,17 +42,18 @@ class SatisfactionRepository:
 
         # Match using fuzzy matcher
         matched_uni, score = UniversityMatcher.match(university, self.universities)
-        if not matched_uni or score < 90:
+        action = classify_match_score(score)
+
+        if not matched_uni or action == MatchAction.REJECT:
             logging.warning(f"⚠️ ÜNİAR Eşleşme REDDEDİLDİ: '{university}' benzerlik skoru {score} (<90)")
             return None
 
-        if score >= 99:
-            # High confidence auto accept
-            pass
-        elif 95 <= score < 99:
-            logging.info(f"ℹ️ ÜNİAR Otomatik Kabul (Orta Güven): '{university}' -> '{matched_uni}' (Skor: {score})")
-        elif 90 <= score < 95:
-            logging.warning(f"⚠️ ÜNİAR Eşleşme İnceleme Önerisi (Düşük Güven): '{university}' -> '{matched_uni}' (Skor: {score})")
+        if action == MatchAction.ACCEPT_LOG:
+            logging.info(f"ℹ️ ÜNİAR Eşleşme kabul (log): '{university}' -> '{matched_uni}' (Skor: {score})")
+        elif action == MatchAction.WARNING:
+            logging.warning(f"⚠️ ÜNİAR Eşleşme uyarı: '{university}' -> '{matched_uni}' (Skor: {score})")
+        elif action == MatchAction.MANUAL_REVIEW:
+            logging.warning(f"⚠️ ÜNİAR Eşleşme manuel inceleme: '{university}' -> '{matched_uni}' (Skor: {score})")
 
         # Filter by matched name
         uni_records = [r for r in self.records if r.university_name == matched_uni]
@@ -124,6 +125,9 @@ class SatisfactionRepository:
             details.append(f"kampüs yaşamı memnuniyeti {score_rec.campus_life}")
         if score_rec.learning_experience is not None:
             details.append(f"öğrenim deneyimi {score_rec.learning_experience}")
+        sub_meta = score_rec.source_metadata or {}
+        if sub_meta.get("learning_resources") is not None:
+            details.append(f"öğrenme kaynakları {sub_meta['learning_resources']}")
 
         if details:
             desc += " Detaylar: " + ", ".join(details) + "."

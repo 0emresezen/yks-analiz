@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+DEPRECATED — Kanıta Dayalı Mimari ile Uyumsuz
+==============================================
+Bu script mimari gereği devre dışı bırakıldı.
+LLM ile sayı/puan üretimi veya eksik alan doldurma yapılmaz.
+Mevcut ai_eval alanları korunur; yeni üretim yapılmaz.
+"""
 
-"""
-YKS Tercih Analizlerini Gemini LLM ile Zenginleştirme Scripti
-============================================================
-Bu script:
-1. google-generativeai kütüphanesini kontrol eder, yoksa kurar.
-2. GEMINI_API_KEY ortam değişkenini veya kullanıcı girişini okur.
-3. hakan/yks_master_database.json ve enes/yks_master_database.json dosyalarını okur.
-4. Her program için detaylı, 4 paragraflık HTML formatında analiz raporu üretir.
-5. Sonuçları 'ai_eval' alanına yazar ve veritabanlarını günceller.
-"""
+import sys
+
+print("enrich_with_llm.py devre dışı — kanıta dayalı mimari LLM veri üretimini yasaklar.")
+print("Mevcut ai_eval alanları generate_app_data.py tarafından korunur.")
+sys.exit(0)
+
+# --- Eski kod aşağıda referans için bırakıldı ---
 
 import os
 import sys
@@ -172,11 +176,11 @@ def main():
     model = genai.GenerativeModel("gemini-1.5-flash")
 
     # Hakan'ın 8 Tercihi
-    hakan_path = "hakan/yks_master_database.json"
+    hakan_path = "data/yks_master_database.json"
     process_database(model, hakan_path)
 
     # Enes'in 96 Tercihi
-    enes_path = "enes/yks_master_database.json"
+    enes_path = "data/yks_master_database.json"
     process_database(model, enes_path)
 
     print("\n✨ Tüm veritabanları başarıyla zenginleştirildi!")

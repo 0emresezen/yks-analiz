@@ -1,0 +1,1373 @@
+{
+  "version": "1.0.0",
+  "universities": [
+    {
+      "canonical_id": "uni_abdullah_g_l_niversitesi_kayseri",
+      "canonical_name": "ABDULLAH GÜL ÜNİVERSİTESİ (KAYSERİ)",
+      "aliases": [],
+      "normalized": "abdullah gül"
+    },
+    {
+      "canonical_id": "uni_ac_badem_mehmet_ali_ayd_nlar_niversitesi",
+      "canonical_name": "ACIBADEM MEHMET ALİ AYDINLAR ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "acıbadem mehmet ali aydınlar"
+    },
+    {
+      "canonical_id": "uni_ada_kent_niversitesi_kktc_gazima_usa",
+      "canonical_name": "ADA KENT ÜNİVERSİTESİ (KKTC-GAZİMAĞUSA)",
+      "aliases": [],
+      "normalized": "ada kent"
+    },
+    {
+      "canonical_id": "uni_adana_alparslan_t_rke_bilim_ve_teknoloji",
+      "canonical_name": "ADANA ALPARSLAN TÜRKEŞ BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "adana alparslan türkeş bilim ve teknoloji"
+    },
+    {
+      "canonical_id": "uni_ad_yaman_niversitesi",
+      "canonical_name": "ADIYAMAN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "adıyaman"
+    },
+    {
+      "canonical_id": "uni_afyon_kocatepe_niversitesi_afyonkarahisa",
+      "canonical_name": "AFYON KOCATEPE ÜNİVERSİTESİ (AFYONKARAHİSAR)",
+      "aliases": [],
+      "normalized": "afyon kocatepe"
+    },
+    {
+      "canonical_id": "uni_afyonkarahisar_sa_l_k_bilimleri_niversit",
+      "canonical_name": "AFYONKARAHİSAR SAĞLIK BİLİMLERİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "afyonkarahisar sağlık bilimleri"
+    },
+    {
+      "canonical_id": "uni_akdeniz_karpaz_niversitesi_kktc_lefko_a",
+      "canonical_name": "AKDENİZ KARPAZ ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "aliases": [],
+      "normalized": "akdeniz karpaz"
+    },
+    {
+      "canonical_id": "uni_akdeniz_niversitesi_antalya",
+      "canonical_name": "AKDENİZ ÜNİVERSİTESİ (ANTALYA)",
+      "aliases": [],
+      "normalized": "akdeniz"
+    },
+    {
+      "canonical_id": "uni_aksaray_niversitesi",
+      "canonical_name": "AKSARAY ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "aksaray"
+    },
+    {
+      "canonical_id": "uni_alanya_alaaddin_keykubat_niversitesi_ant",
+      "canonical_name": "ALANYA ALAADDİN KEYKUBAT ÜNİVERSİTESİ (ANTALYA)",
+      "aliases": [],
+      "normalized": "alanya alaaddin keykubat"
+    },
+    {
+      "canonical_id": "uni_alanya_niversitesi_antalya",
+      "canonical_name": "ALANYA ÜNİVERSİTESİ (ANTALYA)",
+      "aliases": [],
+      "normalized": "alanya"
+    },
+    {
+      "canonical_id": "uni_alt_nba_niversitesi_istanbul",
+      "canonical_name": "ALTINBAŞ ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "altınbaş"
+    },
+    {
+      "canonical_id": "uni_amasya_niversitesi",
+      "canonical_name": "AMASYA ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "amasya"
+    },
+    {
+      "canonical_id": "uni_anadolu_niversitesi_eski_ehir",
+      "canonical_name": "ANADOLU ÜNİVERSİTESİ (ESKİŞEHİR)",
+      "aliases": [],
+      "normalized": "anadolu"
+    },
+    {
+      "canonical_id": "uni_ankara_bilim_niversitesi",
+      "canonical_name": "ANKARA BİLİM ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ankara bilim"
+    },
+    {
+      "canonical_id": "uni_ankara_hac_bayram_veli_niversitesi",
+      "canonical_name": "ANKARA HACI BAYRAM VELİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ankara hacı bayram veli"
+    },
+    {
+      "canonical_id": "uni_ankara_medipol_niversitesi",
+      "canonical_name": "ANKARA MEDİPOL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ankara medipol"
+    },
+    {
+      "canonical_id": "uni_ankara_m_zik_ve_g_zel_sanatlar_niversite",
+      "canonical_name": "ANKARA MÜZİK VE GÜZEL SANATLAR ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ankara müzik ve güzel sanatlar"
+    },
+    {
+      "canonical_id": "uni_ankara_sosyal_bilimler_niversitesi",
+      "canonical_name": "ANKARA SOSYAL BİLİMLER ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ankara sosyal bilimler"
+    },
+    {
+      "canonical_id": "uni_ankara_y_ld_r_m_beyaz_t_niversitesi",
+      "canonical_name": "ANKARA YILDIRIM BEYAZIT ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ankara yıldırım beyazıt"
+    },
+    {
+      "canonical_id": "uni_ankara_niversitesi",
+      "canonical_name": "ANKARA ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ankara"
+    },
+    {
+      "canonical_id": "uni_antalya_belek_niversitesi",
+      "canonical_name": "ANTALYA BELEK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "antalya belek"
+    },
+    {
+      "canonical_id": "uni_antalya_bilim_niversitesi",
+      "canonical_name": "ANTALYA BİLİM ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "antalya bilim"
+    },
+    {
+      "canonical_id": "uni_ardahan_niversitesi",
+      "canonical_name": "ARDAHAN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ardahan"
+    },
+    {
+      "canonical_id": "uni_ark_n_yarat_c_sanatlar_ve_tasar_m_nivers",
+      "canonical_name": "ARKIN YARATICI SANATLAR VE TASARIM ÜNİVERSİTESİ (KKTC-GİRNE)",
+      "aliases": [],
+      "normalized": "arkın yaratıcı sanatlar ve tasarım"
+    },
+    {
+      "canonical_id": "uni_artvin_oruh_niversitesi",
+      "canonical_name": "ARTVİN ÇORUH ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "artvin çoruh"
+    },
+    {
+      "canonical_id": "uni_atat_rk_niversitesi_erzurum",
+      "canonical_name": "ATATÜRK ÜNİVERSİTESİ (ERZURUM)",
+      "aliases": [],
+      "normalized": "atatürk"
+    },
+    {
+      "canonical_id": "uni_ata_ehir_ad_g_zel_meslek_y_ksekokulu_ist",
+      "canonical_name": "ATAŞEHİR ADIGÜZEL MESLEK YÜKSEKOKULU (İSTANBUL)",
+      "aliases": [],
+      "normalized": "ataşehir adıgüzel meslek yüksekokulu"
+    },
+    {
+      "canonical_id": "uni_at_l_m_niversitesi_ankara",
+      "canonical_name": "ATILIM ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "atılım"
+    },
+    {
+      "canonical_id": "uni_avrasya_niversitesi_trabzon",
+      "canonical_name": "AVRASYA ÜNİVERSİTESİ (TRABZON)",
+      "aliases": [],
+      "normalized": "avrasya"
+    },
+    {
+      "canonical_id": "uni_ayd_n_adnan_menderes_niversitesi",
+      "canonical_name": "AYDIN ADNAN MENDERES ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "aydın adnan menderes"
+    },
+    {
+      "canonical_id": "uni_azerbaycan_devlet_pedagoji_niversitesi_b",
+      "canonical_name": "AZERBAYCAN DEVLET PEDAGOJİ ÜNİVERSİTESİ (BAKÜ-AZERBAYCAN)",
+      "aliases": [],
+      "normalized": "azerbaycan pedagoji"
+    },
+    {
+      "canonical_id": "uni_a_r_ibrahim_e_en_niversitesi",
+      "canonical_name": "AĞRI İBRAHİM ÇEÇEN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ağrı ibrahim çeçen"
+    },
+    {
+      "canonical_id": "uni_bah_e_ehir_k_br_s_niversitesi_kktc_lefko",
+      "canonical_name": "BAHÇEŞEHİR KIBRIS ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "aliases": [],
+      "normalized": "bahçeşehir kıbrıs"
+    },
+    {
+      "canonical_id": "uni_bah_e_ehir_niversitesi_istanbul",
+      "canonical_name": "BAHÇEŞEHİR ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "bahçeşehir"
+    },
+    {
+      "canonical_id": "uni_bal_kesir_niversitesi",
+      "canonical_name": "BALIKESİR ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "balıkesir"
+    },
+    {
+      "canonical_id": "uni_band_rma_onyedi_eyl_l_niversitesi_bal_ke",
+      "canonical_name": "BANDIRMA ONYEDİ EYLÜL ÜNİVERSİTESİ (BALIKESİR)",
+      "aliases": [],
+      "normalized": "bandırma onyedi eylül"
+    },
+    {
+      "canonical_id": "uni_bart_n_niversitesi",
+      "canonical_name": "BARTIN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "bartın"
+    },
+    {
+      "canonical_id": "uni_batman_niversitesi",
+      "canonical_name": "BATMAN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "batman"
+    },
+    {
+      "canonical_id": "uni_bayburt_niversitesi",
+      "canonical_name": "BAYBURT ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "bayburt"
+    },
+    {
+      "canonical_id": "uni_ba_kent_niversitesi_ankara",
+      "canonical_name": "BAŞKENT ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "başkent"
+    },
+    {
+      "canonical_id": "uni_beykoz_niversitesi_istanbul",
+      "canonical_name": "BEYKOZ ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "beykoz"
+    },
+    {
+      "canonical_id": "uni_bezm_i_lem_vak_f_niversitesi_istanbul",
+      "canonical_name": "BEZM-İ ÂLEM VAKIF ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "bezm i âlem"
+    },
+    {
+      "canonical_id": "uni_bolu_abant_izzet_baysal_niversitesi",
+      "canonical_name": "BOLU ABANT İZZET BAYSAL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "bolu abant izzet baysal"
+    },
+    {
+      "canonical_id": "uni_bo_azi_i_niversitesi_istanbul",
+      "canonical_name": "BOĞAZİÇİ ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "boğaziçi"
+    },
+    {
+      "canonical_id": "uni_burdur_mehmet_akif_ersoy_niversitesi",
+      "canonical_name": "BURDUR MEHMET AKİF ERSOY ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "burdur mehmet akif ersoy"
+    },
+    {
+      "canonical_id": "uni_bursa_teknik_niversitesi",
+      "canonical_name": "BURSA TEKNİK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "bursa teknik"
+    },
+    {
+      "canonical_id": "uni_bursa_uluda_niversitesi",
+      "canonical_name": "BURSA ULUDAĞ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "bursa uludağ"
+    },
+    {
+      "canonical_id": "uni_bilecik_eyh_edebali_niversitesi",
+      "canonical_name": "BİLECİK ŞEYH EDEBALİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "bilecik şeyh edebali"
+    },
+    {
+      "canonical_id": "uni_bing_l_niversitesi",
+      "canonical_name": "BİNGÖL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "bingöl"
+    },
+    {
+      "canonical_id": "uni_biruni_niversitesi_istanbul",
+      "canonical_name": "BİRUNİ ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "biruni"
+    },
+    {
+      "canonical_id": "uni_bitlis_eren_niversitesi",
+      "canonical_name": "BİTLİS EREN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "bitlis eren"
+    },
+    {
+      "canonical_id": "uni_demiro_lu_bilim_niversitesi_istanbul",
+      "canonical_name": "DEMİROĞLU BİLİM ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "demiroğlu bilim"
+    },
+    {
+      "canonical_id": "uni_dokuz_eyl_l_niversitesi_izmir",
+      "canonical_name": "DOKUZ EYLÜL ÜNİVERSİTESİ (İZMİR)",
+      "aliases": [],
+      "normalized": "dokuz eylül"
+    },
+    {
+      "canonical_id": "uni_do_u_akdeniz_niversitesi_kktc_gazima_usa",
+      "canonical_name": "DOĞU AKDENİZ ÜNİVERSİTESİ (KKTC-GAZİMAĞUSA)",
+      "aliases": [],
+      "normalized": "doğu akdeniz"
+    },
+    {
+      "canonical_id": "uni_do_u_niversitesi_istanbul",
+      "canonical_name": "DOĞUŞ ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "doğuş"
+    },
+    {
+      "canonical_id": "uni_d_zce_niversitesi",
+      "canonical_name": "DÜZCE ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "düzce"
+    },
+    {
+      "canonical_id": "uni_dicle_niversitesi_diyarbak_r",
+      "canonical_name": "DİCLE ÜNİVERSİTESİ (DİYARBAKIR)",
+      "aliases": [],
+      "normalized": "dicle"
+    },
+    {
+      "canonical_id": "uni_ege_niversitesi_izmir",
+      "canonical_name": "EGE ÜNİVERSİTESİ (İZMİR)",
+      "aliases": [],
+      "normalized": "ege"
+    },
+    {
+      "canonical_id": "uni_erciyes_niversitesi_kayseri",
+      "canonical_name": "ERCİYES ÜNİVERSİTESİ (KAYSERİ)",
+      "aliases": [],
+      "normalized": "erciyes"
+    },
+    {
+      "canonical_id": "uni_erzurum_teknik_niversitesi",
+      "canonical_name": "ERZURUM TEKNİK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "erzurum teknik"
+    },
+    {
+      "canonical_id": "uni_erzincan_binali_y_ld_r_m_niversitesi",
+      "canonical_name": "ERZİNCAN BİNALİ YILDIRIM ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "erzincan binali yıldırım"
+    },
+    {
+      "canonical_id": "uni_eski_ehir_osmangazi_niversitesi",
+      "canonical_name": "ESKİŞEHİR OSMANGAZİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "eskişehir osmangazi"
+    },
+    {
+      "canonical_id": "uni_eski_ehir_teknik_niversitesi",
+      "canonical_name": "ESKİŞEHİR TEKNİK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "eskişehir teknik üniversitesi"
+    },
+    {
+      "canonical_id": "uni_fatih_sultan_mehmet_vak_f_niversitesi_is",
+      "canonical_name": "FATİH SULTAN MEHMET VAKIF ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "fatih sultan mehmet"
+    },
+    {
+      "canonical_id": "uni_fenerbah_e_niversitesi_istanbul",
+      "canonical_name": "FENERBAHÇE ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "fenerbahçe"
+    },
+    {
+      "canonical_id": "uni_f_rat_niversitesi_elaz",
+      "canonical_name": "FIRAT ÜNİVERSİTESİ (ELAZIĞ)",
+      "aliases": [],
+      "normalized": "fırat"
+    },
+    {
+      "canonical_id": "uni_galatasaray_niversitesi_istanbul",
+      "canonical_name": "GALATASARAY ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "galatasaray"
+    },
+    {
+      "canonical_id": "uni_gazi_niversitesi_ankara",
+      "canonical_name": "GAZİ ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "gazi"
+    },
+    {
+      "canonical_id": "uni_gaziantep_niversitesi",
+      "canonical_name": "GAZİANTEP ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "gaziantep"
+    },
+    {
+      "canonical_id": "uni_gaziantep_islam_bilim_ve_teknoloji_niver",
+      "canonical_name": "GAZİANTEP İSLAM BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "gaziantep islam bilim ve teknoloji"
+    },
+    {
+      "canonical_id": "uni_gebze_teknik_niversitesi",
+      "canonical_name": "GEBZE TEKNİK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "gebze teknik"
+    },
+    {
+      "canonical_id": "uni_g_m_hane_niversitesi",
+      "canonical_name": "GÜMÜŞHANE ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "gümüşhane"
+    },
+    {
+      "canonical_id": "uni_giresun_niversitesi",
+      "canonical_name": "GİRESUN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "giresun"
+    },
+    {
+      "canonical_id": "uni_girne_amerikan_niversitesi_kktc_girne",
+      "canonical_name": "GİRNE AMERİKAN ÜNİVERSİTESİ (KKTC-GİRNE)",
+      "aliases": [],
+      "normalized": "girne amerikan"
+    },
+    {
+      "canonical_id": "uni_girne_niversitesi_kktc_girne",
+      "canonical_name": "GİRNE ÜNİVERSİTESİ (KKTC-GİRNE)",
+      "aliases": [],
+      "normalized": "girne"
+    },
+    {
+      "canonical_id": "uni_hacettepe_niversitesi_ankara",
+      "canonical_name": "HACETTEPE ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "hacettepe"
+    },
+    {
+      "canonical_id": "uni_hakkari_niversitesi",
+      "canonical_name": "HAKKARİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "hakkari"
+    },
+    {
+      "canonical_id": "uni_hali_niversitesi_istanbul",
+      "canonical_name": "HALİÇ ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "haliç"
+    },
+    {
+      "canonical_id": "uni_harran_niversitesi_anl_urfa",
+      "canonical_name": "HARRAN ÜNİVERSİTESİ (ŞANLIURFA)",
+      "aliases": [],
+      "normalized": "harran"
+    },
+    {
+      "canonical_id": "uni_hasan_kalyoncu_niversitesi_gaziantep",
+      "canonical_name": "HASAN KALYONCU ÜNİVERSİTESİ (GAZİANTEP)",
+      "aliases": [],
+      "normalized": "hasan kalyoncu"
+    },
+    {
+      "canonical_id": "uni_hatay_mustafa_kemal_niversitesi",
+      "canonical_name": "HATAY MUSTAFA KEMAL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "hatay mustafa kemal"
+    },
+    {
+      "canonical_id": "uni_hoca_ahmet_yesevi_uluslararas_t_rk_kazak",
+      "canonical_name": "HOCA AHMET YESEVİ ULUSLARARASI TÜRK-KAZAK ÜNİVERSİTESİ (TÜRKİSTAN-KAZAKİSTAN)",
+      "aliases": [],
+      "normalized": "hoca ahmet yesevi uluslararası türk kazak"
+    },
+    {
+      "canonical_id": "uni_hitit_niversitesi_orum",
+      "canonical_name": "HİTİT ÜNİVERSİTESİ (ÇORUM)",
+      "aliases": [],
+      "normalized": "hitit"
+    },
+    {
+      "canonical_id": "uni_sparta_uygulamal_bilimler_niversitesi",
+      "canonical_name": "ISPARTA UYGULAMALI BİLİMLER ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ısparta uygulamalı bilimler"
+    },
+    {
+      "canonical_id": "uni_d_r_niversitesi",
+      "canonical_name": "IĞDIR ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ığdır"
+    },
+    {
+      "canonical_id": "uni_k_niversitesi_istanbul",
+      "canonical_name": "IŞIK ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "ışık"
+    },
+    {
+      "canonical_id": "uni_kadir_has_niversitesi_istanbul",
+      "canonical_name": "KADİR HAS ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "kadir has"
+    },
+    {
+      "canonical_id": "uni_kafkas_niversitesi_kars",
+      "canonical_name": "KAFKAS ÜNİVERSİTESİ (KARS)",
+      "aliases": [],
+      "normalized": "kafkas"
+    },
+    {
+      "canonical_id": "uni_kahramanmara_s_t_imam_niversitesi",
+      "canonical_name": "KAHRAMANMARAŞ SÜTÇÜ İMAM ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kahramanmaraş sütçü imam"
+    },
+    {
+      "canonical_id": "uni_kahramanmara_istiklal_niversitesi",
+      "canonical_name": "KAHRAMANMARAŞ İSTİKLAL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kahramanmaraş istiklal"
+    },
+    {
+      "canonical_id": "uni_kapadokya_niversitesi_nev_ehir",
+      "canonical_name": "KAPADOKYA ÜNİVERSİTESİ (NEVŞEHİR)",
+      "aliases": [],
+      "normalized": "kapadokya"
+    },
+    {
+      "canonical_id": "uni_karab_k_niversitesi",
+      "canonical_name": "KARABÜK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "karabük"
+    },
+    {
+      "canonical_id": "uni_karadeniz_teknik_niversitesi_trabzon",
+      "canonical_name": "KARADENİZ TEKNİK ÜNİVERSİTESİ (TRABZON)",
+      "aliases": [],
+      "normalized": "karadeniz teknik"
+    },
+    {
+      "canonical_id": "uni_karamano_lu_mehmetbey_niversitesi_karama",
+      "canonical_name": "KARAMANOĞLU MEHMETBEY ÜNİVERSİTESİ (KARAMAN)",
+      "aliases": [],
+      "normalized": "karamanoğlu mehmetbey"
+    },
+    {
+      "canonical_id": "uni_kastamonu_niversitesi",
+      "canonical_name": "KASTAMONU ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kastamonu"
+    },
+    {
+      "canonical_id": "uni_kayseri_niversitesi",
+      "canonical_name": "KAYSERİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kayseri"
+    },
+    {
+      "canonical_id": "uni_k_br_s_amerikan_niversitesi_kktc_lefko_a",
+      "canonical_name": "KIBRIS AMERİKAN ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "aliases": [],
+      "normalized": "kıbrıs amerikan"
+    },
+    {
+      "canonical_id": "uni_k_br_s_ayd_n_niversitesi_kktc_girne",
+      "canonical_name": "KIBRIS AYDIN ÜNİVERSİTESİ (KKTC-GİRNE)",
+      "aliases": [],
+      "normalized": "kıbrıs aydın"
+    },
+    {
+      "canonical_id": "uni_k_br_s_bat_niversitesi_kktc_gazima_usa",
+      "canonical_name": "KIBRIS BATI ÜNİVERSİTESİ (KKTC-GAZİMAĞUSA)",
+      "aliases": [],
+      "normalized": "kıbrıs batı"
+    },
+    {
+      "canonical_id": "uni_k_br_s_sa_l_k_ve_toplum_bilimleri_nivers",
+      "canonical_name": "KIBRIS SAĞLIK VE TOPLUM BİLİMLERİ ÜNİVERSİTESİ (KKTC-GÜZELYURT)",
+      "aliases": [],
+      "normalized": "kıbrıs sağlık ve toplum bilimleri"
+    },
+    {
+      "canonical_id": "uni_k_rg_zistan_t_rkiye_manas_niversitesi_bi",
+      "canonical_name": "KIRGIZİSTAN-TÜRKİYE MANAS ÜNİVERSİTESİ (BİŞKEK-KIRGIZİSTAN)",
+      "aliases": [],
+      "normalized": "kırgızistan türkiye manas"
+    },
+    {
+      "canonical_id": "uni_k_r_kkale_niversitesi",
+      "canonical_name": "KIRIKKALE ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kırıkkale"
+    },
+    {
+      "canonical_id": "uni_k_rklareli_niversitesi",
+      "canonical_name": "KIRKLARELİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kırklareli"
+    },
+    {
+      "canonical_id": "uni_k_r_ehir_ahi_evran_niversitesi",
+      "canonical_name": "KIRŞEHİR AHİ EVRAN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kırşehir ahi evran"
+    },
+    {
+      "canonical_id": "uni_kocaeli_sa_l_k_ve_teknoloji_niversitesi",
+      "canonical_name": "KOCAELİ SAĞLIK VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kocaeli sağlık ve teknoloji"
+    },
+    {
+      "canonical_id": "uni_kocaeli_niversitesi",
+      "canonical_name": "KOCAELİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kocaeli"
+    },
+    {
+      "canonical_id": "uni_konya_g_da_ve_tar_m_niversitesi",
+      "canonical_name": "KONYA GIDA VE TARIM ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "konya gıda ve tarım"
+    },
+    {
+      "canonical_id": "uni_konya_teknik_niversitesi",
+      "canonical_name": "KONYA TEKNİK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "konya teknik"
+    },
+    {
+      "canonical_id": "uni_ko_niversitesi_istanbul",
+      "canonical_name": "KOÇ ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "koç"
+    },
+    {
+      "canonical_id": "uni_kto_karatay_niversitesi_konya",
+      "canonical_name": "KTO KARATAY ÜNİVERSİTESİ (KONYA)",
+      "aliases": [],
+      "normalized": "kto karatay"
+    },
+    {
+      "canonical_id": "uni_k_tahya_dumlup_nar_niversitesi",
+      "canonical_name": "KÜTAHYA DUMLUPINAR ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kütahya dumlupınar"
+    },
+    {
+      "canonical_id": "uni_k_tahya_sa_l_k_bilimleri_niversitesi",
+      "canonical_name": "KÜTAHYA SAĞLIK BİLİMLERİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kütahya sağlık bilimleri"
+    },
+    {
+      "canonical_id": "uni_kilis_7_aral_k_niversitesi",
+      "canonical_name": "KİLİS 7 ARALIK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "kilis 7 aralık"
+    },
+    {
+      "canonical_id": "uni_lefke_avrupa_niversitesi_kktc_lefke",
+      "canonical_name": "LEFKE AVRUPA ÜNİVERSİTESİ (KKTC-LEFKE)",
+      "aliases": [],
+      "normalized": "lefke avrupa"
+    },
+    {
+      "canonical_id": "uni_lokman_hekim_niversitesi_ankara",
+      "canonical_name": "LOKMAN HEKİM ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "lokman hekim"
+    },
+    {
+      "canonical_id": "uni_malatya_turgut_zal_niversitesi",
+      "canonical_name": "MALATYA TURGUT ÖZAL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "malatya turgut özal"
+    },
+    {
+      "canonical_id": "uni_maltepe_niversitesi_istanbul",
+      "canonical_name": "MALTEPE ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "maltepe"
+    },
+    {
+      "canonical_id": "uni_manisa_cel_l_bayar_niversitesi",
+      "canonical_name": "MANİSA CELÂL BAYAR ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "manisa celâl bayar"
+    },
+    {
+      "canonical_id": "uni_mardin_artuklu_niversitesi",
+      "canonical_name": "MARDİN ARTUKLU ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "mardin artuklu"
+    },
+    {
+      "canonical_id": "uni_marmara_niversitesi_istanbul",
+      "canonical_name": "MARMARA ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "marmara"
+    },
+    {
+      "canonical_id": "uni_mef_niversitesi_istanbul",
+      "canonical_name": "MEF ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "mef"
+    },
+    {
+      "canonical_id": "uni_mersin_niversitesi",
+      "canonical_name": "MERSİN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "mersin"
+    },
+    {
+      "canonical_id": "uni_mudanya_niversitesi_bursa",
+      "canonical_name": "MUDANYA ÜNİVERSİTESİ (BURSA)",
+      "aliases": [],
+      "normalized": "mudanya"
+    },
+    {
+      "canonical_id": "uni_munzur_niversitesi_tunceli",
+      "canonical_name": "MUNZUR ÜNİVERSİTESİ (TUNCELİ)",
+      "aliases": [],
+      "normalized": "munzur"
+    },
+    {
+      "canonical_id": "uni_mu_la_s_tk_ko_man_niversitesi",
+      "canonical_name": "MUĞLA SITKI KOÇMAN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "muğla sıtkı koçman"
+    },
+    {
+      "canonical_id": "uni_mu_alparslan_niversitesi",
+      "canonical_name": "MUŞ ALPARSLAN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "muş alparslan"
+    },
+    {
+      "canonical_id": "uni_mimar_sinan_g_zel_sanatlar_niversitesi_i",
+      "canonical_name": "MİMAR SİNAN GÜZEL SANATLAR ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "mimar sinan güzel sanatlar"
+    },
+    {
+      "canonical_id": "uni_necmettin_erbakan_niversitesi_konya",
+      "canonical_name": "NECMETTİN ERBAKAN ÜNİVERSİTESİ (KONYA)",
+      "aliases": [],
+      "normalized": "necmettin erbakan"
+    },
+    {
+      "canonical_id": "uni_nev_ehir_hac_bekta_veli_niversitesi",
+      "canonical_name": "NEVŞEHİR HACI BEKTAŞ VELİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "nevşehir hacı bektaş veli"
+    },
+    {
+      "canonical_id": "uni_nuh_naci_yazgan_niversitesi_kayseri",
+      "canonical_name": "NUH NACİ YAZGAN ÜNİVERSİTESİ (KAYSERİ)",
+      "aliases": [],
+      "normalized": "nuh naci yazgan"
+    },
+    {
+      "canonical_id": "uni_ni_de_mer_halisdemir_niversitesi",
+      "canonical_name": "NİĞDE ÖMER HALİSDEMİR ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "niğde ömer halisdemir"
+    },
+    {
+      "canonical_id": "uni_ondokuz_may_s_niversitesi_samsun",
+      "canonical_name": "ONDOKUZ MAYIS ÜNİVERSİTESİ (SAMSUN)",
+      "aliases": [],
+      "normalized": "ondokuz mayıs"
+    },
+    {
+      "canonical_id": "uni_ordu_niversitesi",
+      "canonical_name": "ORDU ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "ordu"
+    },
+    {
+      "canonical_id": "uni_orta_do_u_teknik_niversitesi_ankara",
+      "canonical_name": "ORTA DOĞU TEKNİK ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "orta doğu teknik"
+    },
+    {
+      "canonical_id": "uni_osmaniye_korkut_ata_niversitesi",
+      "canonical_name": "OSMANİYE KORKUT ATA ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "osmaniye korkut ata"
+    },
+    {
+      "canonical_id": "uni_ostim_teknik_niversitesi_ankara",
+      "canonical_name": "OSTİM TEKNİK ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "ostim teknik"
+    },
+    {
+      "canonical_id": "uni_pamukkale_niversitesi_denizli",
+      "canonical_name": "PAMUKKALE ÜNİVERSİTESİ (DENİZLİ)",
+      "aliases": [],
+      "normalized": "pamukkale"
+    },
+    {
+      "canonical_id": "uni_piri_reis_niversitesi_istanbul",
+      "canonical_name": "PİRİ REİS ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "piri reis"
+    },
+    {
+      "canonical_id": "uni_rauf_denkta_niversitesi_kktc_lefko_a",
+      "canonical_name": "RAUF DENKTAŞ ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "aliases": [],
+      "normalized": "rauf denktaş"
+    },
+    {
+      "canonical_id": "uni_recep_tayyip_erdo_an_niversitesi_rize",
+      "canonical_name": "RECEP TAYYİP ERDOĞAN ÜNİVERSİTESİ (RİZE)",
+      "aliases": [],
+      "normalized": "recep tayyip erdoğan"
+    },
+    {
+      "canonical_id": "uni_sabanc_niversitesi_istanbul",
+      "canonical_name": "SABANCI ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "sabancı"
+    },
+    {
+      "canonical_id": "uni_sakarya_uygulamal_bilimler_niversitesi",
+      "canonical_name": "SAKARYA UYGULAMALI BİLİMLER ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "sakarya uygulamalı bilimler"
+    },
+    {
+      "canonical_id": "uni_sakarya_niversitesi",
+      "canonical_name": "SAKARYA ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "sakarya"
+    },
+    {
+      "canonical_id": "uni_samsun_niversitesi",
+      "canonical_name": "SAMSUN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "samsun"
+    },
+    {
+      "canonical_id": "uni_sanko_niversitesi_gaziantep",
+      "canonical_name": "SANKO ÜNİVERSİTESİ (GAZİANTEP)",
+      "aliases": [],
+      "normalized": "sanko"
+    },
+    {
+      "canonical_id": "uni_sa_l_k_bilimleri_niversitesi_istanbul",
+      "canonical_name": "SAĞLIK BİLİMLERİ ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "sağlık bilimleri"
+    },
+    {
+      "canonical_id": "uni_sel_uk_niversitesi_konya",
+      "canonical_name": "SELÇUK ÜNİVERSİTESİ (KONYA)",
+      "aliases": [],
+      "normalized": "selçuk"
+    },
+    {
+      "canonical_id": "uni_s_leyman_demirel_niversitesi_sparta",
+      "canonical_name": "SÜLEYMAN DEMİREL ÜNİVERSİTESİ (ISPARTA)",
+      "aliases": [],
+      "normalized": "süleyman demirel"
+    },
+    {
+      "canonical_id": "uni_sinop_niversitesi",
+      "canonical_name": "SİNOP ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "sinop"
+    },
+    {
+      "canonical_id": "uni_sivas_bilim_ve_teknoloji_niversitesi",
+      "canonical_name": "SİVAS BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "sivas bilim ve teknoloji"
+    },
+    {
+      "canonical_id": "uni_sivas_cumhuriyet_niversitesi",
+      "canonical_name": "SİVAS CUMHURİYET ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "sivas cumhuriyet"
+    },
+    {
+      "canonical_id": "uni_siirt_niversitesi",
+      "canonical_name": "SİİRT ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "siirt"
+    },
+    {
+      "canonical_id": "uni_tarsus_niversitesi_mersin",
+      "canonical_name": "TARSUS ÜNİVERSİTESİ (MERSİN)",
+      "aliases": [],
+      "normalized": "tarsus"
+    },
+    {
+      "canonical_id": "uni_ted_niversitesi_ankara",
+      "canonical_name": "TED ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "ted"
+    },
+    {
+      "canonical_id": "uni_tekirda_nam_k_kemal_niversitesi",
+      "canonical_name": "TEKİRDAĞ NAMIK KEMAL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "tekirdağ namık kemal"
+    },
+    {
+      "canonical_id": "uni_tobb_ekonomi_ve_teknoloji_niversitesi_an",
+      "canonical_name": "TOBB EKONOMİ VE TEKNOLOJİ ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "tobb ekonomi ve teknoloji"
+    },
+    {
+      "canonical_id": "uni_tokat_gaziosmanpa_a_niversitesi",
+      "canonical_name": "TOKAT GAZİOSMANPAŞA ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "tokat gaziosmanpaşa"
+    },
+    {
+      "canonical_id": "uni_toros_niversitesi_mersin",
+      "canonical_name": "TOROS ÜNİVERSİTESİ (MERSİN)",
+      "aliases": [],
+      "normalized": "toros"
+    },
+    {
+      "canonical_id": "uni_trabzon_niversitesi",
+      "canonical_name": "TRABZON ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "trabzon"
+    },
+    {
+      "canonical_id": "uni_trakya_niversitesi_edirne",
+      "canonical_name": "TRAKYA ÜNİVERSİTESİ (EDİRNE)",
+      "aliases": [],
+      "normalized": "trakya"
+    },
+    {
+      "canonical_id": "uni_t_rk_hava_kurumu_niversitesi_ankara",
+      "canonical_name": "TÜRK HAVA KURUMU ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "türk hava kurumu"
+    },
+    {
+      "canonical_id": "uni_t_rk_alman_niversitesi_istanbul",
+      "canonical_name": "TÜRK-ALMAN ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "türk alman"
+    },
+    {
+      "canonical_id": "uni_t_rk_japon_bilim_ve_teknoloji_niversites",
+      "canonical_name": "TÜRK-JAPON BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "türk japon bilim ve teknoloji"
+    },
+    {
+      "canonical_id": "uni_tiran_new_york_niversitesi_tiran_arnavut",
+      "canonical_name": "TİRAN NEW YORK ÜNİVERSİTESİ (TİRAN-ARNAVUTLUK)",
+      "aliases": [],
+      "normalized": "tiran new york"
+    },
+    {
+      "canonical_id": "uni_ufuk_niversitesi_ankara",
+      "canonical_name": "UFUK ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "ufuk"
+    },
+    {
+      "canonical_id": "uni_uluslararas_balkan_niversitesi_sk_p_make",
+      "canonical_name": "ULUSLARARASI BALKAN ÜNİVERSİTESİ (ÜSKÜP-MAKEDONYA)",
+      "aliases": [],
+      "normalized": "uluslararası balkan"
+    },
+    {
+      "canonical_id": "uni_uluslararas_final_niversitesi_kktc_girne",
+      "canonical_name": "ULUSLARARASI FİNAL ÜNİVERSİTESİ (KKTC-GİRNE)",
+      "aliases": [],
+      "normalized": "uluslararası final"
+    },
+    {
+      "canonical_id": "uni_uluslararas_k_br_s_niversitesi_kktc_lefk",
+      "canonical_name": "ULUSLARARASI KIBRIS ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "aliases": [],
+      "normalized": "uluslararası kıbrıs"
+    },
+    {
+      "canonical_id": "uni_uluslararas_saraybosna_niversitesi_saray",
+      "canonical_name": "ULUSLARARASI SARAYBOSNA ÜNİVERSİTESİ (SARAYBOSNA - BOSNA - HERSEK)",
+      "aliases": [],
+      "normalized": "uluslararası saraybosna"
+    },
+    {
+      "canonical_id": "uni_u_ak_niversitesi",
+      "canonical_name": "UŞAK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "uşak"
+    },
+    {
+      "canonical_id": "uni_van_y_z_nc_y_l_niversitesi",
+      "canonical_name": "VAN YÜZÜNCÜ YIL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "van yüzüncü yıl"
+    },
+    {
+      "canonical_id": "uni_yak_n_do_u_niversitesi_kktc_lefko_a",
+      "canonical_name": "YAKIN DOĞU ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "aliases": [],
+      "normalized": "yakın doğu"
+    },
+    {
+      "canonical_id": "uni_yalova_niversitesi",
+      "canonical_name": "YALOVA ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "yalova"
+    },
+    {
+      "canonical_id": "uni_ya_ar_niversitesi_izmir",
+      "canonical_name": "YAŞAR ÜNİVERSİTESİ (İZMİR)",
+      "aliases": [],
+      "normalized": "yaşar"
+    },
+    {
+      "canonical_id": "uni_yeditepe_niversitesi_istanbul",
+      "canonical_name": "YEDİTEPE ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "yeditepe"
+    },
+    {
+      "canonical_id": "uni_y_ld_z_teknik_niversitesi_istanbul",
+      "canonical_name": "YILDIZ TEKNİK ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "yıldız teknik"
+    },
+    {
+      "canonical_id": "uni_yozgat_bozok_niversitesi",
+      "canonical_name": "YOZGAT BOZOK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "yozgat bozok"
+    },
+    {
+      "canonical_id": "uni_y_ksek_ihtisas_niversitesi_ankara",
+      "canonical_name": "YÜKSEK İHTİSAS ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "yüksek ihtisas"
+    },
+    {
+      "canonical_id": "uni_zonguldak_b_lent_ecevit_niversitesi",
+      "canonical_name": "ZONGULDAK BÜLENT ECEVİT ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "zonguldak bülent ecevit"
+    },
+    {
+      "canonical_id": "uni_anakkale_onsekiz_mart_niversitesi",
+      "canonical_name": "ÇANAKKALE ONSEKİZ MART ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "çanakkale onsekiz mart"
+    },
+    {
+      "canonical_id": "uni_ankaya_niversitesi_ankara",
+      "canonical_name": "ÇANKAYA ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "çankaya"
+    },
+    {
+      "canonical_id": "uni_ank_r_karatekin_niversitesi",
+      "canonical_name": "ÇANKIRI KARATEKİN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "çankırı karatekin"
+    },
+    {
+      "canonical_id": "uni_a_niversitesi_mersin",
+      "canonical_name": "ÇAĞ ÜNİVERSİTESİ (MERSİN)",
+      "aliases": [],
+      "normalized": "çağ"
+    },
+    {
+      "canonical_id": "uni_ukurova_niversitesi_adana",
+      "canonical_name": "ÇUKUROVA ÜNİVERSİTESİ (ADANA)",
+      "aliases": [],
+      "normalized": "çukurova"
+    },
+    {
+      "canonical_id": "uni_zye_in_niversitesi_istanbul",
+      "canonical_name": "ÖZYEĞİN ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "özyeğin"
+    },
+    {
+      "canonical_id": "uni_sk_dar_niversitesi_istanbul",
+      "canonical_name": "ÜSKÜDAR ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "üsküdar"
+    },
+    {
+      "canonical_id": "uni_ibn_haldun_niversitesi_istanbul",
+      "canonical_name": "İBN HALDUN ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "ibn haldun"
+    },
+    {
+      "canonical_id": "uni_ihsan_do_ramac_bilkent_niversitesi_ankar",
+      "canonical_name": "İHSAN DOĞRAMACI BİLKENT ÜNİVERSİTESİ (ANKARA)",
+      "aliases": [],
+      "normalized": "ihsan doğramacı bilkent"
+    },
+    {
+      "canonical_id": "uni_in_n_niversitesi_malatya",
+      "canonical_name": "İNÖNÜ ÜNİVERSİTESİ (MALATYA)",
+      "aliases": [],
+      "normalized": "inönü"
+    },
+    {
+      "canonical_id": "uni_iskenderun_teknik_niversitesi_hatay",
+      "canonical_name": "İSKENDERUN TEKNİK ÜNİVERSİTESİ (HATAY)",
+      "aliases": [],
+      "normalized": "iskenderun teknik"
+    },
+    {
+      "canonical_id": "uni_istanbul_29_may_s_niversitesi",
+      "canonical_name": "İSTANBUL 29 MAYIS ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul 29 mayıs"
+    },
+    {
+      "canonical_id": "uni_istanbul_arel_niversitesi",
+      "canonical_name": "İSTANBUL AREL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul arel"
+    },
+    {
+      "canonical_id": "uni_istanbul_atlas_niversitesi",
+      "canonical_name": "İSTANBUL ATLAS ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul atlas"
+    },
+    {
+      "canonical_id": "uni_istanbul_ayd_n_niversitesi",
+      "canonical_name": "İSTANBUL AYDIN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul aydın"
+    },
+    {
+      "canonical_id": "uni_istanbul_beykent_niversitesi",
+      "canonical_name": "İSTANBUL BEYKENT ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul beykent"
+    },
+    {
+      "canonical_id": "uni_istanbul_bilgi_niversitesi",
+      "canonical_name": "İSTANBUL BİLGİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul bilgi"
+    },
+    {
+      "canonical_id": "uni_istanbul_esenyurt_niversitesi",
+      "canonical_name": "İSTANBUL ESENYURT ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul esenyurt"
+    },
+    {
+      "canonical_id": "uni_istanbul_galata_niversitesi",
+      "canonical_name": "İSTANBUL GALATA ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul galata"
+    },
+    {
+      "canonical_id": "uni_istanbul_gedik_niversitesi",
+      "canonical_name": "İSTANBUL GEDİK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul gedik"
+    },
+    {
+      "canonical_id": "uni_istanbul_geli_im_niversitesi",
+      "canonical_name": "İSTANBUL GELİŞİM ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul gelişim"
+    },
+    {
+      "canonical_id": "uni_istanbul_kent_niversitesi",
+      "canonical_name": "İSTANBUL KENT ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul kent"
+    },
+    {
+      "canonical_id": "uni_istanbul_k_lt_r_niversitesi",
+      "canonical_name": "İSTANBUL KÜLTÜR ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul kültür"
+    },
+    {
+      "canonical_id": "uni_istanbul_medeniyet_niversitesi",
+      "canonical_name": "İSTANBUL MEDENİYET ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul medeniyet"
+    },
+    {
+      "canonical_id": "uni_istanbul_medipol_niversitesi",
+      "canonical_name": "İSTANBUL MEDİPOL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul medipol"
+    },
+    {
+      "canonical_id": "uni_istanbul_ni_anta_niversitesi",
+      "canonical_name": "İSTANBUL NİŞANTAŞI ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul nişantaşı"
+    },
+    {
+      "canonical_id": "uni_istanbul_okan_niversitesi",
+      "canonical_name": "İSTANBUL OKAN ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul okan"
+    },
+    {
+      "canonical_id": "uni_istanbul_rumeli_niversitesi",
+      "canonical_name": "İSTANBUL RUMELİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul rumeli"
+    },
+    {
+      "canonical_id": "uni_istanbul_sabahattin_zaim_niversitesi",
+      "canonical_name": "İSTANBUL SABAHATTİN ZAİM ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul sabahattin zaim"
+    },
+    {
+      "canonical_id": "uni_istanbul_sa_l_k_ve_sosyal_bilimler_mesle",
+      "canonical_name": "İSTANBUL SAĞLIK VE SOSYAL BİLİMLER MESLEK YÜKSEKOKULU",
+      "aliases": [],
+      "normalized": "istanbul sağlık ve sosyal bilimler meslek yüksekokulu"
+    },
+    {
+      "canonical_id": "uni_istanbul_sa_l_k_ve_teknoloji_niversitesi",
+      "canonical_name": "İSTANBUL SAĞLIK VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul sağlık ve teknoloji"
+    },
+    {
+      "canonical_id": "uni_istanbul_teknik_niversitesi",
+      "canonical_name": "İSTANBUL TEKNİK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul teknik"
+    },
+    {
+      "canonical_id": "uni_istanbul_topkap_niversitesi",
+      "canonical_name": "İSTANBUL TOPKAPI ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul topkapı"
+    },
+    {
+      "canonical_id": "uni_istanbul_ticaret_niversitesi",
+      "canonical_name": "İSTANBUL TİCARET ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul ticaret"
+    },
+    {
+      "canonical_id": "uni_istanbul_yeni_y_zy_l_niversitesi",
+      "canonical_name": "İSTANBUL YENİ YÜZYIL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul yeni yüzyıl"
+    },
+    {
+      "canonical_id": "uni_istanbul_niversitesi",
+      "canonical_name": "İSTANBUL ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "istanbul"
+    },
+    {
+      "canonical_id": "uni_istanbul_niversitesi_cerrahpa_a",
+      "canonical_name": "İSTANBUL ÜNİVERSİTESİ-CERRAHPAŞA",
+      "aliases": [],
+      "normalized": "istanbul cerrahpaşa"
+    },
+    {
+      "canonical_id": "uni_istanbul_i_li_meslek_y_ksekokulu",
+      "canonical_name": "İSTANBUL ŞİŞLİ MESLEK YÜKSEKOKULU",
+      "aliases": [],
+      "normalized": "istanbul şişli meslek yüksekokulu"
+    },
+    {
+      "canonical_id": "uni_istinye_niversitesi_istanbul",
+      "canonical_name": "İSTİNYE ÜNİVERSİTESİ (İSTANBUL)",
+      "aliases": [],
+      "normalized": "istinye"
+    },
+    {
+      "canonical_id": "uni_izmir_bak_r_ay_niversitesi",
+      "canonical_name": "İZMİR BAKIRÇAY ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "izmir bakırçay"
+    },
+    {
+      "canonical_id": "uni_izmir_demokrasi_niversitesi",
+      "canonical_name": "İZMİR DEMOKRASİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "izmir demokrasi"
+    },
+    {
+      "canonical_id": "uni_izmir_ekonomi_niversitesi",
+      "canonical_name": "İZMİR EKONOMİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "izmir ekonomi"
+    },
+    {
+      "canonical_id": "uni_izmir_katip_elebi_niversitesi",
+      "canonical_name": "İZMİR KATİP ÇELEBİ ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "izmir katip çelebi"
+    },
+    {
+      "canonical_id": "uni_izmir_konak_meslek_y_ksekokulu",
+      "canonical_name": "İZMİR KONAK MESLEK YÜKSEKOKULU",
+      "aliases": [],
+      "normalized": "izmir konak meslek yüksekokulu"
+    },
+    {
+      "canonical_id": "uni_izmir_t_naztepe_niversitesi",
+      "canonical_name": "İZMİR TINAZTEPE ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "izmir tınaztepe"
+    },
+    {
+      "canonical_id": "uni_izmir_y_ksek_teknoloji_enstit_s",
+      "canonical_name": "İZMİR YÜKSEK TEKNOLOJİ ENSTİTÜSÜ",
+      "aliases": [],
+      "normalized": "izmir yüksek teknoloji enstitüsü"
+    },
+    {
+      "canonical_id": "uni_rnak_niversitesi",
+      "canonical_name": "ŞIRNAK ÜNİVERSİTESİ",
+      "aliases": [],
+      "normalized": "şırnak"
+    }
+  ]
+}

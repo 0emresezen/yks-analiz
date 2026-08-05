@@ -4,15 +4,17 @@
 **Durum:** ✅ GEÇTİ
 
 ## İstatistikler
-- **Toplam Okunan Kayıt:** 38
-- **Geçerli Kayıt Sayısı:** 38
+- **Toplam Okunan Kayıt:** 200
+- **Geçerli Kayıt Sayısı:** 200
 - **Geçersiz Kayıt Sayısı:** 0
 - **Tekrarlanan Kayıt Sayısı:** 0
 
 ### Derece Dağılımı (Geçerli Kayıtlar)
-- **A:** 7 adet
-- **A+:** 18 adet
-- **B:** 6 adet
-- **C:** 7 adet
+- **A:** 12 adet
+- **A+:** 7 adet
+- **B:** 18 adet
+- **C:** 24 adet
+- **D:** 43 adet
+- **FF:** 96 adet
 
 ✅ Veri kümesinde hiçbir hata veya tekrarlanan kayıt tespit edilmedi.

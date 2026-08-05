@@ -9,6 +9,27 @@ to pair ÜNİAR names with YÖK Atlas names.
 import re
 from thefuzz import fuzz, process
 from typing import Dict, List, Optional, Tuple
+from enum import Enum
+
+
+class MatchAction(str, Enum):
+    ACCEPT = "accept"
+    ACCEPT_LOG = "accept_log"
+    WARNING = "warning"
+    MANUAL_REVIEW = "manual_review"
+    REJECT = "reject"
+
+
+def classify_match_score(score: int) -> MatchAction:
+    if score == 100:
+        return MatchAction.ACCEPT
+    if 98 <= score <= 99:
+        return MatchAction.ACCEPT_LOG
+    if 95 <= score <= 97:
+        return MatchAction.WARNING
+    if 90 <= score <= 94:
+        return MatchAction.MANUAL_REVIEW
+    return MatchAction.REJECT
 
 class UniversityMatcher:
     # Common abbreviation mapping (keys should be normalized)
@@ -86,10 +107,11 @@ class UniversityMatcher:
         return cleaned
 
     @classmethod
-    def match(cls, query_name: str, choices: List[str], threshold: int = 75) -> Tuple[Optional[str], int]:
+    def match(cls, query_name: str, choices: List[str], threshold: int = 90) -> Tuple[Optional[str], int]:
         """
         Finds the best matching university name from a list of choices.
         Returns (matched_name, score).
+        Skor < 90 → (None, score) — sessiz kabul yok.
         """
         if not query_name or not choices:
             return None, 0
@@ -106,10 +128,11 @@ class UniversityMatcher:
         if norm_query in norm_to_orig:
             return norm_to_orig[norm_query], 100
 
-        # 2. Substring matching
-        for norm_c, orig in norm_to_orig.items():
-            if norm_query and norm_c and (norm_query in norm_c or norm_c in norm_query):
-                return orig, 90
+        # 2. Alias map exact
+        if norm_query in cls.ALIASES:
+            alias_target = cls.normalize_name(cls.ALIASES[norm_query])
+            if alias_target in norm_to_orig:
+                return norm_to_orig[alias_target], 100
 
         # 3. Fuzzy matching using token_sort_ratio
         norm_choices_list = list(norm_to_orig.keys())
@@ -119,16 +142,17 @@ class UniversityMatcher:
             scorer=fuzz.token_sort_ratio
         )
 
-        if score >= threshold:
-            return norm_to_orig[best_norm_choice], score
-            
-        # 4. Fallback fuzzy matching using partial_ratio
-        best_norm_choice_p, score_p = process.extractOne(
-            norm_query, 
-            norm_choices_list, 
-            scorer=fuzz.partial_ratio
-        )
-        if score_p >= threshold + 10:
-            return norm_to_orig[best_norm_choice_p], score_p
+        if score < threshold:
+            best_norm_choice_p, score_p = process.extractOne(
+                norm_query, 
+                norm_choices_list, 
+                scorer=fuzz.partial_ratio
+            )
+            if score_p > score:
+                best_norm_choice, score = best_norm_choice_p, score_p
 
-        return None, score
+        action = classify_match_score(score)
+        if action == MatchAction.REJECT:
+            return None, score
+
+        return norm_to_orig[best_norm_choice], score

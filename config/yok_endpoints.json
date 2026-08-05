@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "primary": {
+    "name": "tercih_kilavuz_search",
+    "method": "POST",
+    "url": "https://yokatlas.yok.gov.tr/api/tercih-kilavuz/search",
+    "content_type": "application/json"
+  },
+  "fallbacks": [
+    {
+      "name": "tercih_kilavuz_json",
+      "method": "GET",
+      "url": "https://yokatlas.yok.gov.tr/api/tercih-kilavuz",
+      "note": "Resmî JSON endpoint — yapılandırma ile genişletilebilir"
+    },
+    {
+      "name": "tercih_kilavuz_html",
+      "method": "GET",
+      "url": "https://yokatlas.yok.gov.tr/tercih-kilavuz",
+      "parser": "header_based_html",
+      "note": "Sabit XPath kullanılmaz; başlık bazlı tablo seçimi"
+    }
+  ],
+  "browser_fallbacks": ["playwright", "selenium"],
+  "discovered_at": null,
+  "notes": "Network/XHR keşfi veya bu dosya üzerinden endpoint yönetimi"
+}
