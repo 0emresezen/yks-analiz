@@ -184,7 +184,7 @@ class MasterApp {
       }
       return [null, null];
     };
-    this.comparePrograms = cleanCompare(this.loadCompareState('yks_compare_programs'));
+    this.comparePrograms = cleanCompare(this.loadCompareState('yks_compare_programs')).map((v) => (v != null ? itemId(v) : null));
     this.compareUnis = cleanCompare(this.loadCompareState('yks_compare_unis'));
     this.compareDepts = cleanCompare(this.loadCompareState('yks_compare_depts'));
     this.activeCompareMode = localStorage.getItem('yks_compare_mode') || 'program';
@@ -1645,6 +1645,39 @@ function getWizardAnsweredCount() {
   return app.wizardEngine?.userAnswers?.length || 0;
 }
 
+const getProgramWinStats = (programId, engine) => {
+  if (!engine?.comparisons?.length) {
+    return { wins: 0, total: 0, winPct: null };
+  }
+
+  const id = String(programId);
+  let wins = 0;
+  let total = 0;
+
+  engine.comparisons.forEach((comp) => {
+    if (comp.choice !== 'A' && comp.choice !== 'B') return;
+
+    const isA = String(comp.idA) === id;
+    const isB = String(comp.idB) === id;
+    if (!isA && !isB) return;
+
+    total += 1;
+    const won = (comp.choice === 'A' && isA) || (comp.choice === 'B' && isB);
+    if (won) wins += 1;
+  });
+
+  return {
+    wins,
+    total,
+    winPct: total > 0 ? Math.round((wins / total) * 100) : null,
+  };
+};
+
+const formatProgramWinLabel = (stats) => {
+  if (!stats?.total) return '—';
+  return `%${stats.winPct} galibiyet`;
+};
+
 function updateWizardHistoryBadge() {
   const toggleBtn = document.getElementById('btn-toggle-wizard-side');
   if (!toggleBtn) return;
@@ -1824,13 +1857,12 @@ function finishWizard() {
   if (!engine) return;
 
   const sortedCandidates = engine.getResult() || [];
-  const userComparisons = engine.userAnswers.length;
-  const inferredComparisons = engine.comparisons.filter((c) => c.inferred).length;
   const rankedIds = sortedCandidates.map((x) => x.id);
 
   tbody.innerHTML = '';
 
   sortedCandidates.forEach((item, index) => {
+    const winStats = getProgramWinStats(item.id, engine);
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="font-family: var(--font-mono); font-weight:700; text-align:center;">#${index + 1}</td>
@@ -1840,8 +1872,8 @@ function finishWizard() {
       </td>
       <td>${item.city}</td>
       <td>
-        <span class="score-pill">
-          ${userComparisons} soru${inferredComparisons > 0 ? `, ${inferredComparisons} otomatik` : ''}
+        <span class="score-pill" title="${winStats.total ? `${winStats.wins}/${winStats.total} ikili karşılaştırma kazanıldı` : 'Bu program için karşılaştırma yok'}">
+          ${formatProgramWinLabel(winStats)}
         </span>
       </td>
     `;
@@ -2705,6 +2737,7 @@ const addSelectedProgramsToList = async () => {
     return;
   }
 
+  const wasEmpty = app.data.length === 0;
   const saveBtn = document.getElementById('btn-save-new-program');
   const defaultLabel = 'Seçilenleri Tercih Listeme Ekle';
   if (saveBtn) {
@@ -2721,6 +2754,9 @@ const addSelectedProgramsToList = async () => {
       }
     }
     app.saveFavoriteOrder();
+    if (wasEmpty && app.data.length > 0) {
+      trackListCreated();
+    }
     closeAddProgramModal();
     renderMasterTable();
     renderFavoritesList();
@@ -2979,137 +3015,296 @@ function setupDisclaimer() {
 // Comparison Laboratory Feature Logic
 // ==========================================================================
 
-function setupCompareHub() {
-  const modeBtns = document.querySelectorAll('[data-compare-mode]');
-  modeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      modeBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+let activeComparePicker = null
 
-      const mode = btn.dataset.compareMode;
-      app.activeCompareMode = mode;
-      localStorage.setItem('yks_compare_mode', mode);
-
-      // Hide all panes
-      document.querySelectorAll('.compare-pane').forEach(p => p.classList.add('hidden'));
-      // Show active pane
-      const targetPane = document.getElementById(`compare-pane-${mode}`);
-      if (targetPane) targetPane.classList.remove('hidden');
-
-      renderCompareHub();
-    });
-  });
-
-  // Program select 1 and 2 changes
-  document.getElementById('compare-program-select-1')?.addEventListener('change', (e) => {
-    const val = parseInt(e.target.value) || null;
-    app.comparePrograms[0] = val;
-    app.saveCompareState('yks_compare_programs', app.comparePrograms);
-    renderCompareHub();
-  });
-  document.getElementById('compare-program-select-2')?.addEventListener('change', (e) => {
-    const val = parseInt(e.target.value) || null;
-    app.comparePrograms[1] = val;
-    app.saveCompareState('yks_compare_programs', app.comparePrograms);
-    renderCompareHub();
-  });
-
-  // University select 1 and 2 changes
-  document.getElementById('compare-university-select-1')?.addEventListener('change', (e) => {
-    const val = e.target.value || null;
-    app.compareUnis[0] = val;
-    app.saveCompareState('yks_compare_unis', app.compareUnis);
-    renderCompareHub();
-  });
-  document.getElementById('compare-university-select-2')?.addEventListener('change', (e) => {
-    const val = e.target.value || null;
-    app.compareUnis[1] = val;
-    app.saveCompareState('yks_compare_unis', app.compareUnis);
-    renderCompareHub();
-  });
-
-  // Department select 1 and 2 changes
-  document.getElementById('compare-department-select-1')?.addEventListener('change', (e) => {
-    const val = e.target.value || null;
-    app.compareDepts[0] = val;
-    app.saveCompareState('yks_compare_depts', app.compareDepts);
-    renderCompareHub();
-  });
-  document.getElementById('compare-department-select-2')?.addEventListener('change', (e) => {
-    const val = e.target.value || null;
-    app.compareDepts[1] = val;
-    app.saveCompareState('yks_compare_depts', app.compareDepts);
-    renderCompareHub();
-  });
-
-  // Load correct state
-  const savedMode = app.activeCompareMode;
-  const activeBtn = document.querySelector(`[data-compare-mode="${savedMode}"]`);
-  if (activeBtn) {
-    modeBtns.forEach(b => b.classList.remove('active'));
-    activeBtn.classList.add('active');
-  }
-  document.querySelectorAll('.compare-pane').forEach(p => p.classList.add('hidden'));
-  const activePane = document.getElementById(`compare-pane-${savedMode}`);
-  if (activePane) activePane.classList.remove('hidden');
+const COMPARE_MODE_CONFIG = {
+  program: {
+    stateKey: 'yks_compare_programs',
+    getSelection: () => app.comparePrograms,
+    placeholder: 'Program seçin',
+    searchPlaceholder: 'Program ara...',
+    emptyHint: 'Listenizdeki programlar arasından seçin.',
+  },
+  university: {
+    stateKey: 'yks_compare_unis',
+    getSelection: () => app.compareUnis,
+    placeholder: 'Üniversite seçin',
+    searchPlaceholder: 'Üniversite ara...',
+    emptyHint: 'Listenizdeki üniversiteler arasından seçin.',
+  },
+  department: {
+    stateKey: 'yks_compare_depts',
+    getSelection: () => app.compareDepts,
+    placeholder: 'Bölüm seçin',
+    searchPlaceholder: 'Bölüm ara...',
+    emptyHint: 'Listenizdeki bölümler arasından seçin.',
+  },
 }
 
-function initCompareHubDropdowns() {
-  const populateDualDropdown = (select1Id, select2Id, items, selectedValues, valKey = 'value', textKey = 'text') => {
-    const select1 = document.getElementById(select1Id);
-    const select2 = document.getElementById(select2Id);
-    if (!select1 || !select2) return;
+const getCompareCatalog = (mode) => {
+  if (mode === 'program') {
+    return [...app.data]
+      .sort((a, b) => a.full_name.localeCompare(b.full_name, 'tr'))
+      .map((p) => ({
+        value: itemId(p.id),
+        label: p.full_name,
+        meta: [p.city, p.degree, p.language].filter(Boolean).join(' · '),
+      }))
+  }
 
-    const val1 = selectedValues[0];
-    const val2 = selectedValues[1];
+  if (mode === 'university') {
+    return [...new Set(app.data.map((x) => x.university))]
+      .sort((a, b) => a.localeCompare(b, 'tr'))
+      .map((name) => ({
+        value: name,
+        label: name,
+        meta: `${app.data.filter((x) => x.university === name).length} program`,
+      }))
+  }
 
-    let html1 = `<option value="">-- 1. Seçeneği Belirleyin --</option>`;
-    let html2 = `<option value="">-- 2. Seçeneği Belirleyin --</option>`;
+  return [...new Set(app.data.map((x) => x.department))]
+    .sort((a, b) => a.localeCompare(b, 'tr'))
+    .map((name) => ({
+      value: name,
+      label: name,
+      meta: `${app.data.filter((x) => x.department === name).length} program`,
+    }))
+}
 
-    items.forEach(item => {
-      const val = item[valKey];
-      const text = item[textKey];
-      
-      // Populate Option 1 (exclude if selected in Option 2)
-      if (val !== val2) {
-        html1 += `<option value="${ea(val)}" ${val === val1 ? 'selected' : ''}>${eh(text)}</option>`;
+const getCompareSelectedLabel = (mode, value) => {
+  if (value == null || value === '') return null
+  const match = getCompareCatalog(mode).find((item) => String(item.value) === String(value))
+  return match?.label || String(value)
+}
+
+const setCompareSelection = (mode, slot, value) => {
+  const normalized = mode === 'program' ? (value != null ? itemId(value) : null) : (value || null)
+  const config = COMPARE_MODE_CONFIG[mode]
+  const selection = config.getSelection()
+  selection[slot] = normalized
+  app.saveCompareState(config.stateKey, selection)
+}
+
+const closeComparePicker = () => {
+  if (!activeComparePicker) return
+  const { picker } = activeComparePicker
+  const panel = picker.querySelector('.compare-picker-panel')
+  const trigger = picker.querySelector('.compare-picker-trigger')
+  panel?.classList.add('hidden')
+  trigger?.setAttribute('aria-expanded', 'false')
+  activeComparePicker = null
+}
+
+const openComparePicker = (picker) => {
+  if (activeComparePicker?.picker === picker) {
+    closeComparePicker()
+    return
+  }
+
+  closeComparePicker()
+  activeComparePicker = { picker }
+
+  const panel = picker.querySelector('.compare-picker-panel')
+  const trigger = picker.querySelector('.compare-picker-trigger')
+  const searchInput = picker.querySelector('.compare-picker-search')
+
+  panel?.classList.remove('hidden')
+  trigger?.setAttribute('aria-expanded', 'true')
+
+  renderComparePickerResults(picker, '')
+
+  requestAnimationFrame(() => {
+    searchInput?.focus()
+    searchInput?.select()
+  })
+}
+
+const renderComparePickerResults = (picker, rawQuery = '') => {
+  const mode = picker.dataset.mode
+  const slot = Number(picker.dataset.slot)
+  const resultsEl = picker.querySelector('.compare-picker-results')
+  if (!resultsEl || !COMPARE_MODE_CONFIG[mode]) return
+
+  const config = COMPARE_MODE_CONFIG[mode]
+  const selection = config.getSelection()
+  const excludeValue = selection[slot === 0 ? 1 : 0]
+  const query = trLower(rawQuery.trim())
+  const catalog = getCompareCatalog(mode).filter((item) => String(item.value) !== String(excludeValue ?? ''))
+
+  const filtered = query
+    ? catalog.filter((item) => trLower(`${item.label} ${item.meta || ''}`).includes(query))
+    : catalog
+
+  const currentValue = selection[slot]
+
+  if (catalog.length === 0) {
+    resultsEl.innerHTML = '<div class="search-empty-state">Listenizde karşılaştırılacak kayıt yok. Önce tercih listesine program ekleyin.</div>'
+    return
+  }
+
+  if (filtered.length === 0) {
+    resultsEl.innerHTML = '<div class="search-empty-state">Eşleşen sonuç bulunamadı.</div>'
+    return
+  }
+
+  const clearRow = currentValue
+    ? `<button type="button" class="compare-picker-clear" data-action="clear">Seçimi temizle</button>`
+    : ''
+
+  const countHtml = !query
+    ? `<div class="search-match-count">${filtered.length} seçenek — listeden tıklayarak seçin</div>`
+    : ''
+
+  resultsEl.innerHTML = clearRow + countHtml + filtered.slice(0, 120).map((item) => {
+    const isSelected = String(item.value) === String(currentValue)
+    return `
+      <button
+        type="button"
+        class="add-program-result-item compare-picker-option${isSelected ? ' selected' : ''}"
+        data-value="${ea(item.value)}"
+        role="option"
+        aria-selected="${isSelected}"
+      >
+        <span class="add-program-check" aria-hidden="true">${isSelected ? '✓' : ''}</span>
+        <span class="add-program-result-body">
+          <span class="add-program-result-title">${eh(item.label)}</span>
+          ${item.meta ? `<span class="add-program-result-meta"><span>${eh(item.meta)}</span></span>` : ''}
+        </span>
+      </button>
+    `
+  }).join('')
+
+  resultsEl.querySelector('.compare-picker-clear')?.addEventListener('click', () => {
+    setCompareSelection(mode, slot, null)
+    closeComparePicker()
+    renderCompareHub()
+  })
+
+  resultsEl.querySelectorAll('.compare-picker-option').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      setCompareSelection(mode, slot, btn.dataset.value)
+      closeComparePicker()
+      renderCompareHub()
+    })
+  })
+}
+
+const syncComparePickerUI = () => {
+  document.querySelectorAll('.compare-picker').forEach((picker) => {
+    const mode = picker.dataset.mode
+    const slot = Number(picker.dataset.slot)
+    const config = COMPARE_MODE_CONFIG[mode]
+    if (!config) return
+
+    const selection = config.getSelection()
+    const value = selection[slot]
+    const label = getCompareSelectedLabel(mode, value) || config.placeholder
+    const valueEl = picker.querySelector('.compare-picker-value')
+    const trigger = picker.querySelector('.compare-picker-trigger')
+
+    if (valueEl) {
+      valueEl.textContent = label
+      valueEl.classList.toggle('is-placeholder', !value)
+    }
+    trigger?.classList.toggle('has-value', Boolean(value))
+
+    if (activeComparePicker?.picker === picker) {
+      const searchInput = picker.querySelector('.compare-picker-search')
+      renderComparePickerResults(picker, searchInput?.value || '')
+    }
+  })
+}
+
+function setupCompareHub() {
+  const modeBtns = document.querySelectorAll('[data-compare-mode]')
+  modeBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      closeComparePicker()
+      modeBtns.forEach((b) => b.classList.remove('active'))
+      btn.classList.add('active')
+
+      const mode = btn.dataset.compareMode
+      app.activeCompareMode = mode
+      localStorage.setItem('yks_compare_mode', mode)
+
+      document.querySelectorAll('.compare-pane').forEach((p) => p.classList.add('hidden'))
+      const targetPane = document.getElementById(`compare-pane-${mode}`)
+      if (targetPane) targetPane.classList.remove('hidden')
+
+      renderCompareHub()
+    })
+  })
+
+  document.querySelectorAll('.compare-picker').forEach((picker) => {
+    const trigger = picker.querySelector('.compare-picker-trigger')
+    const searchInput = picker.querySelector('.compare-picker-search')
+    const mode = picker.dataset.mode
+    const config = COMPARE_MODE_CONFIG[mode]
+
+    if (searchInput && config) {
+      searchInput.placeholder = config.searchPlaceholder
+    }
+
+    trigger?.addEventListener('click', (e) => {
+      e.stopPropagation()
+      openComparePicker(picker)
+    })
+
+    trigger?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        openComparePicker(picker)
       }
-      // Populate Option 2 (exclude if selected in Option 1)
-      if (val !== val1) {
-        html2 += `<option value="${ea(val)}" ${val === val2 ? 'selected' : ''}>${eh(text)}</option>`;
+    })
+
+    searchInput?.addEventListener('input', () => {
+      renderComparePickerResults(picker, searchInput.value)
+    })
+
+    searchInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        closeComparePicker()
       }
-    });
+    })
 
-    select1.innerHTML = html1;
-    select2.innerHTML = html2;
-  };
+    picker.querySelector('.compare-picker-panel')?.addEventListener('click', (e) => {
+      e.stopPropagation()
+    })
+  })
 
-  // Populate Program Dropdowns
-  const sortedProgs = [...app.data].sort((a, b) => a.full_name.localeCompare(b.full_name, 'tr'));
-  const progItems = sortedProgs.map(p => ({ value: p.id, text: p.full_name }));
-  populateDualDropdown('compare-program-select-1', 'compare-program-select-2', progItems, app.comparePrograms);
+  document.addEventListener('click', (e) => {
+    if (!activeComparePicker) return
+    if (activeComparePicker.picker.contains(e.target)) return
+    closeComparePicker()
+  })
 
-  // Populate University Dropdowns
-  const uniqueUnis = [...new Set(app.data.map(x => x.university))].sort((a, b) => a.localeCompare(b, 'tr'));
-  const uniItems = uniqueUnis.map(u => ({ value: u, text: u }));
-  populateDualDropdown('compare-university-select-1', 'compare-university-select-2', uniItems, app.compareUnis);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeComparePicker()
+  })
 
-  // Populate Department Dropdowns
-  const uniqueDepts = [...new Set(app.data.map(x => x.department))].sort((a, b) => a.localeCompare(b, 'tr'));
-  const deptItems = uniqueDepts.map(d => ({ value: d, text: d }));
-  populateDualDropdown('compare-department-select-1', 'compare-department-select-2', deptItems, app.compareDepts);
+  const savedMode = app.activeCompareMode
+  const activeBtn = document.querySelector(`[data-compare-mode="${savedMode}"]`)
+  if (activeBtn) {
+    modeBtns.forEach((b) => b.classList.remove('active'))
+    activeBtn.classList.add('active')
+  }
+  document.querySelectorAll('.compare-pane').forEach((p) => p.classList.add('hidden'))
+  const activePane = document.getElementById(`compare-pane-${savedMode}`)
+  if (activePane) activePane.classList.remove('hidden')
 }
 
 function renderCompareHub() {
-  initCompareHubDropdowns();
+  syncComparePickerUI()
 
-  const mode = app.activeCompareMode;
+  const mode = app.activeCompareMode
   if (mode === 'program') {
-    renderProgramComparison();
+    renderProgramComparison()
   } else if (mode === 'university') {
-    renderUniversityComparison();
+    renderUniversityComparison()
   } else if (mode === 'department') {
-    renderDepartmentComparison();
+    renderDepartmentComparison()
   }
 }
 
@@ -3130,7 +3325,9 @@ function renderProgramComparison() {
     return;
   }
 
-  const selectedItems = app.comparePrograms.map(id => app.data.find(x => x.id === id)).filter(Boolean);
+  const selectedItems = app.comparePrograms
+    .map((id) => app.data.find((x) => itemId(x.id) === itemId(id)))
+    .filter(Boolean)
 
   let html = `<table class="compare-table">`;
   html += `<thead><tr><th class="label-col">Metrik / Program</th>`;
@@ -3579,9 +3776,13 @@ async function renderUsageStatsPage() {
   }
 
   if (footnote) {
-    footnote.textContent = data.remoteAvailable
-      ? 'Anonim kullanım sayıları — kişisel bilgi toplanmaz.'
-      : 'İstatistikler yalnızca bu cihazda görüntülenir.'
+    if (data.statsMode === 'remote') {
+      footnote.textContent = 'Anonim kullanım sayıları — kişisel bilgi toplanmaz.'
+    } else if (data.statsMode === 'local-fallback') {
+      footnote.textContent = 'Sunucu sayacı henüz güncellenemedi; bu cihazdaki sayılar gösteriliyor.'
+    } else {
+      footnote.textContent = 'İstatistikler yalnızca bu cihazda görüntülenir.'
+    }
   }
 
   if (statsRefreshTimer) clearInterval(statsRefreshTimer)

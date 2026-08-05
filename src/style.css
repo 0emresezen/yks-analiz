@@ -2384,10 +2384,18 @@ pre code {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow: visible;
 }
 
 .compare-search-box {
   padding: 1.25rem 1.5rem;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+.compare-search-box:has(.compare-picker-panel:not(.hidden)) {
+  z-index: 30;
 }
 
 .compare-dual-grid {
@@ -2396,6 +2404,7 @@ pre code {
   justify-content: space-between;
   gap: 1.5rem;
   width: 100%;
+  overflow: visible;
 }
 
 .compare-select-block {
@@ -2403,14 +2412,110 @@ pre code {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  overflow: visible;
 }
 
-.compare-select-block label {
+.compare-select-block label,
+.compare-select-block .compare-select-label {
   font-weight: 700;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--muted-foreground);
+}
+
+.compare-picker {
+  position: relative;
+  width: 100%;
+}
+
+.compare-picker-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.625rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.compare-picker-trigger:hover,
+.compare-picker-trigger:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+  outline: none;
+}
+
+.compare-picker-trigger.has-value {
+  background: var(--card);
+}
+
+.compare-picker-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compare-picker-value.is-placeholder {
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.compare-picker-panel {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow-md);
+}
+
+.compare-picker-panel .compare-picker-search {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+}
+
+.compare-picker-panel .compare-picker-results {
+  max-height: 240px;
+}
+
+.compare-picker-clear {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.compare-picker-clear:hover,
+.compare-picker-clear:focus-visible {
+  background: var(--secondary);
+  color: var(--foreground);
+  outline: none;
 }
 
 .compare-select-block .select-wrapper {

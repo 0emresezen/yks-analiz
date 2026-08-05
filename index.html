@@ -419,7 +419,7 @@
                   <th style="width: 50px; text-align: center;">Sıra</th>
                   <th>Üniversite & Bölüm Adı</th>
                   <th>Şehir</th>
-                  <th>Karşılaştırma</th>
+                  <th>Galibiyet %</th>
                 </tr>
               </thead>
               <tbody id="wizard-final-tbody">
@@ -481,20 +481,28 @@
           <div class="compare-search-box card">
             <div class="compare-dual-grid">
               <div class="compare-select-block">
-                <label for="compare-program-select-1">1. Program</label>
-                <div class="select-wrapper">
-                  <select id="compare-program-select-1" class="compact-select compare-dropdown">
-                    <option value="">-- 1. Programı Seçin --</option>
-                  </select>
+                <span class="compare-select-label" id="compare-program-label-1">1. Program</span>
+                <div class="compare-picker" id="compare-program-picker-1" data-mode="program" data-slot="0">
+                  <button type="button" class="compare-picker-trigger" id="compare-program-trigger-1" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="compare-program-label-1">
+                    <span class="compare-picker-value">Program seçin</span>
+                  </button>
+                  <div class="compare-picker-panel hidden" role="listbox" aria-labelledby="compare-program-label-1">
+                    <input type="search" class="compare-picker-search compact-input" placeholder="Program ara..." autocomplete="off" spellcheck="false" aria-label="Program ara">
+                    <div class="compare-picker-results search-add-results"></div>
+                  </div>
                 </div>
               </div>
               <div class="compare-vs-badge">VS</div>
               <div class="compare-select-block">
-                <label for="compare-program-select-2">2. Program</label>
-                <div class="select-wrapper">
-                  <select id="compare-program-select-2" class="compact-select compare-dropdown">
-                    <option value="">-- 2. Programı Seçin --</option>
-                  </select>
+                <span class="compare-select-label" id="compare-program-label-2">2. Program</span>
+                <div class="compare-picker" id="compare-program-picker-2" data-mode="program" data-slot="1">
+                  <button type="button" class="compare-picker-trigger" id="compare-program-trigger-2" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="compare-program-label-2">
+                    <span class="compare-picker-value">Program seçin</span>
+                  </button>
+                  <div class="compare-picker-panel hidden" role="listbox" aria-labelledby="compare-program-label-2">
+                    <input type="search" class="compare-picker-search compact-input" placeholder="Program ara..." autocomplete="off" spellcheck="false" aria-label="Program ara">
+                    <div class="compare-picker-results search-add-results"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -510,20 +518,28 @@
           <div class="compare-search-box card">
             <div class="compare-dual-grid">
               <div class="compare-select-block">
-                <label for="compare-university-select-1">1. Üniversite</label>
-                <div class="select-wrapper">
-                  <select id="compare-university-select-1" class="compact-select compare-dropdown">
-                    <option value="">-- 1. Üniversiteyi Seçin --</option>
-                  </select>
+                <span class="compare-select-label" id="compare-university-label-1">1. Üniversite</span>
+                <div class="compare-picker" id="compare-university-picker-1" data-mode="university" data-slot="0">
+                  <button type="button" class="compare-picker-trigger" id="compare-university-trigger-1" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="compare-university-label-1">
+                    <span class="compare-picker-value">Üniversite seçin</span>
+                  </button>
+                  <div class="compare-picker-panel hidden" role="listbox" aria-labelledby="compare-university-label-1">
+                    <input type="search" class="compare-picker-search compact-input" placeholder="Üniversite ara..." autocomplete="off" spellcheck="false" aria-label="Üniversite ara">
+                    <div class="compare-picker-results search-add-results"></div>
+                  </div>
                 </div>
               </div>
               <div class="compare-vs-badge">VS</div>
               <div class="compare-select-block">
-                <label for="compare-university-select-2">2. Üniversite</label>
-                <div class="select-wrapper">
-                  <select id="compare-university-select-2" class="compact-select compare-dropdown">
-                    <option value="">-- 2. Üniversiteyi Seçin --</option>
-                  </select>
+                <span class="compare-select-label" id="compare-university-label-2">2. Üniversite</span>
+                <div class="compare-picker" id="compare-university-picker-2" data-mode="university" data-slot="1">
+                  <button type="button" class="compare-picker-trigger" id="compare-university-trigger-2" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="compare-university-label-2">
+                    <span class="compare-picker-value">Üniversite seçin</span>
+                  </button>
+                  <div class="compare-picker-panel hidden" role="listbox" aria-labelledby="compare-university-label-2">
+                    <input type="search" class="compare-picker-search compact-input" placeholder="Üniversite ara..." autocomplete="off" spellcheck="false" aria-label="Üniversite ara">
+                    <div class="compare-picker-results search-add-results"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -539,20 +555,28 @@
           <div class="compare-search-box card">
             <div class="compare-dual-grid">
               <div class="compare-select-block">
-                <label for="compare-department-select-1">1. Bölüm</label>
-                <div class="select-wrapper">
-                  <select id="compare-department-select-1" class="compact-select compare-dropdown">
-                    <option value="">-- 1. Bölümü Seçin --</option>
-                  </select>
+                <span class="compare-select-label" id="compare-department-label-1">1. Bölüm</span>
+                <div class="compare-picker" id="compare-department-picker-1" data-mode="department" data-slot="0">
+                  <button type="button" class="compare-picker-trigger" id="compare-department-trigger-1" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="compare-department-label-1">
+                    <span class="compare-picker-value">Bölüm seçin</span>
+                  </button>
+                  <div class="compare-picker-panel hidden" role="listbox" aria-labelledby="compare-department-label-1">
+                    <input type="search" class="compare-picker-search compact-input" placeholder="Bölüm ara..." autocomplete="off" spellcheck="false" aria-label="Bölüm ara">
+                    <div class="compare-picker-results search-add-results"></div>
+                  </div>
                 </div>
               </div>
               <div class="compare-vs-badge">VS</div>
               <div class="compare-select-block">
-                <label for="compare-department-select-2">2. Bölüm</label>
-                <div class="select-wrapper">
-                  <select id="compare-department-select-2" class="compact-select compare-dropdown">
-                    <option value="">-- 2. Bölümü Seçin --</option>
-                  </select>
+                <span class="compare-select-label" id="compare-department-label-2">2. Bölüm</span>
+                <div class="compare-picker" id="compare-department-picker-2" data-mode="department" data-slot="1">
+                  <button type="button" class="compare-picker-trigger" id="compare-department-trigger-2" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="compare-department-label-2">
+                    <span class="compare-picker-value">Bölüm seçin</span>
+                  </button>
+                  <div class="compare-picker-panel hidden" role="listbox" aria-labelledby="compare-department-label-2">
+                    <input type="search" class="compare-picker-search compact-input" placeholder="Bölüm ara..." autocomplete="off" spellcheck="false" aria-label="Bölüm ara">
+                    <div class="compare-picker-results search-add-results"></div>
+                  </div>
                 </div>
               </div>
             </div>
