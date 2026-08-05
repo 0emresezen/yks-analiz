@@ -6,18 +6,16 @@ const DATA_FILES = [
   'program_search.json',
   'program_index.json',
   'departments_index.json',
-  'analysis_index_2026.json',
 ]
 
 const STATIC_DIRS = [
   { urlPrefix: '/data', dir: 'data' },
-  { urlPrefix: '/validated', dir: 'validated' },
 ]
 
 const serveStaticJson = () => ({
   name: 'serve-static-json',
   configureServer(server) {
-    for (const { urlPrefix, dir } of STATIC_DIRS) {
+    const serveDir = (urlPrefix, dir) => {
       server.middlewares.use(urlPrefix, (req, res, next) => {
         const rel = decodeURIComponent((req.url || '').replace(/^\//, ''))
         if (!rel || rel.includes('..')) {
@@ -30,34 +28,26 @@ const serveStaticJson = () => ({
           return
         }
         res.setHeader('Content-Type', 'application/json; charset=utf-8')
+      if (filePath.endsWith('.gz')) {
+        res.setHeader('Content-Encoding', 'gzip')
+      }
         fs.createReadStream(filePath).pipe(res)
       })
     }
+    for (const { urlPrefix, dir } of STATIC_DIRS) serveDir(urlPrefix, dir)
   },
   closeBundle() {
-    for (const { urlPrefix, dir } of STATIC_DIRS) {
-      const destRoot = path.join(process.cwd(), 'dist', urlPrefix.replace(/^\//, ''))
-      const srcRoot = path.join(process.cwd(), dir)
-      if (!fs.existsSync(srcRoot)) continue
-
-      const copyRecursive = (src, dest) => {
-        fs.mkdirSync(dest, { recursive: true })
-        for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-          const srcPath = path.join(src, entry.name)
-          const destPath = path.join(dest, entry.name)
-          if (entry.isDirectory()) copyRecursive(srcPath, destPath)
-          else if (entry.name.endsWith('.json')) fs.copyFileSync(srcPath, destPath)
-        }
+    const copyRecursive = (src, dest) => {
+      if (!fs.existsSync(src)) return
+      fs.mkdirSync(dest, { recursive: true })
+      for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+        const srcPath = path.join(src, entry.name)
+        const destPath = path.join(dest, entry.name)
+        if (entry.isDirectory()) copyRecursive(srcPath, destPath)
+        else if (entry.name.endsWith('.json') || entry.name.endsWith('.gz')) fs.copyFileSync(srcPath, destPath)
       }
-      copyRecursive(srcRoot, destRoot)
     }
-
-    const destData = path.join(process.cwd(), 'dist', 'data')
-    fs.mkdirSync(destData, { recursive: true })
-    for (const name of DATA_FILES) {
-      const src = path.join(process.cwd(), 'data', name)
-      if (fs.existsSync(src)) fs.copyFileSync(src, path.join(destData, name))
-    }
+    copyRecursive(path.join(process.cwd(), 'data'), path.join(process.cwd(), 'dist', 'data'))
   },
 })
 

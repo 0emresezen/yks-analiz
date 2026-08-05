@@ -15,13 +15,13 @@ import pandas as pd
 from pipeline.config import (
     DEFAULT_UNIAR_YEAR,
     DEFAULT_YOK_YEAR,
-    analysis_index_path,
-    analysis_json_path,
     analysis_parquet_path,
     build_report_path,
     master_parquet_path,
 )
 from pipeline.enrich import enrich_batch
+from pipeline.export import export_layered
+from pipeline.sanitize import sanitize_batch
 from pipeline.transform import yok_record_to_base
 from verification.collector_validator import CollectorValidator
 from verification.integrity_checker import IntegrityChecker
@@ -56,27 +56,7 @@ def build_analysis_records(
     base_records = [yok_record_to_base(row) for row in yok_rows]
     logger.info("Zenginleştirme başlıyor (%d kayıt)...", len(base_records))
     enriched = enrich_batch(base_records, uniar_year=uniar_year)
-    return enriched
-
-
-def _compact_index_record(item: Dict[str, Any]) -> Dict[str, Any]:
-    return {
-        "id": item["id"],
-        "program_id": item["program_id"],
-        "full_name": item.get("full_name", ""),
-        "university": item.get("university", ""),
-        "department": item.get("department", ""),
-        "department_group": item.get("department_group", ""),
-        "city": item.get("city", ""),
-        "degree": item.get("degree", ""),
-        "score_type": item.get("score_type", ""),
-        "tuition_status": item.get("tuition_status", ""),
-        "last_rank": item.get("last_rank"),
-        "rating": item.get("rating"),
-        "uniar_score": item.get("uniar_score"),
-        "scholarship_score": item.get("scholarship_score"),
-        "yok_data_available": item.get("yok_data_available", False),
-    }
+    return sanitize_batch(enriched)
 
 
 def export_analysis_database(
@@ -88,7 +68,6 @@ def export_analysis_database(
 
     os.makedirs(os.path.dirname(analysis_parquet_path(year)), exist_ok=True)
 
-    # Validation
     yok_validation = CollectorValidator.validate_yok_batch(records, expected_year=year)
     IntegrityChecker.run_database_checks(records)
 
@@ -96,41 +75,11 @@ def export_analysis_database(
         if "_traceability" in item:
             item["_traceability"]["validated"] = True
 
-    # Parquet (primary artifact)
-    df = pd.DataFrame(records)
     parquet_path = analysis_parquet_path(year)
-    df.to_parquet(parquet_path, index=False)
-    logger.info("analysis_database.parquet → %s (%d kayıt)", parquet_path, len(records))
+    pd.DataFrame(records).to_parquet(parquet_path, index=False)
+    logger.info("analysis.parquet (kaynak) → %s (%d kayıt)", parquet_path, len(records))
 
-    # Full JSON for app runtime fetch
-    json_path = analysis_json_path(year)
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(records, f, ensure_ascii=False)
-    json_mb = os.path.getsize(json_path) / (1024 * 1024)
-    logger.info("analysis_database.json → %.1f MB", json_mb)
-
-    # Compact index for fast lookup
-    index = [_compact_index_record(r) for r in records]
-    idx_path = analysis_index_path(year)
-    os.makedirs(os.path.dirname(idx_path), exist_ok=True)
-    with open(idx_path, "w", encoding="utf-8") as f:
-        json.dump(index, f, ensure_ascii=False, separators=(",", ":"))
-
-    # Legacy path for backward compat (symlink-like copy)
-    legacy_validated = os.path.join(
-        os.path.dirname(os.path.dirname(analysis_parquet_path(year))),
-        "yks_master_database.json",
-    )
-    with open(legacy_validated, "w", encoding="utf-8") as f:
-        json.dump(records, f, ensure_ascii=False)
-
-    legacy_data = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(analysis_parquet_path(year)))),
-        "data",
-        "yks_master_database.json",
-    )
-    with open(legacy_data, "w", encoding="utf-8") as f:
-        json.dump(records, f, ensure_ascii=False)
+    layered_meta = export_layered(records, year=year)
 
     uniar_count = sum(1 for r in records if r.get("uniar_data_available"))
     sch_count = sum(1 for r in records if r.get("scholarship_data_available"))
@@ -141,21 +90,20 @@ def export_analysis_database(
         "built_at": datetime.now().isoformat(),
         "year": year,
         "total_programs": len(records),
-        "total_universities": 0,
+        "total_universities": len(set(r.get("university") for r in records if r.get("university"))),
         "uniar_matched": uniar_count,
         "scholarship_scored": sch_count,
         "trend_scored": trend_count,
         "rated": rating_count,
         "validation": yok_validation,
+        "layered": layered_meta,
         "outputs": {
             "parquet": parquet_path,
-            "json": json_path,
-            "index": idx_path,
-            "legacy_validated": legacy_validated,
-            "legacy_data": legacy_data,
+            "layered_base": layered_meta.get("paths", {}).get("base"),
+            "index": layered_meta.get("paths", {}).get("index"),
+            "details_dir": layered_meta.get("paths", {}).get("details_dir"),
         },
     }
-    report["total_universities"] = len(set(r.get("university") for r in records if r.get("university")))
 
     with open(build_report_path(), "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
@@ -163,10 +111,8 @@ def export_analysis_database(
     logger.info("=" * 60)
     logger.info("UNIVERSAL ANALYSIS DB TAMAMLANDI")
     logger.info("  Program     : %s", f"{len(records):,}")
-    logger.info("  ÜNİAR eşleşen: %d", uniar_count)
-    logger.info("  Burs skorlu : %d", sch_count)
-    logger.info("  Trend skorlu: %d", trend_count)
-    logger.info("  Rating hesap: %d", rating_count)
+    logger.info("  Index       : %.2f MB (gzip %.2f MB)", layered_meta.get("index_mb", 0), layered_meta.get("index_gzip_mb", 0))
+    logger.info("  Partitions  : %d (city-based)", layered_meta.get("partition_count", 0))
     logger.info("=" * 60)
 
     return report

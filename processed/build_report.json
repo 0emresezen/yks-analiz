@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-08-05T02:40:24.823858",
+  "steps": {
+    "registry": {
+      "count": 228
+    },
+    "uniar_download": {
+      "success": false,
+      "message": "TÜMA 2024 PDF linki portalda bulunamadı — manuel olarak /Users/hasanemresezen/Desktop/cs/yks-analiz/raw/pdf/tuma_2024.pdf konumuna koyun"
+    },
+    "uniar": {
+      "validated": false,
+      "message": "PDF dosyası bulunamadı: /Users/hasanemresezen/Desktop/cs/yks-analiz/raw/pdf/tuma_2024.pdf"
+    }
+  },
+  "finished_at": "2026-08-05T02:40:25.906677"
+}

@@ -7,6 +7,7 @@ from __future__ import annotations
 import math
 from typing import Any, Dict, List, Optional
 
+from pipeline.campus_key import compute_campus_key
 from pipeline.config import NO_DATA_NOTE
 
 
@@ -83,7 +84,7 @@ def yok_record_to_base(row: Dict[str, Any]) -> Dict[str, Any]:
     scholarship_rate = row.get("scholarship_rate") or ""
     university_type = row.get("university_type") or ""
 
-    return {
+    base = {
         "id": program_id,
         "program_id": program_id,
         "degree": _infer_degree(row.get("program_type", "")),
@@ -123,3 +124,5 @@ def yok_record_to_base(row: Dict[str, Any]) -> Dict[str, Any]:
         "isFavorite": False,
         "prediction": None,
     }
+    base["campus_key"] = compute_campus_key(base)
+    return base

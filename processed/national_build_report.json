@@ -1,0 +1,27 @@
+{
+  "built_at": "2026-08-05T02:40:17.081611",
+  "year": 2026,
+  "total_programs": 21493,
+  "total_universities": 228,
+  "pages_fetched": 11,
+  "api_total_elements": 21493,
+  "validation": {
+    "source": "yok",
+    "validator_version": "2.1.0",
+    "total": 21493,
+    "passed": 21493,
+    "failed": 0,
+    "warnings": [],
+    "errors": [],
+    "success": true,
+    "success_rate": 100.0,
+    "validated_at": "2026-08-05T02:40:13.768410"
+  },
+  "outputs": {
+    "program_index": "/Users/hasanemresezen/Desktop/cs/yks-analiz/data/program_index.json",
+    "university_registry": "/Users/hasanemresezen/Desktop/cs/yks-analiz/data/university_registry.json",
+    "processed_parquet": "/Users/hasanemresezen/Desktop/cs/yks-analiz/processed/yok/2026.parquet",
+    "validated_parquet": "/Users/hasanemresezen/Desktop/cs/yks-analiz/validated/yok/2026.parquet",
+    "national_summary": "/Users/hasanemresezen/Desktop/cs/yks-analiz/data/national_summary.json"
+  }
+}

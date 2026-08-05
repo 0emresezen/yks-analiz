@@ -18,7 +18,14 @@ from pipeline.scoring import (
     trend_score_from_rankings,
     yok_rank_score,
 )
-from satisfaction.uniar_lookup import apply_uniar_fields, build_uniar_lookup
+from pipeline.campus_heuristics import (
+    apply_academic_heuristic,
+    apply_campus_metrics,
+    get_campus_metrics_cache,
+    reset_campus_cache,
+)
+from pipeline.llm_lookup import apply_llm_metrics, reset_llm_cache
+from pipeline.uniar_lookup import apply_uniar_fields, build_uniar_lookup
 
 NULL_METRICS = {
     "academic": ("YÖK Akademik Personel İstatistikleri", "https://istatistik.yok.gov.tr"),
@@ -137,9 +144,10 @@ def enrich_record(item: Dict[str, Any], uniar_year: Optional[int] = None) -> Dic
     item["career_data_note"] = car_note
     item["career_planned_source"] = "Kariyer.net Mezun Başarı Raporları"
 
-    item["transport_data_available"] = False
-    item["transport_data_note"] = NO_DATA_NOTE
-    item["transport_planned_source"] = "Şehir/Belediye Ulaşım Açık Verisi"
+    # Öncelik: resmî veri > LLM tahmini > konum heuristiği
+    apply_llm_metrics(item)
+    apply_campus_metrics(item)
+    apply_academic_heuristic(item)
 
     rating, rating_note = composite_rating(item)
     item["partial_rating"] = rating
@@ -159,4 +167,6 @@ def enrich_batch(records: List[Dict[str, Any]], uniar_year: int = 2026) -> List[
     global _UNIAR_LOOKUP, _UNIAR_YEAR
     _UNIAR_LOOKUP = None
     _UNIAR_YEAR = 0
+    reset_campus_cache()
+    reset_llm_cache()
     return [enrich_record(dict(r), uniar_year=uniar_year) for r in records]

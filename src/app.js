@@ -677,6 +677,17 @@ class MasterApp {
 const app = new MasterApp();
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Buton/etkileşim dinleyicileri veri yüklemesini BEKLEMEDEN bağlanır;
+  // aksi halde yavaş ağda saniyelerce "ölü buton" dönemi oluşuyor.
+  setupNavTabs();
+  setupFilterEvents();
+  setupViewModeToggle();
+  setupModalEvents();
+  setupAddProgramModal();
+  setupDisclaimer();
+  setupPairwiseWizard();
+  setupCompareHub();
+
   const loader = document.getElementById('app-loading');
   try {
     if (loader) loader.classList.remove('hidden');
@@ -706,17 +717,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   trackVisit();
   startPresence();
   app.syncFavoritesList();
-  setupNavTabs();
-  setupFilterEvents();
-  setupViewModeToggle();
   await populateDropdowns();
   renderMasterTable();
   await renderFavoritesList();
-  setupModalEvents();
-  setupAddProgramModal();
-  setupDisclaimer();
-  setupPairwiseWizard();
-  setupCompareHub();
 });
 
 // Navigation Tabs Logic
@@ -1157,23 +1160,23 @@ async function renderFavoritesList() {
           <div class="fav-metrics-grid">
             <div class="fav-metric-item">
               <span class="fav-metric-lbl">Ulaşım</span>
-              <span class="fav-metric-val"><strong>${item.transport_score}</strong>/10</span>
+              <span class="fav-metric-val"><strong>${item.transport_score ?? '—'}</strong>/10</span>
             </div>
             <div class="fav-metric-item">
               <span class="fav-metric-lbl">ÜNİAR</span>
-              <span class="fav-metric-val"><strong>${item.uniar_score}</strong>/10</span>
+              <span class="fav-metric-val"><strong>${item.uniar_score ?? '—'}</strong>/10</span>
             </div>
             <div class="fav-metric-item">
               <span class="fav-metric-lbl">Prestij</span>
-              <span class="fav-metric-val"><strong>${item.prestige_score}</strong>/10</span>
+              <span class="fav-metric-val"><strong>${item.prestige_score ?? '—'}</strong>/10</span>
             </div>
             <div class="fav-metric-item">
               <span class="fav-metric-lbl">Kadro</span>
-              <span class="fav-metric-val"><strong>${item.academic_score}</strong>/10</span>
+              <span class="fav-metric-val"><strong>${item.academic_score ?? '—'}</strong>/10</span>
             </div>
             <div class="fav-metric-item fav-metric-pred">
               <span class="fav-metric-lbl">Tahmini Sıralama</span>
-              <span class="fav-metric-val"><strong>${item.prediction.tahmini_skor.toLocaleString('tr-TR')}</strong></span>
+              <span class="fav-metric-val"><strong>${item.prediction?.tahmini_skor != null ? item.prediction.tahmini_skor.toLocaleString('tr-TR') : '—'}</strong></span>
             </div>
           </div>
         </div>
@@ -1962,38 +1965,8 @@ async function openDetailModal(id) {
   document.getElementById('modal-dept-title').textContent = item.full_name;
   document.getElementById('modal-dept-sub').textContent = `${item.location || item.city} (${item.city}) - ${item.degree}`;
 
-  document.getElementById('modal-faculty').textContent = item.faculty;
+  document.getElementById('modal-faculty').textContent = item.faculty || 'Fakülte / Yüksekokul bilgisi bulunamadı';
   document.getElementById('modal-lang-tuition').textContent = `${item.language} | ${item.tuition_status}`;
-
-  // Use pre-calculated Gemini LLM analysis if available, otherwise fallback to template
-  const evalBadge = document.getElementById('modal-eval-badge');
-  if (item.ai_eval) {
-    document.getElementById('modal-general-eval').innerHTML = sanitizeRichHtml(item.ai_eval);
-    if (evalBadge) evalBadge.classList.remove('hidden');
-  } else {
-    const unName = item.university.split(' (')[0];
-    const prestige = getMetricScore(item, 'prestige');
-    const academic = getMetricScore(item, 'academic');
-    const isTopTier = prestige != null && academic != null && prestige >= 8 && academic >= 8;
-    const isGood = (prestige != null && prestige >= 7) || (academic != null && academic >= 7);
-    let tierText = NO_DATA_NOTE;
-    if (isTopTier) {
-      tierText = "akademik kadro kalitesi ve üniversite prestiji açısından Türkiye genelinde üst düzey (seçkin) bir konumdadır.";
-    } else if (isGood) {
-      tierText = "güçlü ve dengeli bir akademik/prestij altyapısına sahiptir.";
-    } else if (prestige == null && academic == null) {
-      tierText = "prestij ve akademik kalite için doğrulanmış resmî veri bulunmamaktadır.";
-    }
-
-    const predRank = item.prediction && typeof item.prediction.tahmini_skor === 'number'
-      ? item.prediction.tahmini_skor.toLocaleString('tr-TR')
-      : '-';
-
-    const generalEvalHtml = `Bu program, <strong>${eh(item.city)}</strong> şehrinde, <strong>${eh(item.tuition_status)}</strong> statüsünde ve <strong>${eh(item.language)}</strong> eğitim diliyle verilmektedir. ${eh(unName)} bünyesindeki bu bölüm, ${eh(tierText)} Son yerleşme verilerine göre geçen yılki taban sıralaması <strong>${item.last_rank ? item.last_rank.toLocaleString('tr-TR') : '-'}</strong> iken, bu yılki kontenjan esnekliği ve trend analizi doğrultusunda tahmini yerleşme skorunun <strong>${predRank}</strong> civarında seyretmesi beklenmektedir.`;
-    
-    document.getElementById('modal-general-eval').innerHTML = generalEvalHtml;
-    if (evalBadge) evalBadge.classList.add('hidden');
-  }
 
   const METRIC_LABELS = {
     prestige: 'Diploma Gücü & Prestij',
@@ -2071,9 +2044,11 @@ async function openDetailModal(id) {
     Object.keys(METRIC_LABELS).forEach(key => {
       const label = METRIC_LABELS[key];
       const score = scores[key];
-      if (score == null) return;
-      const mMeta = meta[key] || { source: 'Resmî kaynak', version: '2025', confidence: 1.0 };
-      
+      const hasScore = score != null;
+      const metricKey = key === 'student_life' ? 'uniar' : key;
+      const dataSource = item[`${metricKey}_data_source`] || meta[key]?.source || null;
+      const dataNote = item[`${metricKey}_data_note`] || NO_DATA_NOTE;
+
       let explainHtml = '';
       if (exp[key]) {
         const subItems = Object.entries(exp[key]).map(([subKey, subVal]) => {
@@ -2081,7 +2056,7 @@ async function openDetailModal(id) {
           const reason = getQualitativeReason(subKey, subVal);
           return `<li><strong>${eh(subLabel)}:</strong> ${eh(reason)}</li>`;
         }).join('');
-        
+
         explainHtml = `
           <details class="metric-explain-details" style="margin-top: 0.5rem; font-size: 0.75rem;">
             <summary style="cursor: pointer; color: var(--primary); outline: none; font-weight: 500;">Puan Detayları</summary>
@@ -2091,41 +2066,49 @@ async function openDetailModal(id) {
           </details>
         `;
       }
-      
+
       const card = document.createElement('div');
       card.className = 'modal-metric-card';
-      card.style.cssText = 'background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 0.75rem; display: flex; flex-direction: column;';
+      card.style.cssText = `background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 0.75rem; display: flex; flex-direction: column;${hasScore ? '' : ' opacity: 0.65;'}`;
       card.innerHTML = `
         <div class="modal-metric-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
           <span class="modal-metric-title" style="font-weight: 600; font-size: 0.8125rem;">${label}</span>
-          <span class="modal-metric-score" style="font-family: var(--font-mono); font-weight: 700; font-size: 0.8125rem;">${Math.round(score * 10)} / 100</span>
+          <span class="modal-metric-score" style="font-family: var(--font-mono); font-weight: 700; font-size: 0.8125rem;">${hasScore ? `${Math.round(score * 10)} / 100` : '—'}</span>
         </div>
         <div class="modal-metric-bar-bg" style="background: var(--secondary); height: 6px; border-radius: var(--radius-full); overflow: hidden; width: 100%; margin-bottom: 0.4rem;">
-          <div class="modal-metric-bar-fill" style="background: var(--primary); height: 100%; width: ${score * 10}%;"></div>
+          <div class="modal-metric-bar-fill" style="background: ${hasScore ? 'var(--primary)' : 'var(--border)'}; height: 100%; width: ${hasScore ? score * 10 : 100}%;"></div>
         </div>
-        
+
         <p class="modal-metric-desc" style="font-size: 0.75rem; color: var(--foreground); line-height: 1.45; margin: 0 0 0.5rem 0;">
-          ${getOverallMetricDescription(item, key, score)}
+          ${hasScore ? getOverallMetricDescription(item, key, score) : eh(dataNote)}
         </p>
 
-        <div class="modal-metric-meta" style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--muted-foreground); margin-top:0.35rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
-          <span>Güven: <strong>${(mMeta.confidence * 100).toFixed(0)}%</strong></span>
-          <span title="Güncelleme: ${ea(mMeta.last_updated || '')}">Kaynak: ${eh(mMeta.source)} (${eh(mMeta.version)})</span>
+        <div class="modal-metric-meta" style="font-size:0.7rem; color:var(--muted-foreground); margin-top:0.35rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
+          <span>Kaynak: ${eh(dataSource || (hasScore ? 'Analiz veritabanı' : 'Veri kaynağı bekleniyor'))}</span>
         </div>
-        ${explainHtml}
+        ${hasScore ? explainHtml : ''}
       `;
       gridContainer.appendChild(card);
     });
   }
 
-  document.getElementById('modal-notes').textContent = item.notes || 'Belirtilmiş özel bir koşul veya ek not bulunmuyor.';
-
-  // Fill 5-year Table
+  // Son 4 yıl sıralama/kontenjan tablosu — 4 sütuna hizala, eksikleri '-' ile doldur
   const rankRow = document.getElementById('modal-rank-row');
   const quotaRow = document.getElementById('modal-quota-row');
+  const padTo4 = (arr) => {
+    const vals = Array.isArray(arr) ? arr.slice(-4) : [];
+    while (vals.length < 4) vals.unshift(null);
+    return vals;
+  };
 
-  rankRow.innerHTML = '<td><strong>Sıralama</strong></td>' + item.history_rankings.map(r => `<td style="font-family: var(--font-mono); font-weight:700;">${r.toLocaleString('tr-TR')}</td>`).join('');
-  quotaRow.innerHTML = '<td><strong>Kontenjan</strong></td>' + item.history_quotas.map(q => `<td style="font-family: var(--font-mono);">${q}</td>`).join('');
+  if (rankRow) {
+    rankRow.innerHTML = '<td><strong>Sıralama</strong></td>' + padTo4(item.history_rankings)
+      .map(r => `<td style="font-family: var(--font-mono); font-weight:700;">${r != null ? r.toLocaleString('tr-TR') : '-'}</td>`).join('');
+  }
+  if (quotaRow) {
+    quotaRow.innerHTML = '<td><strong>Kontenjan</strong></td>' + padTo4(item.history_quotas)
+      .map(q => `<td style="font-family: var(--font-mono);">${q != null ? q : '-'}</td>`).join('');
+  }
 
   overlay.classList.remove('hidden');
 }
@@ -2247,7 +2230,7 @@ const loadProgramSearchIndex = async () => {
   } catch (e) {
     console.warn('program_search.json yüklenemedi, program_index fallback');
   }
-  const fallback = await loadProgramIndex();
+  const fallback = await loadLegacyProgramIndex();
   programSearchCache = fallback.map(p => ({
     id: p.program_id,
     t: p.full_title,
@@ -2262,7 +2245,7 @@ const loadProgramSearchIndex = async () => {
   return programSearchCache;
 };
 
-const loadProgramIndex = async () => {
+const loadLegacyProgramIndex = async () => {
   if (programIndexCache) return programIndexCache;
   try {
     const response = await fetch('/data/program_index.json');
@@ -2616,15 +2599,22 @@ const populateAddProgramCityDropdown = async () => {
   });
 };
 
-const openAddProgramModal = async () => {
+const openAddProgramModal = () => {
   const modal = document.getElementById('add-program-modal');
   if (!modal) return;
 
   resetAddProgramModal();
-  await Promise.all([loadProgramSearchIndex(), populateAddProgramCityDropdown(), bootstrapDatabase()]);
-  app.useSupabase = isSupabaseDataEnabled();
+  // Modal beklemeden açılır; veri arka planda yüklenir ki buton "çalışmıyor" gibi görünmesin
   modal.classList.remove('hidden');
   document.getElementById('search-add-program')?.focus();
+
+  Promise.all([loadProgramSearchIndex(), populateAddProgramCityDropdown(), bootstrapDatabase()])
+    .then(() => {
+      app.useSupabase = isSupabaseDataEnabled();
+    })
+    .catch((e) => {
+      console.warn('Bölüm ekle verileri yüklenirken sorun oluştu:', e);
+    });
 };
 
 const addSelectedProgramsToList = async () => {

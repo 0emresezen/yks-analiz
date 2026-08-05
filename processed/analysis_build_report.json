@@ -1,0 +1,54 @@
+{
+  "built_at": "2026-08-05T09:37:44.735502",
+  "year": 2026,
+  "total_programs": 21493,
+  "total_universities": 228,
+  "uniar_matched": 19902,
+  "scholarship_scored": 21493,
+  "trend_scored": 17537,
+  "rated": 21493,
+  "validation": {
+    "source": "yok",
+    "validator_version": "2.1.0",
+    "total": 21493,
+    "passed": 21493,
+    "failed": 0,
+    "warnings": [],
+    "errors": [],
+    "success": true,
+    "success_rate": 100.0,
+    "validated_at": "2026-08-05T09:36:01.948799"
+  },
+  "layered": {
+    "year": 2026,
+    "version": 2,
+    "total_programs": 21493,
+    "index_bytes": 1419857,
+    "index_gzip_bytes": 303416,
+    "index_mb": 1.35,
+    "index_gzip_mb": 0.29,
+    "avg_card_bytes": 66.1,
+    "partition_count": 123,
+    "dictionary_entries": 1884,
+    "paths": {
+      "base": "data/analysis/2026",
+      "index": "data/analysis/2026/analysis_index.json",
+      "index_gz": "data/analysis/2026/analysis_index.json.gz",
+      "manifest": "data/analysis/2026/details_manifest.json",
+      "dictionary": "data/analysis/2026/string_dictionary.json",
+      "enums": "data/analysis/2026/enums.json",
+      "details_dir": "data/analysis/2026/details",
+      "city_index": "data/analysis/2026/city_index.json",
+      "department_index": "data/analysis/2026/department_index.json",
+      "university_index": "data/analysis/2026/university_index.json",
+      "meta": "data/analysis/2026/meta.json",
+      "campus_metrics": "data/analysis/2026/campus_metrics.json"
+    }
+  },
+  "outputs": {
+    "parquet": "/Users/hasanemresezen/Desktop/cs/yks-analiz/validated/analysis_database/2026.parquet",
+    "layered_base": "data/analysis/2026",
+    "index": "data/analysis/2026/analysis_index.json",
+    "details_dir": "data/analysis/2026/details"
+  }
+}

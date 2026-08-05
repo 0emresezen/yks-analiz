@@ -10,11 +10,13 @@
     "pipeline": "python3 build_pipeline.py",
     "pipeline:full": "python3 build_pipeline.py --skip-national",
     "analysis": "python3 build_analysis_database.py",
+    "migrate:supabase": "python3 scripts/migrate_to_supabase.py",
     "national": "python3 build_national_index.py",
     "fetch": "python3 main.py",
     "generate": "python3 generate_app_data.py"
   },
   "devDependencies": {
+    "puppeteer-core": "^25.5.0",
     "vite": "^8.2.0"
   },
   "dependencies": {

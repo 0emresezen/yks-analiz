@@ -41,3 +41,8 @@ out/
 .gemini/
 antigravity/
 .vercel
+
+# Large generated datasets (build locally with build_analysis_database.py)
+raw/
+data/yks_master_database.json
+validated/analysis_database/*.json

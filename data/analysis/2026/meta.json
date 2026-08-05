@@ -1,0 +1,26 @@
+{
+  "year": 2026,
+  "version": 2,
+  "total_programs": 21493,
+  "index_bytes": 1419857,
+  "index_gzip_bytes": 303416,
+  "index_mb": 1.35,
+  "index_gzip_mb": 0.29,
+  "avg_card_bytes": 66.1,
+  "partition_count": 123,
+  "dictionary_entries": 1884,
+  "paths": {
+    "base": "data/analysis/2026",
+    "index": "data/analysis/2026/analysis_index.json",
+    "index_gz": "data/analysis/2026/analysis_index.json.gz",
+    "manifest": "data/analysis/2026/details_manifest.json",
+    "dictionary": "data/analysis/2026/string_dictionary.json",
+    "enums": "data/analysis/2026/enums.json",
+    "details_dir": "data/analysis/2026/details",
+    "city_index": "data/analysis/2026/city_index.json",
+    "department_index": "data/analysis/2026/department_index.json",
+    "university_index": "data/analysis/2026/university_index.json",
+    "meta": "data/analysis/2026/meta.json",
+    "campus_metrics": "data/analysis/2026/campus_metrics.json"
+  }
+}
