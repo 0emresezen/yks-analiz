@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 5173 --host",
-    "build": "python3 build_analysis_database.py && python3 build_program_search_index.py && vite build",
+    "build": "vite build",
+    "build:full": "python3 build_analysis_database.py && python3 build_program_search_index.py && vite build",
     "preview": "vite preview --port 5173",
     "pipeline": "python3 build_pipeline.py",
     "pipeline:full": "python3 build_pipeline.py --skip-national",
