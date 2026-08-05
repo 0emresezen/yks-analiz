@@ -58,7 +58,8 @@ const modalInfo = await page.evaluate(() => {
   const cards = [...document.querySelectorAll('.modal-metric-card')].map((c) => ({
     metric: c.querySelector('.modal-metric-title')?.textContent?.trim(),
     score: c.querySelector('.modal-metric-score')?.textContent?.trim(),
-    source: c.querySelector('.modal-metric-meta span')?.textContent?.trim(),
+    status: c.querySelector('.modal-metric-status-value')?.textContent?.trim(),
+    description: c.querySelector('.modal-metric-desc')?.textContent?.trim().slice(0, 80),
   }))
   return {
     modalVisible: modal ? !modal.classList.contains('hidden') : false,
@@ -75,7 +76,7 @@ console.log('sonuç bulundu:', addState.resultFound, '|', addState.label || '-')
 console.log('=== DETAY MODAL ===')
 console.log('satır tıklandı:', clicked, '| görünür:', modalInfo.modalVisible, '| başlık:', modalInfo.title)
 console.log('metrik kartı sayısı:', modalInfo.cardCount)
-modalInfo.cards.forEach((c) => console.log(`- ${c.metric} | ${c.score} | ${c.source}`))
+modalInfo.cards.forEach((c) => console.log(`- ${c.metric} | ${c.score} | ${c.status || '-'} | ${c.description || '-'}`))
 
 await page.screenshot({ path: '/tmp/ui_quality_modal.png', fullPage: false })
 await browser.close()

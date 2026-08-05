@@ -1,0 +1,1506 @@
+{
+  "version": 1,
+  "source": "URAP 2024-2025 Türkiye Sıralaması",
+  "source_url": "https://www.urap.hacettepe.edu.tr",
+  "year": 2024,
+  "count": 228,
+  "universities": {
+    "ABDULLAH GUL": {
+      "university_name": "ABDULLAH GÜL ÜNİVERSİTESİ (KAYSERİ)",
+      "urap_rank": 60,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 60. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ACIBADEM MEHMET ALI AYDINLAR": {
+      "university_name": "ACIBADEM MEHMET ALİ AYDINLAR ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 35,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 35. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ADA KENT": {
+      "university_name": "ADA KENT ÜNİVERSİTESİ (KKTC-GAZİMAĞUSA)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "ADANA ALPARSLAN TURKES BILIM VE TEKNOLOJI": {
+      "university_name": "ADANA ALPARSLAN TÜRKEŞ BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 7.0,
+      "tier": "devlet"
+    },
+    "ADIYAMAN": {
+      "university_name": "ADIYAMAN ÜNİVERSİTESİ",
+      "urap_rank": 47,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 47. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "AFYON KOCATEPE": {
+      "university_name": "AFYON KOCATEPE ÜNİVERSİTESİ (AFYONKARAHİSAR)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "AFYONKARAHISAR SAGLIK BILIMLERI": {
+      "university_name": "AFYONKARAHİSAR SAĞLIK BİLİMLERİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "AKDENIZ KARPAZ": {
+      "university_name": "AKDENİZ KARPAZ ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "urap_rank": 26,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 26. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "AKDENIZ": {
+      "university_name": "AKDENİZ ÜNİVERSİTESİ (ANTALYA)",
+      "urap_rank": 26,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 26. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "AKSARAY": {
+      "university_name": "AKSARAY ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "ALANYA ALAADDIN KEYKUBAT": {
+      "university_name": "ALANYA ALAADDİN KEYKUBAT ÜNİVERSİTESİ (ANTALYA)",
+      "urap_rank": null,
+      "prestige_score": 7.5,
+      "tier": "devlet"
+    },
+    "ALANYA": {
+      "university_name": "ALANYA ÜNİVERSİTESİ (ANTALYA)",
+      "urap_rank": null,
+      "prestige_score": 7.5,
+      "tier": "devlet"
+    },
+    "ALTINBAS": {
+      "university_name": "ALTINBAŞ ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 7.0,
+      "tier": "vakif_premium"
+    },
+    "AMASYA": {
+      "university_name": "AMASYA ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "ANADOLU": {
+      "university_name": "ANADOLU ÜNİVERSİTESİ (ESKİŞEHİR)",
+      "urap_rank": 55,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 55. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ANKARA BILIM": {
+      "university_name": "ANKARA BİLİM ÜNİVERSİTESİ",
+      "urap_rank": 78,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 78. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ANKARA HACI BAYRAM VELI": {
+      "university_name": "ANKARA HACI BAYRAM VELİ ÜNİVERSİTESİ",
+      "urap_rank": 4,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 4. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ANKARA MEDIPOL": {
+      "university_name": "ANKARA MEDİPOL ÜNİVERSİTESİ",
+      "urap_rank": 4,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 4. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ANKARA MUZIK VE GUZEL SANATLAR": {
+      "university_name": "ANKARA MÜZİK VE GÜZEL SANATLAR ÜNİVERSİTESİ",
+      "urap_rank": 4,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 4. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ANKARA SOSYAL BILIMLER": {
+      "university_name": "ANKARA SOSYAL BİLİMLER ÜNİVERSİTESİ",
+      "urap_rank": 4,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 4. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ANKARA YILDIRIM BEYAZIT": {
+      "university_name": "ANKARA YILDIRIM BEYAZIT ÜNİVERSİTESİ",
+      "urap_rank": 4,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 4. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ANKARA": {
+      "university_name": "ANKARA ÜNİVERSİTESİ",
+      "urap_rank": 4,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 4. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ANTALYA BELEK": {
+      "university_name": "ANTALYA BELEK ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 7.5,
+      "tier": "devlet"
+    },
+    "ANTALYA BILIM": {
+      "university_name": "ANTALYA BİLİM ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 7.5,
+      "tier": "devlet"
+    },
+    "ARDAHAN": {
+      "university_name": "ARDAHAN ÜNİVERSİTESİ",
+      "urap_rank": 90,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 90. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ARKIN YARATICI SANATLAR VE TASARIM": {
+      "university_name": "ARKIN YARATICI SANATLAR VE TASARIM ÜNİVERSİTESİ (KKTC-GİRNE)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "ARTVIN CORUH": {
+      "university_name": "ARTVİN ÇORUH ÜNİVERSİTESİ",
+      "urap_rank": 88,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 88. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ATATURK": {
+      "university_name": "ATATÜRK ÜNİVERSİTESİ (ERZURUM)",
+      "urap_rank": 11,
+      "prestige_score": 8.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 11. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ATASEHIR ADIGUZEL MESLEK YUKSEKOKULU": {
+      "university_name": "ATAŞEHİR ADIGÜZEL MESLEK YÜKSEKOKULU (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "ATILIM": {
+      "university_name": "ATILIM ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": 65,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 65. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "AVRASYA": {
+      "university_name": "AVRASYA ÜNİVERSİTESİ (TRABZON)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "AYDIN ADNAN MENDERES": {
+      "university_name": "AYDIN ADNAN MENDERES ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "AZERBAYCAN PEDAGOJI": {
+      "university_name": "AZERBAYCAN DEVLET PEDAGOJİ ÜNİVERSİTESİ (BAKÜ-AZERBAYCAN)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "AGRI IBRAHIM CECEN": {
+      "university_name": "AĞRI İBRAHİM ÇEÇEN ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "BAHCESEHIR KIBRIS": {
+      "university_name": "BAHÇEŞEHİR KIBRIS ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "urap_rank": 55,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 55. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BAHCESEHIR": {
+      "university_name": "BAHÇEŞEHİR ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 55,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 55. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BALIKESIR": {
+      "university_name": "BALIKESİR ÜNİVERSİTESİ",
+      "urap_rank": 30,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 30. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BANDIRMA ONYEDI EYLUL": {
+      "university_name": "BANDIRMA ONYEDİ EYLÜL ÜNİVERSİTESİ (BALIKESİR)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "BARTIN": {
+      "university_name": "BARTIN ÜNİVERSİTESİ",
+      "urap_rank": 80,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 80. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BATMAN": {
+      "university_name": "BATMAN ÜNİVERSİTESİ",
+      "urap_rank": 88,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 88. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BAYBURT": {
+      "university_name": "BAYBURT ÜNİVERSİTESİ",
+      "urap_rank": 90,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 90. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BASKENT": {
+      "university_name": "BAŞKENT ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": 62,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 62. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BEYKOZ": {
+      "university_name": "BEYKOZ ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "BEZM I LEM": {
+      "university_name": "BEZM-İ ÂLEM VAKIF ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "vakif"
+    },
+    "BOLU ABANT IZZET BAYSAL": {
+      "university_name": "BOLU ABANT İZZET BAYSAL ÜNİVERSİTESİ",
+      "urap_rank": 58,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 58. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BOGAZICI": {
+      "university_name": "BOĞAZİÇİ ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 20,
+      "prestige_score": 8.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 20. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BURDUR MEHMET AKIF ERSOY": {
+      "university_name": "BURDUR MEHMET AKİF ERSOY ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "BURSA TEKNIK": {
+      "university_name": "BURSA TEKNİK ÜNİVERSİTESİ",
+      "urap_rank": 68,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 68. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BURSA ULUDAG": {
+      "university_name": "BURSA ULUDAĞ ÜNİVERSİTESİ",
+      "urap_rank": 22,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 22. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BILECIK SEYH EDEBALI": {
+      "university_name": "BİLECİK ŞEYH EDEBALİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "BINGOL": {
+      "university_name": "BİNGÖL ÜNİVERSİTESİ",
+      "urap_rank": 84,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 84. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "BIRUNI": {
+      "university_name": "BİRUNİ ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "BITLIS EREN": {
+      "university_name": "BİTLİS EREN ÜNİVERSİTESİ",
+      "urap_rank": 86,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 86. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "DEMIROGLU BILIM": {
+      "university_name": "DEMİROĞLU BİLİM ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "DOKUZ EYLUL": {
+      "university_name": "DOKUZ EYLÜL ÜNİVERSİTESİ (İZMİR)",
+      "urap_rank": 17,
+      "prestige_score": 8.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 17. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "DOGU AKDENIZ": {
+      "university_name": "DOĞU AKDENİZ ÜNİVERSİTESİ (KKTC-GAZİMAĞUSA)",
+      "urap_rank": 26,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 26. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "DOGUS": {
+      "university_name": "DOĞUŞ ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "DUZCE": {
+      "university_name": "DÜZCE ÜNİVERSİTESİ",
+      "urap_rank": 37,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 37. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "DICLE": {
+      "university_name": "DİCLE ÜNİVERSİTESİ (DİYARBAKIR)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "EGE": {
+      "university_name": "EGE ÜNİVERSİTESİ (İZMİR)",
+      "urap_rank": 10,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 10. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ERCIYES": {
+      "university_name": "ERCİYES ÜNİVERSİTESİ (KAYSERİ)",
+      "urap_rank": 14,
+      "prestige_score": 8.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 14. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ERZURUM TEKNIK": {
+      "university_name": "ERZURUM TEKNİK ÜNİVERSİTESİ",
+      "urap_rank": 70,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 70. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ERZINCAN BINALI YILDIRIM": {
+      "university_name": "ERZİNCAN BİNALİ YILDIRIM ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "ESKISEHIR OSMANGAZI": {
+      "university_name": "ESKİŞEHİR OSMANGAZİ ÜNİVERSİTESİ",
+      "urap_rank": 52,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 52. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ESKISEHIR TEKNIK": {
+      "university_name": "ESKİŞEHİR TEKNİK ÜNİVERSİTESİ",
+      "urap_rank": 77,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 77. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "FATIH SULTAN MEHMET": {
+      "university_name": "FATİH SULTAN MEHMET VAKIF ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "vakif"
+    },
+    "FENERBAHCE": {
+      "university_name": "FENERBAHÇE ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "FIRAT": {
+      "university_name": "FIRAT ÜNİVERSİTESİ (ELAZIĞ)",
+      "urap_rank": 16,
+      "prestige_score": 8.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 16. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "GALATASARAY": {
+      "university_name": "GALATASARAY ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 70,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 70. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "GAZI": {
+      "university_name": "GAZİ ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": 7,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 7. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "GAZIANTEP": {
+      "university_name": "GAZİANTEP ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "GAZIANTEP ISLAM BILIM VE TEKNOLOJI": {
+      "university_name": "GAZİANTEP İSLAM BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 7.0,
+      "tier": "devlet"
+    },
+    "GEBZE TEKNIK": {
+      "university_name": "GEBZE TEKNİK ÜNİVERSİTESİ",
+      "urap_rank": 15,
+      "prestige_score": 8.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 15. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "GUMUSHANE": {
+      "university_name": "GÜMÜŞHANE ÜNİVERSİTESİ",
+      "urap_rank": 87,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 87. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "GIRESUN": {
+      "university_name": "GİRESUN ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "GIRNE AMERIKAN": {
+      "university_name": "GİRNE AMERİKAN ÜNİVERSİTESİ (KKTC-GİRNE)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "GIRNE": {
+      "university_name": "GİRNE ÜNİVERSİTESİ (KKTC-GİRNE)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "HACETTEPE": {
+      "university_name": "HACETTEPE ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": 2,
+      "prestige_score": 9.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 2. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "HAKKARI": {
+      "university_name": "HAKKARİ ÜNİVERSİTESİ",
+      "urap_rank": 92,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 92. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "HALIC": {
+      "university_name": "HALİÇ ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "HARRAN": {
+      "university_name": "HARRAN ÜNİVERSİTESİ (ŞANLIURFA)",
+      "urap_rank": 34,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 34. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "HASAN KALYONCU": {
+      "university_name": "HASAN KALYONCU ÜNİVERSİTESİ (GAZİANTEP)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "HATAY MUSTAFA KEMAL": {
+      "university_name": "HATAY MUSTAFA KEMAL ÜNİVERSİTESİ",
+      "urap_rank": 48,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 48. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "HOCA AHMET YESEVI ULUSLARARASI TURK KAZAK": {
+      "university_name": "HOCA AHMET YESEVİ ULUSLARARASI TÜRK-KAZAK ÜNİVERSİTESİ (TÜRKİSTAN-KAZAKİSTAN)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "HITIT": {
+      "university_name": "HİTİT ÜNİVERSİTESİ (ÇORUM)",
+      "urap_rank": 41,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 41. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ISPARTA UYGULAMALI BILIMLER": {
+      "university_name": "ISPARTA UYGULAMALI BİLİMLER ÜNİVERSİTESİ",
+      "urap_rank": 72,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 72. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "IGDIR": {
+      "university_name": "IĞDIR ÜNİVERSİTESİ",
+      "urap_rank": 82,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 82. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ISIK": {
+      "university_name": "IŞIK ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "KADIR HAS": {
+      "university_name": "KADİR HAS ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 74,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 74. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "KAFKAS": {
+      "university_name": "KAFKAS ÜNİVERSİTESİ (KARS)",
+      "urap_rank": 36,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 36. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "KAHRAMANMARAS SUTCU IMAM": {
+      "university_name": "KAHRAMANMARAŞ SÜTÇÜ İMAM ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "KAHRAMANMARAS ISTIKLAL": {
+      "university_name": "KAHRAMANMARAŞ İSTİKLAL ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "KAPADOKYA": {
+      "university_name": "KAPADOKYA ÜNİVERSİTESİ (NEVŞEHİR)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "KARABUK": {
+      "university_name": "KARABÜK ÜNİVERSİTESİ",
+      "urap_rank": 75,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 75. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "KARADENIZ TEKNIK": {
+      "university_name": "KARADENİZ TEKNİK ÜNİVERSİTESİ (TRABZON)",
+      "urap_rank": 21,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 21. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "KARAMANOGLU MEHMETBEY": {
+      "university_name": "KARAMANOĞLU MEHMETBEY ÜNİVERSİTESİ (KARAMAN)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "KASTAMONU": {
+      "university_name": "KASTAMONU ÜNİVERSİTESİ",
+      "urap_rank": 42,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 42. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "KAYSERI": {
+      "university_name": "KAYSERİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "KIBRIS AMERIKAN": {
+      "university_name": "KIBRIS AMERİKAN ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "KIBRIS AYDIN": {
+      "university_name": "KIBRIS AYDIN ÜNİVERSİTESİ (KKTC-GİRNE)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "KIBRIS BATI": {
+      "university_name": "KIBRIS BATI ÜNİVERSİTESİ (KKTC-GAZİMAĞUSA)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "KIBRIS SAGLIK VE TOPLUM BILIMLERI": {
+      "university_name": "KIBRIS SAĞLIK VE TOPLUM BİLİMLERİ ÜNİVERSİTESİ (KKTC-GÜZELYURT)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "KIRGIZISTAN TURKIYE MANAS": {
+      "university_name": "KIRGIZİSTAN-TÜRKİYE MANAS ÜNİVERSİTESİ (BİŞKEK-KIRGIZİSTAN)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "KIRIKKALE": {
+      "university_name": "KIRIKKALE ÜNİVERSİTESİ",
+      "urap_rank": 38,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 38. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "KIRKLARELI": {
+      "university_name": "KIRKLARELİ ÜNİVERSİTESİ",
+      "urap_rank": 40,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 40. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "KIRSEHIR AHI EVRAN": {
+      "university_name": "KIRŞEHİR AHİ EVRAN ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "KOCAELI SAGLIK VE TEKNOLOJI": {
+      "university_name": "KOCAELİ SAĞLIK VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "urap_rank": 31,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 31. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "KOCAELI": {
+      "university_name": "KOCAELİ ÜNİVERSİTESİ",
+      "urap_rank": 31,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 31. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "KONYA GIDA VE TARIM": {
+      "university_name": "KONYA GIDA VE TARIM ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 7.5,
+      "tier": "devlet"
+    },
+    "KONYA TEKNIK": {
+      "university_name": "KONYA TEKNİK ÜNİVERSİTESİ",
+      "urap_rank": 65,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 65. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "KOC": {
+      "university_name": "KOÇ ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 1,
+      "prestige_score": 10.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 1. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "KTO KARATAY": {
+      "university_name": "KTO KARATAY ÜNİVERSİTESİ (KONYA)",
+      "urap_rank": null,
+      "prestige_score": 7.5,
+      "tier": "devlet"
+    },
+    "KUTAHYA DUMLUPINAR": {
+      "university_name": "KÜTAHYA DUMLUPINAR ÜNİVERSİTESİ",
+      "urap_rank": 49,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 49. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "KUTAHYA SAGLIK BILIMLERI": {
+      "university_name": "KÜTAHYA SAĞLIK BİLİMLERİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "KILIS 7 ARALIK": {
+      "university_name": "KİLİS 7 ARALIK ÜNİVERSİTESİ",
+      "urap_rank": 91,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 91. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "LEFKE AVRUPA": {
+      "university_name": "LEFKE AVRUPA ÜNİVERSİTESİ (KKTC-LEFKE)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "LOKMAN HEKIM": {
+      "university_name": "LOKMAN HEKİM ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": null,
+      "prestige_score": 7.5,
+      "tier": "devlet"
+    },
+    "MALATYA TURGUT OZAL": {
+      "university_name": "MALATYA TURGUT ÖZAL ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "MALTEPE": {
+      "university_name": "MALTEPE ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 72,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 72. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "MANISA CEL L BAYAR": {
+      "university_name": "MANİSA CELÂL BAYAR ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "MARDIN ARTUKLU": {
+      "university_name": "MARDİN ARTUKLU ÜNİVERSİTESİ",
+      "urap_rank": 52,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 52. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "MARMARA": {
+      "university_name": "MARMARA ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 13,
+      "prestige_score": 8.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 13. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "MEF": {
+      "university_name": "MEF ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 88,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 88. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "MERSIN": {
+      "university_name": "MERSİN ÜNİVERSİTESİ",
+      "urap_rank": 33,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 33. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "MUDANYA": {
+      "university_name": "MUDANYA ÜNİVERSİTESİ (BURSA)",
+      "urap_rank": null,
+      "prestige_score": 7.5,
+      "tier": "devlet"
+    },
+    "MUNZUR": {
+      "university_name": "MUNZUR ÜNİVERSİTESİ (TUNCELİ)",
+      "urap_rank": 95,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 95. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "MUGLA SITKI KOCMAN": {
+      "university_name": "MUĞLA SITKI KOÇMAN ÜNİVERSİTESİ",
+      "urap_rank": 46,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 46. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "MUS ALPARSLAN": {
+      "university_name": "MUŞ ALPARSLAN ÜNİVERSİTESİ",
+      "urap_rank": 89,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 89. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "MIMAR SINAN GUZEL SANATLAR": {
+      "university_name": "MİMAR SİNAN GÜZEL SANATLAR ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "NECMETTIN ERBAKAN": {
+      "university_name": "NECMETTİN ERBAKAN ÜNİVERSİTESİ (KONYA)",
+      "urap_rank": 50,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 50. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "NEVSEHIR HACI BEKTAS VELI": {
+      "university_name": "NEVŞEHİR HACI BEKTAŞ VELİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "NUH NACI YAZGAN": {
+      "university_name": "NUH NACİ YAZGAN ÜNİVERSİTESİ (KAYSERİ)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "NIGDE OMER HALISDEMIR": {
+      "university_name": "NİĞDE ÖMER HALİSDEMİR ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "ONDOKUZ MAYIS": {
+      "university_name": "ONDOKUZ MAYIS ÜNİVERSİTESİ (SAMSUN)",
+      "urap_rank": 25,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 25. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ORDU": {
+      "university_name": "ORDU ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "ORTA DOGU TEKNIK": {
+      "university_name": "ORTA DOĞU TEKNİK ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": 3,
+      "prestige_score": 9.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 3. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "OSMANIYE KORKUT ATA": {
+      "university_name": "OSMANİYE KORKUT ATA ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "OSTIM TEKNIK": {
+      "university_name": "OSTİM TEKNİK ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": 80,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 80. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "PAMUKKALE": {
+      "university_name": "PAMUKKALE ÜNİVERSİTESİ (DENİZLİ)",
+      "urap_rank": 29,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 29. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "PIRI REIS": {
+      "university_name": "PİRİ REİS ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "RAUF DENKTAS": {
+      "university_name": "RAUF DENKTAŞ ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "RECEP TAYYIP ERDOGAN": {
+      "university_name": "RECEP TAYYİP ERDOĞAN ÜNİVERSİTESİ (RİZE)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "SABANCI": {
+      "university_name": "SABANCI ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 9,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 9. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "SAKARYA UYGULAMALI BILIMLER": {
+      "university_name": "SAKARYA UYGULAMALI BİLİMLER ÜNİVERSİTESİ",
+      "urap_rank": 28,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 28. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "SAKARYA": {
+      "university_name": "SAKARYA ÜNİVERSİTESİ",
+      "urap_rank": 28,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 28. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "SAMSUN": {
+      "university_name": "SAMSUN ÜNİVERSİTESİ",
+      "urap_rank": 43,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 43. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "SANKO": {
+      "university_name": "SANKO ÜNİVERSİTESİ (GAZİANTEP)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "SAGLIK BILIMLERI": {
+      "university_name": "SAĞLIK BİLİMLERİ ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 30,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 30. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "SELCUK": {
+      "university_name": "SELÇUK ÜNİVERSİTESİ (KONYA)",
+      "urap_rank": 24,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 24. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "SULEYMAN DEMIREL": {
+      "university_name": "SÜLEYMAN DEMİREL ÜNİVERSİTESİ (ISPARTA)",
+      "urap_rank": 35,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 35. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "SINOP": {
+      "university_name": "SİNOP ÜNİVERSİTESİ",
+      "urap_rank": 85,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 85. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "SIVAS BILIM VE TEKNOLOJI": {
+      "university_name": "SİVAS BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 7.0,
+      "tier": "devlet"
+    },
+    "SIVAS CUMHURIYET": {
+      "university_name": "SİVAS CUMHURİYET ÜNİVERSİTESİ",
+      "urap_rank": 53,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 53. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "SIIRT": {
+      "university_name": "SİİRT ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "TARSUS": {
+      "university_name": "TARSUS ÜNİVERSİTESİ (MERSİN)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "TED": {
+      "university_name": "TED ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": 82,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 82. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "TEKIRDAG NAMIK KEMAL": {
+      "university_name": "TEKİRDAĞ NAMIK KEMAL ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "TOBB EKONOMI VE TEKNOLOJI": {
+      "university_name": "TOBB EKONOMİ VE TEKNOLOJİ ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": 68,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 68. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "TOKAT GAZIOSMANPASA": {
+      "university_name": "TOKAT GAZİOSMANPAŞA ÜNİVERSİTESİ",
+      "urap_rank": 54,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 54. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "TOROS": {
+      "university_name": "TOROS ÜNİVERSİTESİ (MERSİN)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "TRABZON": {
+      "university_name": "TRABZON ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "TRAKYA": {
+      "university_name": "TRAKYA ÜNİVERSİTESİ (EDİRNE)",
+      "urap_rank": 32,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 32. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "TURK HAVA KURUMU": {
+      "university_name": "TÜRK HAVA KURUMU ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": null,
+      "prestige_score": 7.5,
+      "tier": "devlet"
+    },
+    "TURK ALMAN": {
+      "university_name": "TÜRK-ALMAN ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "TURK JAPON BILIM VE TEKNOLOJI": {
+      "university_name": "TÜRK-JAPON BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 7.0,
+      "tier": "devlet"
+    },
+    "TIRAN NEW YORK": {
+      "university_name": "TİRAN NEW YORK ÜNİVERSİTESİ (TİRAN-ARNAVUTLUK)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "UFUK": {
+      "university_name": "UFUK ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": null,
+      "prestige_score": 7.5,
+      "tier": "devlet"
+    },
+    "ULUSLARARASI BALKAN": {
+      "university_name": "ULUSLARARASI BALKAN ÜNİVERSİTESİ (ÜSKÜP-MAKEDONYA)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "ULUSLARARASI FINAL": {
+      "university_name": "ULUSLARARASI FİNAL ÜNİVERSİTESİ (KKTC-GİRNE)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "ULUSLARARASI KIBRIS": {
+      "university_name": "ULUSLARARASI KIBRIS ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "ULUSLARARASI SARAYBOSNA": {
+      "university_name": "ULUSLARARASI SARAYBOSNA ÜNİVERSİTESİ (SARAYBOSNA - BOSNA - HERSEK)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "USAK": {
+      "university_name": "UŞAK ÜNİVERSİTESİ",
+      "urap_rank": 56,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 56. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "VAN YUZUNCU YIL": {
+      "university_name": "VAN YÜZÜNCÜ YIL ÜNİVERSİTESİ",
+      "urap_rank": 51,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 51. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "YAKIN DOGU": {
+      "university_name": "YAKIN DOĞU ÜNİVERSİTESİ (KKTC-LEFKOŞA)",
+      "urap_rank": null,
+      "prestige_score": 6.0,
+      "tier": "kktc"
+    },
+    "YALOVA": {
+      "university_name": "YALOVA ÜNİVERSİTESİ",
+      "urap_rank": 44,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 44. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "YASAR": {
+      "university_name": "YAŞAR ÜNİVERSİTESİ (İZMİR)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "YEDITEPE": {
+      "university_name": "YEDİTEPE ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 60,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 60. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "YILDIZ TEKNIK": {
+      "university_name": "YILDIZ TEKNİK ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": 12,
+      "prestige_score": 8.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 12. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "YOZGAT BOZOK": {
+      "university_name": "YOZGAT BOZOK ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "YUKSEK IHTISAS": {
+      "university_name": "YÜKSEK İHTİSAS ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": null,
+      "prestige_score": 7.5,
+      "tier": "devlet"
+    },
+    "ZONGULDAK BULENT ECEVIT": {
+      "university_name": "ZONGULDAK BÜLENT ECEVİT ÜNİVERSİTESİ",
+      "urap_rank": 55,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 55. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "CANAKKALE ONSEKIZ MART": {
+      "university_name": "ÇANAKKALE ONSEKİZ MART ÜNİVERSİTESİ",
+      "urap_rank": 39,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 39. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "CANKAYA": {
+      "university_name": "ÇANKAYA ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": 76,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 76. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "CANKIRI KARATEKIN": {
+      "university_name": "ÇANKIRI KARATEKİN ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "CAG": {
+      "university_name": "ÇAĞ ÜNİVERSİTESİ (MERSİN)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "CUKUROVA": {
+      "university_name": "ÇUKUROVA ÜNİVERSİTESİ (ADANA)",
+      "urap_rank": 19,
+      "prestige_score": 8.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 19. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "OZYEGIN": {
+      "university_name": "ÖZYEĞİN ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "USKUDAR": {
+      "university_name": "ÜSKÜDAR ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "IBN HALDUN": {
+      "university_name": "İBN HALDUN ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "IHSAN DOGRAMACI BILKENT": {
+      "university_name": "İHSAN DOĞRAMACI BİLKENT ÜNİVERSİTESİ (ANKARA)",
+      "urap_rank": 18,
+      "prestige_score": 8.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 18. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "INONU": {
+      "university_name": "İNÖNÜ ÜNİVERSİTESİ (MALATYA)",
+      "urap_rank": 27,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 27. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ISKENDERUN TEKNIK": {
+      "university_name": "İSKENDERUN TEKNİK ÜNİVERSİTESİ (HATAY)",
+      "urap_rank": null,
+      "prestige_score": 7.0,
+      "tier": "devlet"
+    },
+    "ISTANBUL 29 MAYIS": {
+      "university_name": "İSTANBUL 29 MAYIS ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL AREL": {
+      "university_name": "İSTANBUL AREL ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL ATLAS": {
+      "university_name": "İSTANBUL ATLAS ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL AYDIN": {
+      "university_name": "İSTANBUL AYDIN ÜNİVERSİTESİ",
+      "urap_rank": 70,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 70. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ISTANBUL BEYKENT": {
+      "university_name": "İSTANBUL BEYKENT ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL BILGI": {
+      "university_name": "İSTANBUL BİLGİ ÜNİVERSİTESİ",
+      "urap_rank": 75,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 75. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ISTANBUL ESENYURT": {
+      "university_name": "İSTANBUL ESENYURT ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL GALATA": {
+      "university_name": "İSTANBUL GALATA ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL GEDIK": {
+      "university_name": "İSTANBUL GEDİK ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL GELISIM": {
+      "university_name": "İSTANBUL GELİŞİM ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL KENT": {
+      "university_name": "İSTANBUL KENT ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL KULTUR": {
+      "university_name": "İSTANBUL KÜLTÜR ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL MEDENIYET": {
+      "university_name": "İSTANBUL MEDENİYET ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL MEDIPOL": {
+      "university_name": "İSTANBUL MEDİPOL ÜNİVERSİTESİ",
+      "urap_rank": 45,
+      "prestige_score": 7.5,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 45. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "ISTANBUL NISANTASI": {
+      "university_name": "İSTANBUL NİŞANTAŞI ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL OKAN": {
+      "university_name": "İSTANBUL OKAN ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL RUMELI": {
+      "university_name": "İSTANBUL RUMELİ ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL SABAHATTIN ZAIM": {
+      "university_name": "İSTANBUL SABAHATTİN ZAİM ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL SAGLIK VE SOSYAL BILIMLER MESLEK YUKSEKOKULU": {
+      "university_name": "İSTANBUL SAĞLIK VE SOSYAL BİLİMLER MESLEK YÜKSEKOKULU",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL SAGLIK VE TEKNOLOJI": {
+      "university_name": "İSTANBUL SAĞLIK VE TEKNOLOJİ ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL TEKNIK": {
+      "university_name": "İSTANBUL TEKNİK ÜNİVERSİTESİ",
+      "urap_rank": 5,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 5. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL TOPKAPI": {
+      "university_name": "İSTANBUL TOPKAPI ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL TICARET": {
+      "university_name": "İSTANBUL TİCARET ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL YENI YUZYIL": {
+      "university_name": "İSTANBUL YENİ YÜZYIL ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL": {
+      "university_name": "İSTANBUL ÜNİVERSİTESİ",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL CERRAHPASA": {
+      "university_name": "İSTANBUL ÜNİVERSİTESİ-CERRAHPAŞA",
+      "urap_rank": 8,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 8. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTANBUL SISLI MESLEK YUKSEKOKULU": {
+      "university_name": "İSTANBUL ŞİŞLİ MESLEK YÜKSEKOKULU",
+      "urap_rank": 6,
+      "prestige_score": 9.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 6. — ülkenin en yüksek akademik prestijine sahip üniversitelerden."
+    },
+    "ISTINYE": {
+      "university_name": "İSTİNYE ÜNİVERSİTESİ (İSTANBUL)",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "IZMIR BAKIRCAY": {
+      "university_name": "İZMİR BAKIRÇAY ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "IZMIR DEMOKRASI": {
+      "university_name": "İZMİR DEMOKRASİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "IZMIR EKONOMI": {
+      "university_name": "İZMİR EKONOMİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "IZMIR KATIP CELEBI": {
+      "university_name": "İZMİR KATİP ÇELEBİ ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "IZMIR KONAK MESLEK YUKSEKOKULU": {
+      "university_name": "İZMİR KONAK MESLEK YÜKSEKOKULU",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "IZMIR TINAZTEPE": {
+      "university_name": "İZMİR TINAZTEPE ÜNİVERSİTESİ",
+      "urap_rank": null,
+      "prestige_score": 6.5,
+      "tier": "devlet"
+    },
+    "IZMIR YUKSEK TEKNOLOJI": {
+      "university_name": "İZMİR YÜKSEK TEKNOLOJİ ENSTİTÜSÜ",
+      "urap_rank": 23,
+      "prestige_score": 8.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 23. — güçlü akademik prestij ve diploma tanınırlığı."
+    },
+    "SIRNAK": {
+      "university_name": "ŞIRNAK ÜNİVERSİTESİ",
+      "urap_rank": 93,
+      "prestige_score": 7.0,
+      "tier": "urap",
+      "prestige_desc": "URAP 2024-2025 Türkiye genel sıralamasında 93. — güçlü akademik prestij ve diploma tanınırlığı."
+    }
+  }
+}

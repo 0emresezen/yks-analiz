@@ -234,7 +234,7 @@ def enrich_item(item: Dict[str, Any]) -> Dict[str, Any]:
     # ------------------------------------------------------------------
     item["_traceability"] = build_traceability(
         item,
-        source_name="YKS Analiz Master Builder V10",
+        source_name="YKS Kıyas Master Builder V10",
         source_url="https://yokatlas.yok.gov.tr"
     )
 

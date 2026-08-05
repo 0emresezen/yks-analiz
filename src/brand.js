@@ -1,0 +1,7 @@
+export const BRAND_NAME = 'YKS Analiz'
+export const BRAND_SLUG = 'yks-analiz'
+export const BRAND_YEAR = '2026'
+export const BRAND_TAGLINE = 'Üniversite programlarını analiz et, sırala, karar ver'
+export const BRAND_HOME_URL = 'https://yks-analiz.vercel.app'
+export const CONTACT_EMAIL = 'hasanemresezen29@gmail.com'
+export const LEGAL_LAST_UPDATED = '5 Ağustos 2026'

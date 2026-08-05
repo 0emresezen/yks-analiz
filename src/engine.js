@@ -1,5 +1,5 @@
 /**
- * YKS Sıralama ve Tercih Tahmin Engine Modülü
+ * YKS Analiz — Sıralama ve Tercih Tahmin Engine Modülü
  * En Küçük Kareler Regresyonu + Kontenjan Esnekliği Modeli
  */
 

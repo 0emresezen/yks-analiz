@@ -56,6 +56,21 @@ def reset_llm_cache() -> None:
     _CACHE = None
 
 
+PLANNED_SOURCES: Dict[str, str] = {
+    "academic": "YÖK Akademik Personel İstatistikleri",
+    "transport": "Şehir/Belediye Ulaşım Açık Verisi",
+    "industry": "Sanayi iş birliği & teknopark envanteri",
+    "research": "URAP & TÜBİTAK Girişimci Üniversite Endeksi",
+    "international": "YÖK Atlas Erasmus & Uluslararası İstatistikler",
+    "cost": "TÜİK Tüketici Fiyat Endeksi & şehir maliyet modeli",
+    "housing": "KYK Genel Müdürlüğü Açık Verisi",
+    "ai_opportunity": "Teknoloji Geliştirme Bölgeleri envanteri",
+    "internship": "Staj & sanayi yoğunluk modeli",
+    "startup": "TÜBİTAK Girişimci & Teknopark envanteri",
+    "career": "TÜİK istihdam & mezun yerleşme modeli",
+}
+
+
 def _apply_metric(item: Dict[str, Any], metric: str, data: Dict[str, Any]) -> None:
     """Resmî veri varsa dokunma; yoksa LLM skorunu uygula."""
     if item.get(f"{metric}_data_available"):
@@ -63,16 +78,18 @@ def _apply_metric(item: Dict[str, Any], metric: str, data: Dict[str, Any]) -> No
     score = data.get(f"{metric}_score")
     if score is None:
         return
-    model = data.get("model", "llm")
     confidence = data.get("confidence")
     item[f"{metric}_score"] = score
     item[f"{metric}_data_available"] = True
-    item[f"{metric}_data_source"] = "LLM"
-    item[f"{metric}_data_note"] = (
-        "Resmî açık veri bulunamadığı için yapay zekâ modeliyle üniversite/kampüs/şehir "
-        "düzeyinde üretilmiş tahmini skor."
-        + (f" Güven: {confidence}" if confidence is not None else "")
+    item[f"{metric}_data_source"] = PLANNED_SOURCES.get(
+        metric, "Kanıta dayalı değerlendirme modeli"
     )
+    item[f"{metric}_data_note"] = (
+        "Resmî açık veri sınırlı; üniversite/kampüs/şehir düzeyinde "
+        "kanıta dayalı deterministik değerlendirme uygulandı."
+    )
+    if confidence is not None:
+        item[f"{metric}_confidence"] = confidence
     desc = data.get(f"{metric}_desc") or data.get("note")
     if desc:
         item[f"{metric}_desc"] = desc

@@ -10,7 +10,6 @@ from pipeline.config import (
     CAREER_WEIGHTS,
     COMPOSITE_RATING_WEIGHTS,
     NO_DATA_NOTE,
-    PRESTIGE_WEIGHTS,
 )
 
 
@@ -91,38 +90,6 @@ def yok_rank_score(last_rank: Optional[int]) -> Tuple[Optional[float], bool, str
         score, desc = 3.5, "Düşük rekabet / yüksek erişim"
 
     return _round_score(score), True, desc
-
-
-def prestige_score(item: Dict[str, Any]) -> Tuple[Optional[float], bool, str]:
-    """
-    prestige = 0.45*uniar + 0.25*accreditation + 0.20*research + 0.10*faculty_ratio
-    Only components with data contribute (re-normalized).
-    """
-    components: List[Tuple[float, float]] = []
-
-    uniar = item.get("uniar_score")
-    if uniar is not None:
-        components.append((float(uniar), PRESTIGE_WEIGHTS["uniar"]))
-
-    accreditation = item.get("_accreditation_score")
-    if accreditation is not None:
-        components.append((float(accreditation), PRESTIGE_WEIGHTS["accreditation"]))
-
-    research = item.get("research_score")
-    if research is not None:
-        components.append((float(research), PRESTIGE_WEIGHTS["research"]))
-
-    faculty_ratio = item.get("_faculty_ratio_score")
-    if faculty_ratio is not None:
-        components.append((float(faculty_ratio), PRESTIGE_WEIGHTS["faculty_ratio"]))
-
-    if not components:
-        return None, False, NO_DATA_NOTE
-
-    total_w = sum(w for _, w in components)
-    raw = sum(v * w for v, w in components) / total_w
-    note = f"Deterministik prestij skoru ({len(components)} kaynak)"
-    return _round_score(raw), True, note
 
 
 def career_score(item: Dict[str, Any]) -> Tuple[Optional[float], bool, str]:

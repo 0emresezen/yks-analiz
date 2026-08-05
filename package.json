@@ -1,5 +1,5 @@
 {
-  "name": "yks-analiz-ui",
+  "name": "yks-analiz",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -8,6 +8,9 @@
     "build": "vite build",
     "build:full": "python3 build_analysis_database.py && python3 build_program_search_index.py && vite build",
     "preview": "vite preview --port 5173",
+    "test:qa": "node scripts/static_qa.mjs",
+    "test:db": "node scripts/static_qa.mjs --db-only",
+    "test:smoke": "node scripts/static_qa.mjs --ui-only",
     "pipeline": "python3 build_pipeline.py",
     "pipeline:full": "python3 build_pipeline.py --skip-national",
     "analysis": "python3 build_analysis_database.py",

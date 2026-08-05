@@ -10,10 +10,10 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from pipeline.config import NO_DATA_NOTE
+from pipeline.prestige_lookup import apply_prestige_fields
 from pipeline.scoring import (
     career_score,
     composite_rating,
-    prestige_score,
     scholarship_score_from_yok,
     trend_score_from_rankings,
     yok_rank_score,
@@ -130,13 +130,7 @@ def enrich_record(item: Dict[str, Any], uniar_year: Optional[int] = None) -> Dic
 
     _apply_null_metrics(item)
 
-    pres_score, pres_avail, pres_note = prestige_score(item)
-    item["prestige_score"] = pres_score
-    item["prestige_data_available"] = pres_avail
-    item["prestige_data_note"] = pres_note if not pres_avail else ""
-    item["prestige_desc"] = pres_note if pres_avail else None
-    item["prestige_planned_source"] = "URAP / QS Turkey Rankings"
-    item["prestige_planned_source_url"] = "https://www.urap.hacettepe.edu.tr"
+    apply_prestige_fields(item)
 
     car_score, car_avail, car_note = career_score(item)
     item["career_score"] = car_score

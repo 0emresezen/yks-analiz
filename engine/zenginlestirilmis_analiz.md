@@ -1,4 +1,4 @@
-# YKS Zenginleştirilmiş Tercih & Tahmin Analiz Tablosu
+# YKS Analiz — Zenginleştirilmiş Tercih & Tahmin Tablosu
 
 | Veritabanı | Üniversite & Bölüm Adı | Şehir | Kontenjan / Konum | Geçen Yılki Sıralama | Kişisel Puanım (1-10) | Notlar / Artılar - Eksiler | Sıralama Trendi | Tahmini Skor |
 | :---: | :--- | :--- | :--- | :---: | :---: | :--- | :---: | :---: |

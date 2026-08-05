@@ -1,0 +1,36 @@
+# Python pipeline & dev tooling — not used by Vite build
+raw/
+validated/
+venv/
+.venv/
+env/
+ENV/
+__pycache__/
+*.py
+*.pyc
+requirements.txt
+
+pipeline/
+engine/
+collectors/
+satisfaction/
+yokatlas_bot/
+verification/
+tests/
+scripts/
+processed/
+supabase/
+config/
+reports/
+
+# Large data files the frontend never reads
+data/yks_master_database.json
+data/analysis_index_2026.json
+data/departments_index.json
+
+# Misc binaries & reports
+*.xlsx
+*.parquet
+yokatlas_sonuclar.xlsx
+.gemini/
+antigravity/

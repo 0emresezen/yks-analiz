@@ -21,7 +21,8 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from pipeline.scoring import composite_rating, prestige_score
+from pipeline.prestige_lookup import apply_prestige_fields
+from pipeline.scoring import composite_rating
 from pipeline.uniar_lookup import apply_uniar_fields, build_uniar_lookup
 
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s - %(message)s")
@@ -35,11 +36,7 @@ TARGETS = [
 
 
 def _recalculate_derived_scores(item: Dict[str, Any]) -> None:
-    pres_score, pres_avail, pres_note = prestige_score(item)
-    item["prestige_score"] = pres_score
-    item["prestige_data_available"] = pres_avail
-    item["prestige_data_note"] = pres_note if not pres_avail else ""
-    item["prestige_desc"] = pres_note if pres_avail else None
+    apply_prestige_fields(item)
 
     rating, rating_note = composite_rating(item)
     item["partial_rating"] = rating

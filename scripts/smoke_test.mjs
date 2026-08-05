@@ -112,27 +112,30 @@ const favInfo = await page.evaluate(() => {
 })
 ok('Favoriler listesi render edildi', favInfo.count >= 2, `${favInfo.count} öğe | ${favInfo.firstGrid || ''}`)
 
-// 5) Detay modalı — 14 metrik + LLM kaynakları
+// 5) Detay modalı — 14 metrik + kanıt tabanlı açıklamalar
 await page.evaluate(() => document.querySelector('.detail-btn[data-id]')?.click())
 await new Promise((r) => setTimeout(r, 3500))
 const detail = await page.evaluate(() => {
   const modal = document.getElementById('dept-detail-modal')
   const cards = [...document.querySelectorAll('.modal-metric-card')]
   const withScore = cards.filter((c) => !c.querySelector('.modal-metric-score')?.textContent?.includes('—'))
-  const llmSourced = cards.filter((c) => c.textContent.includes('LLM tahmini'))
+  const withStatus = cards.filter((c) => c.querySelector('.modal-metric-status-value'))
+  const withLlmLabel = cards.filter((c) => /\bLLM\b/.test(c.textContent))
   const rankCells = document.querySelectorAll('#modal-rank-row td').length
   return {
     visible: modal && !modal.classList.contains('hidden'),
     title: document.getElementById('modal-dept-title')?.textContent?.trim(),
     total: cards.length,
     withScore: withScore.length,
-    llm: llmSourced.length,
+    status: withStatus.length,
+    llm: withLlmLabel.length,
     rankCells,
   }
 })
 ok('Detay modalı açıldı', detail.visible, detail.title)
 ok('14 metrik kartı mevcut', detail.total === 14, `${detail.total} kart, ${detail.withScore} tanesi skorlu`)
-ok('LLM kaynaklı metrikler görünüyor', detail.llm > 0, `${detail.llm} kart LLM kaynaklı`)
+ok('Durum etiketleri görünüyor', detail.status >= 5, `${detail.status} kartta durum etiketi`)
+ok('LLM kaynağı kullanıcıya gösterilmiyor', detail.llm === 0, `${detail.llm} kartta LLM etiketi`)
 ok('Son 4 yıl sıralama tablosu 4 sütunlu', detail.rankCells === 5, `${detail.rankCells - 1} yıl sütunu`)
 await page.screenshot({ path: '/tmp/smoke_3_detay_modal.png' })
 

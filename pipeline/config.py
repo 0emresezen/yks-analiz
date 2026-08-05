@@ -14,13 +14,6 @@ DEFAULT_UNIAR_YEAR = 2026
 NO_DATA_NOTE = "Bu alan için doğrulanmış resmî veri bulunamadı."
 
 # Deterministic composite weights (only applied when inputs exist)
-PRESTIGE_WEIGHTS = {
-    "uniar": 0.45,
-    "accreditation": 0.25,
-    "research": 0.20,
-    "faculty_ratio": 0.10,
-}
-
 CAREER_WEIGHTS = {
     "employment": 0.35,
     "salary": 0.30,

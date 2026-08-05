@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-08-05T09:37:44.735502",
+  "built_at": "2026-08-05T13:35:25.169974",
   "year": 2026,
   "total_programs": 21493,
   "total_universities": 228,
@@ -17,19 +17,19 @@
     "errors": [],
     "success": true,
     "success_rate": 100.0,
-    "validated_at": "2026-08-05T09:36:01.948799"
+    "validated_at": "2026-08-05T13:31:57.605747"
   },
   "layered": {
     "year": 2026,
     "version": 2,
     "total_programs": 21493,
-    "index_bytes": 1419857,
-    "index_gzip_bytes": 303416,
+    "index_bytes": 1419727,
+    "index_gzip_bytes": 303110,
     "index_mb": 1.35,
     "index_gzip_mb": 0.29,
     "avg_card_bytes": 66.1,
-    "partition_count": 123,
-    "dictionary_entries": 1884,
+    "partition_count": 128,
+    "dictionary_entries": 1963,
     "paths": {
       "base": "data/analysis/2026",
       "index": "data/analysis/2026/analysis_index.json",

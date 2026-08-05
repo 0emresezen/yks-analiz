@@ -12,7 +12,9 @@
              connect-src 'self' https://*.supabase.co;
              img-src 'self' data:;
              object-src 'none';">
-  <title>YKS Tercih Veritabanı & Ultimate Karar Platformu</title>
+  <meta name="description" content="YKS Analiz — üniversite programlarını metriklerle analiz edin, sıralayın ve tercih listenizi oluşturun.">
+  <meta name="application-name" content="YKS Analiz">
+  <title>YKS Analiz — Üniversite Program Karşılaştırma</title>
 
   <!-- Clean Monospace & Sans-Serif Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,17 +26,17 @@
 <body>
 
   <div id="app-loading" class="app-loading hidden" aria-live="polite">
-    <div class="app-loading-inner">Veritabanı yükleniyor…</div>
+    <div class="app-loading-inner">YKS Analiz yükleniyor…</div>
   </div>
 
   <!-- Minimal High-Contrast Header -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand">
-        <span class="brand-badge">YKS 2026</span>
+        <span class="brand-badge">YKS Analiz</span>
         <div class="brand-text">
-          <h1>YKS Tercih & Karar Platformu</h1>
-          <p class="subtitle">Evrensel Program Veritabanı | Deterministik Karar Motoru</p>
+          <h1>YKS Analiz</h1>
+          <p class="subtitle">Üniversite programlarını analiz et, sırala, karar ver</p>
         </div>
       </div>
 
@@ -48,9 +50,9 @@
           </button>
         </div>
 
-        <button class="btn btn-outline" id="btn-export-md">
-          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          Markdown Aktar
+        <button class="btn btn-outline" id="btn-export-md" type="button" aria-haspopup="dialog" aria-controls="export-modal">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Çıktı Al
         </button>
       </div>
     </div>
@@ -438,7 +440,7 @@
         <aside class="wizard-info-note card" aria-label="Tercih sihirbazı hakkında bilgi">
           <div class="wizard-info-note-header">
             <svg class="icon-svg wizard-info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-            <h3>Bu yöntem neden mantıklı?</h3>
+            <h3>İkili karşılaştırma</h3>
           </div>
           <p class="wizard-info-lead">
             Onlarca bölümü tek seferde sıralamaya çalışmak kafanızı karıştırır. İkili karşılaştırma, her adımda yalnızca iki seçenek arasında karar vermenizi ister — tıpkı gerçek tercih sürecinde yaptığınız gibi.
@@ -580,11 +582,32 @@
       </div>
     </section>
 
+    <section class="tab-content" id="tab-about">
+      <div class="about-page">
+        <aside class="about-sidebar" id="about-sidebar" aria-label="Yasal bilgi menüsü"></aside>
+        <div class="about-content" id="about-content"></div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="app-footer">
+    <p class="app-footer-brand"><strong>YKS Analiz</strong> · <a href="https://yks-analiz.vercel.app" target="_blank" rel="noopener noreferrer">yks-analiz.vercel.app</a></p>
     <p>Tercih listeniz bu tarayıcıda otomatik kaydedilir; hesap açmanız gerekmez.</p>
     <p>Buradaki sıralama ve puanlar tahminidir. Tercih vermeden önce <a href="https://yokatlas.yok.gov.tr/" target="_blank" rel="noopener noreferrer">YÖK Atlas</a> ve ÖSYM kılavuzunu kontrol edin.</p>
+    <nav class="app-footer-legal" aria-label="Yasal bilgiler">
+      <a href="#legal-overview" class="footer-legal-link" data-about-section="overview">Hakkında</a>
+      <span class="footer-legal-sep" aria-hidden="true">·</span>
+      <a href="#legal-privacy" class="footer-legal-link" data-about-section="privacy">Gizlilik</a>
+      <span class="footer-legal-sep" aria-hidden="true">·</span>
+      <a href="#legal-kvkk" class="footer-legal-link" data-about-section="kvkk">KVKK</a>
+      <span class="footer-legal-sep" aria-hidden="true">·</span>
+      <a href="#legal-terms" class="footer-legal-link" data-about-section="terms">Kullanım Koşulları</a>
+      <span class="footer-legal-sep" aria-hidden="true">·</span>
+      <a href="#legal-disclaimer" class="footer-legal-link" data-about-section="disclaimer">Sorumluluk Reddi</a>
+      <span class="footer-legal-sep" aria-hidden="true">·</span>
+      <a href="#legal-contact" class="footer-legal-link" data-about-section="contact">İletişim</a>
+    </nav>
     <p class="app-footer-fine">Bu site rehberlik amaçlıdır; nihai karar size aittir.</p>
   </footer>
 
@@ -658,19 +681,40 @@
     </div>
   </div>
 
-  <!-- Export Modal -->
-  <div id="export-modal" class="modal-overlay hidden">
-    <div class="modal-card">
+  <!-- Export / Çıktı Al Modal -->
+  <div id="export-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="export-modal-title">
+    <div class="modal-card export-modal-card">
       <div class="modal-header">
-        <h2>Markdown Master Veritabanı</h2>
-        <button id="export-close-btn" class="modal-close-btn">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-          <span style="font-size: 0.8125rem; color: var(--muted-foreground);">Markdown Tablo Formatı</span>
-          <button class="btn btn-primary" id="btn-copy-code">Panoya Kopyala</button>
+        <div>
+          <h2 id="export-modal-title">Çıktı Al</h2>
+          <p class="modal-sub">Listenizi Excel dosyası veya PDF olarak kaydedin</p>
         </div>
-        <pre><code id="export-code-box"></code></pre>
+        <button id="export-close-btn" class="modal-close-btn" type="button" aria-label="Çıktı penceresini kapat">&times;</button>
+      </div>
+      <div class="modal-body export-modal-body">
+        <aside class="export-sidebar" aria-label="Dışa aktarma seçenekleri">
+          <fieldset class="export-scope-group">
+            <legend class="export-group-label">Kapsam</legend>
+            <div id="export-scope-options" class="export-scope-options"></div>
+          </fieldset>
+          <div class="export-format-section">
+            <span class="export-group-label">Format</span>
+            <div id="export-format-grid" class="export-format-grid" role="tablist" aria-label="Dosya formatı"></div>
+          </div>
+        </aside>
+        <section class="export-preview-panel" aria-label="Önizleme">
+          <div class="export-preview-toolbar">
+            <div class="export-preview-meta">
+              <span id="export-preview-format-label" class="export-preview-format-label">Excel</span>
+              <span id="export-preview-count" class="export-preview-count">0 kayıt</span>
+            </div>
+            <div class="export-action-row">
+              <button type="button" class="btn btn-primary btn-sm" id="btn-export-download">Excel İndir</button>
+            </div>
+          </div>
+          <div id="export-preview-host" class="export-preview-host" aria-live="polite"></div>
+          <p id="export-empty-hint" class="export-empty-hint hidden">Seçilen listede dışa aktarılacak program yok. Önce listeye program ekleyin.</p>
+        </section>
       </div>
     </div>
   </div>

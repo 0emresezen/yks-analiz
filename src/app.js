@@ -36,8 +36,22 @@ import {
   fetchSimpleStats,
   formatStatNumber
 } from './usageStats.js';
+import { setupAboutPage, renderAboutPage } from './aboutPage.js';
 import { enrichItemWithPrediction } from './rankingPrediction.js';
 import { initModalScrollLock } from './scrollLock.js';
+import { BRAND_NAME, BRAND_TAGLINE } from './brand.js';
+import {
+  EXPORT_FORMATS,
+  EXPORT_SCOPES,
+  generateExportContent,
+  generateHtmlExport,
+  generateExportPreviewHtml,
+  generatePdfHelpHtml,
+  downloadExportFile,
+  printExportHtml,
+  getExportFormat,
+} from './exportFormats.js';
+import { buildMetricCardSections } from './metricExplanations.js';
 
 const NO_DATA_NOTE = 'Bu alan için doğrulanmış resmî veri bulunamadı.';
 
@@ -50,11 +64,11 @@ export const getMetricScore = (item, key) => {
   return score;
 };
 
-/** Kaynak etiketini UI için kısalt — LLM kaynaklarında model adı gösterme */
+/** Kaynak etiketini UI için kısalt — LLM kaynakları kullanıcıya gösterilmez */
 export const formatMetricSourceLabel = (source) => {
   if (!source) return source;
   const s = String(source).trim();
-  if (/llm/i.test(s)) return 'LLM';
+  if (/llm|yapay zek|gemini/i.test(s)) return null;
   return s;
 };
 
@@ -718,8 +732,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       : MASTER_DATABASE.length;
     const subtitle = document.querySelector('.subtitle');
     if (subtitle) {
-      subtitle.textContent = `${catalogTotal.toLocaleString('tr-TR')} Program | Deterministik Karar Motoru`;
+      subtitle.textContent = `${catalogTotal.toLocaleString('tr-TR')} program · ${BRAND_TAGLINE}`;
     }
+    document.title = `${BRAND_NAME} — ${BRAND_TAGLINE}`;
     app.updateStats();
   } catch (e) {
     console.error('Veritabanı yükleme hatası:', e);
@@ -739,29 +754,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // Navigation Tabs Logic
+const activateNavTab = (targetId) => {
+  const tabs = document.querySelectorAll('.nav-tab')
+  tabs.forEach((tab) => {
+    tab.classList.toggle('active', tab.dataset.tab === targetId)
+  })
+  document.querySelectorAll('.tab-content').forEach((content) => {
+    content.classList.toggle('active', content.id === targetId)
+  })
+
+  if (targetId === 'tab-favorites') {
+    renderFavoritesList()
+  } else if (targetId === 'tab-pairwise') {
+    startPairwiseWizard()
+  } else if (targetId === 'tab-compare-hub') {
+    renderCompareHub()
+  } else if (targetId === 'tab-stats') {
+    renderUsageStatsPage()
+  } else if (targetId === 'tab-about') {
+    renderAboutPage()
+  }
+}
+
 function setupNavTabs() {
-  const tabs = document.querySelectorAll('.nav-tab');
-  tabs.forEach(t => {
-    t.addEventListener('click', () => {
-      tabs.forEach(x => x.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      activateNavTab(tab.dataset.tab)
+    })
+  })
 
-      t.classList.add('active');
-      const targetId = t.dataset.tab;
-      const targetContent = document.getElementById(targetId);
-      if (targetContent) targetContent.classList.add('active');
-
-      if (targetId === 'tab-favorites') {
-        renderFavoritesList();
-      } else if (targetId === 'tab-pairwise') {
-        startPairwiseWizard();
-      } else if (targetId === 'tab-compare-hub') {
-        renderCompareHub();
-      } else if (targetId === 'tab-stats') {
-        renderUsageStatsPage();
-      }
-    });
-  });
+  setupAboutPage({ activateTab: activateNavTab })
 }
 
 // Display Mode Toggle (Scores vs Descriptions)
@@ -2009,51 +2031,17 @@ function getQualitativeReason(subKey, value) {
   }
 }
 
-function getOverallMetricDescription(item, key, score) {
-  const scorePercent = Math.round(score * 10);
-  switch (key) {
-    case 'prestige':
-      return `Diploma gücü ve işveren itibarı 100 üzerinden <strong>${scorePercent}</strong> seviyesindedir. ${eh(item.prestige_desc || 'Sektör genelinde yüksek tanınırlığa sahiptir.')}`;
-    case 'academic':
-      return `Akademik yeterlilik ve kadro gücü 100 üzerinden <strong>${scorePercent}</strong> olarak değerlendirilmiştir. ${eh(item.academic_desc || 'Deneyimli öğretim üyeleri barındırmaktadır.')}`;
-    case 'transport':
-      return `Kampüse ulaşım ve KYK yurt erişilebilirliği 100 üzerinden <strong>${scorePercent}</strong> düzeyindedir. ${eh(item.transport_desc || 'Toplu taşıma seçenekleri mevcuttur.')}`;
-    case 'student_life':
-      return `Öğrenci kulüpleri, spor imkanları ve kampüs yaşamı memnuniyeti 100 üzerinden <strong>${scorePercent}</strong>'dur. ${eh(item.uniar_desc || 'ÜNİAR memnuniyet endeksleri referans alınmıştır.')}`;
-    case 'industry':
-      return `Sanayi ve sektör bağlantıları 100 üzerinden <strong>${scorePercent}</strong> seviyesindedir. Üniversitenin iş dünyasıyla yürüttüğü ortak projeleri ve sektörel marka gücünü yansıtır.`;
-    case 'research':
-      return `Bilimsel araştırma gücü, yayın performansı ve AR-GE projeleri 100 üzerinden <strong>${scorePercent}</strong>'dur. URAP akademik başarı sıralamaları ve TÜBİTAK proje hacmi referans alınmıştır.`;
-    case 'international':
-      return `Değişim programı (Erasmus) zenginliği ve uluslararasılaşma skoru 100 üzerinden <strong>${scorePercent}</strong>'dur. ${item.language === 'İngilizce' ? 'Eğitim dilinin İngilizce olması uluslararası iş birliklerini ve öğrenci hareketliliğini doğrudan desteklemektedir.' : 'Yabancı dil hazırlık ve yurt dışı eğitim entegrasyonu değerlendirilmiştir.'}`;
-    case 'cost':
-      return `Yaşam maliyetinin bütçe dostu olma derecesi 100 üzerinden <strong>${scorePercent}</strong>'dur. ${item.city === 'İstanbul' ? 'İstanbul gibi bir metropolde yaşam maliyetleri ve genel giderler yüksektir.' : item.city === 'Ankara' || item.city === 'İzmir' ? 'Büyükşehir hayatının getirdiği yaşam maliyetleri orta-yüksek seviyededir.' : 'Bölgesel olarak yaşam maliyetleri ve genel giderler daha ekonomiktir.'}`;
-    case 'housing':
-      return `Yurt (KYK/Özel) kapasitesi ve barınma kolaylığı 100 üzerinden <strong>${scorePercent}</strong> olarak belirlenmiştir. ${item.city === 'İstanbul' ? 'İstanbul genelinde yurt doluluk oranları yüksek, kira endeksleri ise rekabetçidir.' : 'Bölgedeki KYK yurtlarının öğrenci sayısına oranı ve kiralık konut yoğunluğu elverişlidir.'}`;
-    case 'career':
-      return `Mezuniyet sonrası ilk iş bulma hızı ve kariyer basamaklarındaki mezun başarısı 100 üzerinden <strong>${scorePercent}</strong> seviyesindedir. Sektördeki ilk 6 ay istihdam verilerine dayanır.`;
-    case 'ai_opportunity':
-      return `Yapay zeka, veri bilimi ve yüksek teknoloji şirketlerine/fırsatlarına yakınlık skoru 100 üzerinden <strong>${scorePercent}</strong>'dur. ${item.city === 'İstanbul' || item.city === 'Ankara' ? 'Bölgedeki bilişim/AI odaklı ekosistem ve teknopark yoğunluğu adaya avantaj sağlamaktadır.' : 'Bölgesel teknoloji yatırımları ve teknokent imkanları referans alınmıştır.'}`;
-    case 'internship':
-      return `Öğrencilerin zorunlu ve isteğe bağlı staj yeri bulma kolaylığı 100 üzerinden <strong>${scorePercent}</strong>'dur. Çevredeki sanayi ve ofis yoğunluğu ile stajyer kabul istatistiklerine göredir.`;
-    case 'scholarship':
-      return `Burs ve finansal destek olanakları 100 üzerinden <strong>${scorePercent}</strong>'dur. ${item.tuition_status && item.tuition_status.includes('Burslu') ? 'Öğrencinin tam burslu statüde eğitim görecek olması finansal yükü sıfırlamaktadır.' : 'Programın devlet/vakıf statüsü ve sunulan ek burs imkanlarına dayanır.'}`;
-    case 'startup':
-      return `Girişimcilik ekosistemi, kuluçka merkezleri ve teknokent entegrasyonu 100 üzerinden <strong>${scorePercent}</strong>'dur. Yeni iş fikirleri üreten ve startup kurmak isteyen öğrenciler için altyapı gücünü temsil eder.`;
-    default:
-      return `Bu metrik için hesaplanan skor 100 üzerinden <strong>${scorePercent}</strong>'dur.`;
-  }
-}
-
 // Modal Details Logic
 async function openDetailModal(id) {
   const overlay = document.getElementById('dept-detail-modal');
   const card = app.data.find(x => itemId(x.id) === itemId(id));
   if (!card) return;
 
-  const item = enrichItemWithPrediction(
+  let item = enrichItemWithPrediction(
     await loadProgramDetail(id).catch(() => card) || card
   );
+  item = await ensureCampusMetricsOnItem(item);
+  applyAcademicHeuristic(item);
 
   const listItem = app.data.find((x) => itemId(x.id) === itemId(id));
   if (listItem) {
@@ -2093,7 +2081,7 @@ async function openDetailModal(id) {
     academic_reputation: 'Akademik İtibar (%10)',
     industry_collaboration: 'Sanayi İş Birliği (%10)',
     research_power: 'Araştırma Gücü (%10)',
-    
+
     mudek_fedek: 'MÜDEK/FEDEK Akreditasyonu',
     professor_count: 'Profesör Sayısı',
     student_faculty_ratio: 'Öğrenci/Hoca Oranı',
@@ -2102,7 +2090,7 @@ async function openDetailModal(id) {
     erasmus_mobility: 'Erasmus Anlaşmaları',
     lab_facilities: 'Laboratuvar Altyapısı',
     teknopark_presence: 'Teknopark Varlığı',
-    
+
     metro_access: 'Metro Erişimi (%20)',
     tram_access: 'Tramvay Erişimi (%15)',
     bus_frequency: 'Otobüs Sıklığı (%15)',
@@ -2110,7 +2098,7 @@ async function openDetailModal(id) {
     kyk_occupancy_rate: 'KYK Doluluk Durumu (%10)',
     inner_campus_transit: 'Kampüs Ulaşımı (%10)',
     city_transit_integration: 'Şehir İçi Ulaşım Entegrasyonu (%15)',
-    
+
     uniar_satisfaction: 'ÜNİAR Memnuniyeti (%40)',
     student_clubs: 'Öğrenci Kulüpleri (%20)',
     erasmus_mobility_rate: 'Erasmus Değişimi (%15)',
@@ -2121,7 +2109,7 @@ async function openDetailModal(id) {
   const gridContainer = document.getElementById('modal-detailed-scores-grid');
   if (gridContainer) {
     gridContainer.innerHTML = '';
-    
+
     const scores = item.detailed_scores || {
       prestige: getMetricScore(item, 'prestige'),
       academic: getMetricScore(item, 'academic'),
@@ -2138,7 +2126,7 @@ async function openDetailModal(id) {
       scholarship: getMetricScore(item, 'scholarship'),
       startup: getMetricScore(item, 'startup'),
     };
-    
+
     const exp = item.explainable_details || {};
     const meta = item.metadata || {};
 
@@ -2150,8 +2138,19 @@ async function openDetailModal(id) {
       const dataSource = item[`${metricKey}_data_source`] || meta[key]?.source || null;
       const dataNote = item[`${metricKey}_data_note`] || NO_DATA_NOTE;
 
+      const sections = buildMetricCardSections({
+        item,
+        metricKey: key,
+        label,
+        score,
+        dataSource,
+        dataNote,
+        explainableDetails: exp,
+        escapeHtml: eh,
+      });
+
       let explainHtml = '';
-      if (exp[key]) {
+      if (hasScore && exp[key]) {
         const subItems = Object.entries(exp[key]).map(([subKey, subVal]) => {
           const subLabel = SUB_LABELS[subKey] || subKey;
           const reason = getQualitativeReason(subKey, subVal);
@@ -2159,37 +2158,19 @@ async function openDetailModal(id) {
         }).join('');
 
         explainHtml = `
-          <details class="metric-explain-details" style="margin-top: 0.5rem; font-size: 0.75rem;">
-            <summary style="cursor: pointer; color: var(--primary); outline: none; font-weight: 500;">Puan Detayları</summary>
-            <ul class="explain-sub-list" style="margin: 0.25rem 0 0 0; padding-left: 1rem; list-style-type: disc; color: var(--muted-foreground); line-height: 1.4;">
+          <details class="metric-explain-details">
+            <summary>Puan Detayları</summary>
+            <ul class="explain-sub-list">
               ${subItems}
             </ul>
           </details>
         `;
       }
 
-      const card = document.createElement('div');
-      card.className = 'modal-metric-card';
-      card.style.cssText = `background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 0.75rem; display: flex; flex-direction: column;${hasScore ? '' : ' opacity: 0.65;'}`;
-      card.innerHTML = `
-        <div class="modal-metric-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-          <span class="modal-metric-title" style="font-weight: 600; font-size: 0.8125rem;">${label}</span>
-          <span class="modal-metric-score" style="font-family: var(--font-mono); font-weight: 700; font-size: 0.8125rem;">${hasScore ? `${Math.round(score * 10)} / 100` : '—'}</span>
-        </div>
-        <div class="modal-metric-bar-bg" style="background: var(--secondary); height: 6px; border-radius: var(--radius-full); overflow: hidden; width: 100%; margin-bottom: 0.4rem;">
-          <div class="modal-metric-bar-fill" style="background: ${hasScore ? 'var(--primary)' : 'var(--border)'}; height: 100%; width: ${hasScore ? score * 10 : 100}%;"></div>
-        </div>
-
-        <p class="modal-metric-desc" style="font-size: 0.75rem; color: var(--foreground); line-height: 1.45; margin: 0 0 0.5rem 0;">
-          ${hasScore ? getOverallMetricDescription(item, key, score) : eh(dataNote)}
-        </p>
-
-        <div class="modal-metric-meta" style="font-size:0.7rem; color:var(--muted-foreground); margin-top:0.35rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
-          <span>Kaynak: ${eh(formatMetricSourceLabel(dataSource) || (hasScore ? 'Analiz veritabanı' : 'Veri kaynağı bekleniyor'))}</span>
-        </div>
-        ${hasScore ? explainHtml : ''}
-      `;
-      gridContainer.appendChild(card);
+      const cardEl = document.createElement('div');
+      cardEl.className = `modal-metric-card${hasScore ? '' : ' modal-metric-card-na'}`;
+      cardEl.innerHTML = sections.html + explainHtml;
+      gridContainer.appendChild(cardEl);
     });
   }
 
@@ -2329,6 +2310,7 @@ const hydrateVisibleProgramMetrics = async (items, startIndex, endIndex) => {
   return results.some(Boolean);
 };
 let selectedAddProgramIds = new Set();
+let selectedAddProgramCache = new Map();
 let addProgramSearchResults = [];
 let addProgramSearchTimer = null;
 const MIN_SEARCH_CHARS = 1;
@@ -2578,6 +2560,7 @@ const updateAddProgramSelectionBar = () => {
 
 const resetAddProgramModal = () => {
   selectedAddProgramIds = new Set();
+  selectedAddProgramCache = new Map();
   addProgramSearchResults = [];
 
   const searchInput = document.getElementById('search-add-program');
@@ -2646,14 +2629,17 @@ const renderAddProgramSearchResults = (programs, totalMatches = 0) => {
     btn.addEventListener('click', () => {
       const programId = btn.dataset.programId;
       const check = btn.querySelector('.add-program-check');
+      const prog = addProgramSearchResults.find((p) => String(p.program_id) === programId);
 
       if (selectedAddProgramIds.has(programId)) {
         selectedAddProgramIds.delete(programId);
+        selectedAddProgramCache.delete(programId);
         btn.classList.remove('selected');
         btn.setAttribute('aria-selected', 'false');
         if (check) check.textContent = '';
       } else {
         selectedAddProgramIds.add(programId);
+        if (prog) selectedAddProgramCache.set(programId, prog);
         btn.classList.add('selected');
         btn.setAttribute('aria-selected', 'true');
         if (check) check.textContent = '✓';
@@ -2742,7 +2728,7 @@ const openAddProgramModal = () => {
 };
 
 const addSelectedProgramsToList = async () => {
-  const programs = addProgramSearchResults.filter(p => selectedAddProgramIds.has(String(p.program_id)));
+  const programs = [...selectedAddProgramCache.values()];
   if (!programs.length) {
     alert('Lütfen en az bir program seçin.');
     return;
@@ -2843,34 +2829,160 @@ function setupAddProgramModal() {
   saveBtn?.addEventListener('click', () => addSelectedProgramsToList());
 }
 
+function setupExportModal() {
+  const exportBtn = document.getElementById('btn-export-md');
+  const exportModal = document.getElementById('export-modal');
+  const exportCloseBtn = document.getElementById('export-close-btn');
+  const scopeContainer = document.getElementById('export-scope-options');
+  const formatGrid = document.getElementById('export-format-grid');
+  const previewHost = document.getElementById('export-preview-host');
+  const downloadBtn = document.getElementById('btn-export-download');
+  const formatLabel = document.getElementById('export-preview-format-label');
+  const countLabel = document.getElementById('export-preview-count');
+  const emptyHint = document.getElementById('export-empty-hint');
+
+  if (!exportModal || !scopeContainer || !formatGrid || !previewHost) return;
+
+  let activeFormat = EXPORT_FORMATS[0].id;
+  let activeScope = EXPORT_SCOPES[0].id;
+  let lastPreviewContent = '';
+
+  const getExportItems = (scope) => {
+    if (scope === 'favorites') {
+      return app.favoriteOrder
+        .map((id) => app.data.find((x) => x.id === id))
+        .filter(Boolean);
+    }
+    if (scope === 'all') return [...app.data];
+    return app.getFilteredData();
+  };
+
+  const renderPreview = () => {
+    const items = getExportItems(activeScope);
+    const fmt = getExportFormat(activeFormat);
+    const isEmpty = items.length === 0;
+
+    lastPreviewContent = isEmpty ? '' : generateExportContent(activeFormat, items, activeScope);
+
+    if (isEmpty) {
+      previewHost.innerHTML = '';
+    } else if (activeFormat === 'pdf') {
+      previewHost.innerHTML = generatePdfHelpHtml(items.length, activeScope);
+    } else {
+      previewHost.innerHTML = generateExportPreviewHtml(items, activeScope);
+    }
+
+    if (formatLabel) formatLabel.textContent = fmt.label;
+    if (countLabel) countLabel.textContent = `${items.length} program`;
+    if (emptyHint) emptyHint.classList.toggle('hidden', !isEmpty);
+    if (downloadBtn) {
+      downloadBtn.disabled = isEmpty;
+      downloadBtn.textContent = fmt.downloadLabel || 'İndir';
+    }
+  };
+
+  EXPORT_SCOPES.forEach((scope, index) => {
+    const label = document.createElement('label');
+    label.className = 'export-scope-option';
+    label.innerHTML = `
+      <input type="radio" name="export-scope" value="${ea(scope.id)}" ${index === 0 ? 'checked' : ''}>
+      <span class="export-scope-text">
+        <strong>${eh(scope.label)}</strong>
+        <span>${eh(scope.hint)}</span>
+      </span>
+    `;
+    label.querySelector('input')?.addEventListener('change', (e) => {
+      if (!e.target.checked) return;
+      activeScope = scope.id;
+      renderPreview();
+    });
+    scopeContainer.appendChild(label);
+  });
+
+  EXPORT_FORMATS.forEach((format, index) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `export-format-btn${index === 0 ? ' active' : ''}`;
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+    btn.dataset.format = format.id;
+    btn.innerHTML = `
+      <span class="export-format-icon">${eh(format.icon)}</span>
+      <span class="export-format-text">
+        <span class="export-format-name">${eh(format.label)}</span>
+        <span class="export-format-hint">${eh(format.hint)}</span>
+      </span>
+    `;
+    btn.addEventListener('click', () => {
+      activeFormat = format.id;
+      formatGrid.querySelectorAll('.export-format-btn').forEach((el) => {
+        const isActive = el.dataset.format === format.id;
+        el.classList.toggle('active', isActive);
+        el.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      renderPreview();
+    });
+    formatGrid.appendChild(btn);
+  });
+
+  const openExportModal = () => {
+    renderPreview();
+    exportModal.classList.remove('hidden');
+    formatGrid.querySelector('.export-format-btn')?.focus();
+  };
+
+  const closeExportModal = () => {
+    exportModal.classList.add('hidden');
+  };
+
+  exportBtn?.addEventListener('click', openExportModal);
+  exportCloseBtn?.addEventListener('click', closeExportModal);
+
+  exportModal.addEventListener('click', (e) => {
+    if (e.target === exportModal) closeExportModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !exportModal.classList.contains('hidden')) {
+      closeExportModal();
+    }
+  });
+
+  downloadBtn?.addEventListener('click', () => {
+    const items = getExportItems(activeScope);
+    if (!items.length) return;
+
+    if (activeFormat === 'pdf') {
+      const defaultLabel = downloadBtn.textContent;
+      downloadBtn.disabled = true;
+      downloadBtn.textContent = 'Hazırlanıyor…';
+      const html = generateHtmlExport(items, activeScope);
+      printExportHtml(html)
+        .then(() => {
+          downloadBtn.textContent = defaultLabel;
+          downloadBtn.disabled = false;
+        })
+        .catch((err) => {
+          console.error(err);
+          downloadBtn.textContent = defaultLabel;
+          downloadBtn.disabled = false;
+          alert(err.message || 'PDF oluşturulamadı.');
+        });
+      return;
+    }
+
+    if (!lastPreviewContent) return;
+    downloadExportFile(lastPreviewContent, activeFormat, activeScope);
+  });
+}
+
 function setupModalEvents() {
   const detailModal = document.getElementById('dept-detail-modal');
   const closeBtn = document.getElementById('modal-close-btn');
 
   if (closeBtn) closeBtn.addEventListener('click', () => detailModal.classList.add('hidden'));
 
-  const exportBtn = document.getElementById('btn-export-md');
-  const exportModal = document.getElementById('export-modal');
-  const exportCloseBtn = document.getElementById('export-close-btn');
-  const copyBtn = document.getElementById('btn-copy-code');
-  const exportCode = document.getElementById('export-code-box');
-
-  if (exportBtn) {
-    exportBtn.addEventListener('click', () => {
-      exportCode.textContent = generateMarkdownTable(app.getFilteredData());
-      exportModal.classList.remove('hidden');
-    });
-  }
-
-  if (exportCloseBtn) exportCloseBtn.addEventListener('click', () => exportModal.classList.add('hidden'));
-
-  if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(exportCode.textContent);
-      copyBtn.innerHTML = `${SVG_CHECK} Panoya Kopyalandı!`;
-      setTimeout(() => { copyBtn.innerHTML = `Panoya Kopyala`; }, 2000);
-    });
-  }
+  setupExportModal();
 }
 
 function setupDisclaimer() {
@@ -2890,20 +3002,6 @@ function setupDisclaimer() {
       disclaimerModal.classList.add('hidden');
     });
   }
-}
-
-function generateMarkdownTable(items) {
-  let md = '# YKS Master Tercih ve Analiz Veritabanı\n\n';
-  md += '| ID | Tür | Üniversite & Bölüm Adı | Fakülte / MYO | Şehir | Dil | Burs | Ulaşım (1-10) | ÜNİAR (1-10) | Prestij (1-10) | Akademik Kadro (1-10) | Geçen Yıl Sıralama | Tahmini Skor | Kişisel Puan |\n';
-  md += '| :---: | :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n';
-
-  items.forEach(item => {
-    const lastR = item.last_rank ? item.last_rank.toLocaleString('tr-TR') : '-';
-    const predR = item.prediction && typeof item.prediction.tahmini_skor === 'number' ? item.prediction.tahmini_skor.toLocaleString('tr-TR') : '-';
-    md += `| **${item.id}** | ${item.degree} | ${item.full_name} | ${item.faculty} | ${item.city} | ${item.language} | ${item.tuition_status} | ${item.transport_score} | ${item.uniar_score} | ${item.prestige_score} | ${item.academic_score} | ${lastR} | ${predR} | ${item.rating || '-'} |\n`;
-  });
-
-  return md;
 }
 
 // ==========================================================================
@@ -3138,7 +3236,7 @@ function renderProgramComparison() {
     return `
       <div style="font-family:var(--font-mono); font-size:0.8125rem; display:flex; flex-direction:column; gap:0.25rem;">
         <div>Geçen Yıl: <strong>${lastR}</strong></div>
-        <div>YKS 2026 Tahmin: <strong style="color:var(--primary);">${predR}</strong></div>
+        <div>Tahmini Sıra: <strong style="color:var(--primary);">${predR}</strong></div>
       </div>
     `;
   });

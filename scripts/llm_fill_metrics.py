@@ -305,7 +305,7 @@ class OpenRouterProvider:
             "https://openrouter.ai/api/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {self.api_key}",
-                "HTTP-Referer": "https://yks-analiz.local",
+                "HTTP-Referer": "https://yks-kiyas.vercel.app",
                 "X-Title": "YKS Metric Fill",
             },
             json=body,
