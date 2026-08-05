@@ -67,7 +67,7 @@ def _apply_metric(item: Dict[str, Any], metric: str, data: Dict[str, Any]) -> No
     confidence = data.get("confidence")
     item[f"{metric}_score"] = score
     item[f"{metric}_data_available"] = True
-    item[f"{metric}_data_source"] = f"LLM tahmini ({model})"
+    item[f"{metric}_data_source"] = "LLM"
     item[f"{metric}_data_note"] = (
         "Resmî açık veri bulunamadığı için yapay zekâ modeliyle üniversite/kampüs/şehir "
         "düzeyinde üretilmiş tahmini skor."

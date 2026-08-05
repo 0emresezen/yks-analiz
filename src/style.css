@@ -67,6 +67,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html.scroll-locked,
+body.scroll-locked {
+  overflow: hidden !important;
+  height: 100%;
+}
+
+body.scroll-locked {
+  position: fixed;
+  width: 100%;
+  overscroll-behavior: none;
+}
+
 /* Helper utilities */
 .hidden { display: none !important; }
 
@@ -1206,6 +1218,12 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.modal-overlay .modal-card {
+  touch-action: pan-y;
 }
 
 .modal-card {
@@ -1216,6 +1234,8 @@ body {
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   box-shadow: var(--shadow-lg);
   animation: modalIn 0.2s ease-out;
 }
@@ -2508,6 +2528,8 @@ pre code {
   max-height: min(70vh, 720px);
   overflow-y: auto;
   overflow-x: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .virtual-table-wrapper thead th {
@@ -2515,6 +2537,15 @@ pre code {
   top: 0;
   z-index: 2;
   background: var(--card);
+}
+
+.compact-table tbody tr.virtual-row {
+  height: 64px;
+  max-height: 64px;
+}
+
+.compact-table tbody tr.virtual-row td {
+  overflow: hidden;
 }
 
 .table-pagination .pagination-actions {

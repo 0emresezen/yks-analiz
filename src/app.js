@@ -36,6 +36,8 @@ import {
   fetchSimpleStats,
   formatStatNumber
 } from './usageStats.js';
+import { enrichItemWithPrediction } from './rankingPrediction.js';
+import { initModalScrollLock } from './scrollLock.js';
 
 const NO_DATA_NOTE = 'Bu alan için doğrulanmış resmî veri bulunamadı.';
 
@@ -46,6 +48,14 @@ export const getMetricScore = (item, key) => {
   const score = item[scoreKey] ?? item[key];
   if (available === false || score == null || score === '') return null;
   return score;
+};
+
+/** Kaynak etiketini UI için kısalt — LLM kaynaklarında model adı gösterme */
+export const formatMetricSourceLabel = (source) => {
+  if (!source) return source;
+  const s = String(source).trim();
+  if (/llm/i.test(s)) return 'LLM';
+  return s;
 };
 
 export const formatMetricDisplay = (score, desc, dataNote, viewMode = 'scores') => {
@@ -85,9 +95,14 @@ export function sanitizeItem(item) {
 }
 
 const PAGE_SIZE = 100;
-const VIRTUAL_ROW_HEIGHT = 52;
+const VIRTUAL_ROW_HEIGHT = 64;
 const VIRTUAL_OVERSCAN = 6;
 let MASTER_DATABASE = [];
+let filteredDataCache = null;
+let filteredDataCacheKey = '';
+let virtualScrollRaf = null;
+let lastVirtualRange = { start: -1, end: -1 };
+let lastHydratedRange = { start: -1, end: -1 };
 
 const itemId = (raw) => String(raw);
 
@@ -683,6 +698,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupFilterEvents();
   setupViewModeToggle();
   setupModalEvents();
+  initModalScrollLock();
   setupAddProgramModal();
   setupDisclaimer();
   setupPairwiseWizard();
@@ -852,8 +868,38 @@ function setupFilterEvents() {
   });
 }
 
+const getFilteredDataCacheKey = () => [
+  app.filterDegree,
+  app.searchQuery,
+  app.cityFilter,
+  app.langFilter,
+  app.tuitionFilter,
+  app.minRatingFilter,
+  app.sortOrder,
+  app.data.length,
+].join('|');
+
+const invalidateFilteredDataCache = () => {
+  filteredDataCache = null;
+  filteredDataCacheKey = '';
+};
+
+const getCachedFilteredData = () => {
+  const key = getFilteredDataCacheKey();
+  if (filteredDataCache && filteredDataCacheKey === key) return filteredDataCache;
+  filteredDataCache = app.getFilteredData();
+  filteredDataCacheKey = key;
+  return filteredDataCache;
+};
+
+const resetVirtualRangeState = () => {
+  lastVirtualRange = { start: -1, end: -1 };
+  lastHydratedRange = { start: -1, end: -1 };
+};
+
 function resetTablePage() {
   app.virtualScrollTop = 0;
+  resetVirtualRangeState();
   const container = document.getElementById('master-scroll-container');
   if (container) container.scrollTop = 0;
 }
@@ -864,7 +910,11 @@ function attachVirtualScroll() {
   container.dataset.virtualBound = '1';
   container.addEventListener('scroll', () => {
     app.virtualScrollTop = container.scrollTop;
-    renderMasterTable();
+    if (virtualScrollRaf != null) return;
+    virtualScrollRaf = requestAnimationFrame(() => {
+      virtualScrollRaf = null;
+      renderVirtualTableBody();
+    });
   }, { passive: true });
 }
 
@@ -941,33 +991,25 @@ function renderTableStatus(total, startIndex, endIndex) {
   container.innerHTML = `<span>${(startIndex + 1).toLocaleString('tr-TR')}–${endIndex.toLocaleString('tr-TR')} / ${total.toLocaleString('tr-TR')} program (sanal liste)</span>`;
 }
 
-// Master Table Rendering — virtual scroll
-function renderMasterTable() {
-  const tbody = document.getElementById('master-tbody');
-  if (!tbody) return;
+const MASTER_TABLE_HEADER_NAMES = {
+  'id': 'ID & Tür',
+  'transport-desc': 'Ulaşım & KYK',
+  'uniar-desc': 'ÜNİAR',
+  'prestige-desc': 'Prestij',
+  'academic-desc': 'Akademik Kadro',
+  'tahmin-asc': 'Geçen Yıl / Tahmin',
+  'rating-desc': 'Puanım'
+};
 
-  const items = app.getFilteredData();
-  app.updateStats();
-
-  // Update header visual clues (dot indicator next to sorted column)
-  const HEADER_NAMES = {
-    'id': 'ID & Tür',
-    'transport-desc': 'Ulaşım & KYK',
-    'uniar-desc': 'ÜNİAR',
-    'prestige-desc': 'Prestij',
-    'academic-desc': 'Akademik Kadro',
-    'tahmin-asc': 'Geçen Yıl / Tahmin',
-    'rating-desc': 'Puanım'
-  };
-
+function updateMasterTableHeaders() {
   document.querySelectorAll('#master-table th[data-sort]').forEach(th => {
     const key = th.dataset.sort;
-    const baseName = HEADER_NAMES[key];
+    const baseName = MASTER_TABLE_HEADER_NAMES[key];
     if (!baseName) return;
-    
-    const isSorted = app.sortOrder === key || 
+
+    const isSorted = app.sortOrder === key ||
                      (key === 'rating-desc' && app.sortOrder === 'rating-asc');
-    
+
     if (isSorted) {
       th.innerHTML = `${baseName} <span style="color: var(--primary); font-weight: 800; margin-left: 2px;">•</span>`;
       th.style.color = 'var(--foreground)';
@@ -976,49 +1018,31 @@ function renderMasterTable() {
       th.style.color = '';
     }
   });
+}
 
-  tbody.innerHTML = '';
+function renderEmptyMasterTable(tbody) {
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="11" style="padding: 2.5rem; text-align: center;">
+        <p style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 1rem;">Listeniz boş. Yeni bölüm ekleyerek başlayın.</p>
+        <button class="btn btn-primary btn-sm" id="btn-empty-add-program" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Bölüm Ekle
+        </button>
+      </td>
+    </tr>
+  `;
+  document.getElementById('btn-empty-add-program')?.addEventListener('click', openAddProgramModal);
+}
 
-  if (items.length === 0) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="11" style="padding: 2.5rem; text-align: center;">
-          <p style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 1rem;">Listeniz boş. Yeni bölüm ekleyerek başlayın.</p>
-          <button class="btn btn-primary btn-sm" id="btn-empty-add-program" style="display: inline-flex; align-items: center; gap: 0.25rem;">
-            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Bölüm Ekle
-          </button>
-        </td>
-      </tr>
-    `;
-    document.getElementById('btn-empty-add-program')?.addEventListener('click', openAddProgramModal);
-    return;
-  }
-
-  const container = document.getElementById('master-scroll-container');
-  const viewport = container?.clientHeight || 600;
-  const scrollTop = container?.scrollTop ?? app.virtualScrollTop ?? 0;
+function getVirtualSlice(items, scrollTop, viewport) {
   const visibleCount = Math.ceil(viewport / VIRTUAL_ROW_HEIGHT) + VIRTUAL_OVERSCAN * 2;
   const startIndex = Math.max(0, Math.floor(scrollTop / VIRTUAL_ROW_HEIGHT) - VIRTUAL_OVERSCAN);
   const endIndex = Math.min(items.length, startIndex + visibleCount);
-  const topPad = startIndex * VIRTUAL_ROW_HEIGHT;
-  const bottomPad = Math.max(0, (items.length - endIndex) * VIRTUAL_ROW_HEIGHT);
+  return { startIndex, endIndex };
+}
 
-  const rows = [];
-  if (topPad > 0) rows.push(`<tr class="virtual-spacer" aria-hidden="true"><td colspan="11" style="height:${topPad}px;padding:0;border:0;"></td></tr>`);
-  for (let i = startIndex; i < endIndex; i++) {
-    rows.push(`<tr style="height:${VIRTUAL_ROW_HEIGHT}px">${buildRowHtml(items[i])}</tr>`);
-  }
-  if (bottomPad > 0) rows.push(`<tr class="virtual-spacer" aria-hidden="true"><td colspan="11" style="height:${bottomPad}px;padding:0;border:0;"></td></tr>`);
-
-  tbody.innerHTML = rows.join('');
-  renderTableStatus(items.length, startIndex, endIndex);
-  attachVirtualScroll();
-
-  hydrateVisibleProgramMetrics(items, startIndex, endIndex).then((changed) => {
-    if (changed) renderMasterTable();
-  });
-
+function bindMasterTableRowEvents(tbody) {
   tbody.querySelectorAll('.fav-star-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const id = itemId(e.currentTarget.dataset.id);
@@ -1044,6 +1068,73 @@ function renderMasterTable() {
       }
     });
   });
+}
+
+function renderVirtualTableBody({ force = false } = {}) {
+  const tbody = document.getElementById('master-tbody');
+  const container = document.getElementById('master-scroll-container');
+  if (!tbody || !container) return;
+
+  const items = getCachedFilteredData();
+  if (items.length === 0) return;
+
+  const scrollTop = container.scrollTop ?? app.virtualScrollTop ?? 0;
+  const viewport = container.clientHeight || 600;
+  const { startIndex, endIndex } = getVirtualSlice(items, scrollTop, viewport);
+
+  if (!force && startIndex === lastVirtualRange.start && endIndex === lastVirtualRange.end) {
+    return;
+  }
+  lastVirtualRange = { start: startIndex, end: endIndex };
+
+  const topPad = startIndex * VIRTUAL_ROW_HEIGHT;
+  const bottomPad = Math.max(0, (items.length - endIndex) * VIRTUAL_ROW_HEIGHT);
+
+  const rows = [];
+  if (topPad > 0) rows.push(`<tr class="virtual-spacer" aria-hidden="true"><td colspan="11" style="height:${topPad}px;padding:0;border:0;"></td></tr>`);
+  for (let i = startIndex; i < endIndex; i++) {
+    rows.push(`<tr class="virtual-row" style="height:${VIRTUAL_ROW_HEIGHT}px">${buildRowHtml(items[i])}</tr>`);
+  }
+  if (bottomPad > 0) rows.push(`<tr class="virtual-spacer" aria-hidden="true"><td colspan="11" style="height:${bottomPad}px;padding:0;border:0;"></td></tr>`);
+
+  tbody.innerHTML = rows.join('');
+  renderTableStatus(items.length, startIndex, endIndex);
+  bindMasterTableRowEvents(tbody);
+
+  const rangeChanged = force
+    || startIndex !== lastHydratedRange.start
+    || endIndex !== lastHydratedRange.end;
+  if (!rangeChanged) return;
+
+  lastHydratedRange = { start: startIndex, end: endIndex };
+  hydrateVisibleProgramMetrics(items, startIndex, endIndex).then((changed) => {
+    if (!changed) return;
+    invalidateFilteredDataCache();
+    renderVirtualTableBody({ force: true });
+  });
+}
+
+// Master Table Rendering — virtual scroll
+function renderMasterTable() {
+  const tbody = document.getElementById('master-tbody');
+  if (!tbody) return;
+
+  invalidateFilteredDataCache();
+  resetVirtualRangeState();
+  app.updateStats();
+  updateMasterTableHeaders();
+
+  const items = getCachedFilteredData();
+  tbody.innerHTML = '';
+
+  if (items.length === 0) {
+    renderEmptyMasterTable(tbody);
+    renderTableStatus(0, 0, 0);
+    return;
+  }
+
+  renderVirtualTableBody({ force: true });
+  attachVirtualScroll();
 }
 
 // Single-Click Delete Undo Toast Manager (2 Seconds)
@@ -1960,7 +2051,17 @@ async function openDetailModal(id) {
   const card = app.data.find(x => itemId(x.id) === itemId(id));
   if (!card) return;
 
-  const item = await loadProgramDetail(id).catch(() => card) || card;
+  const item = enrichItemWithPrediction(
+    await loadProgramDetail(id).catch(() => card) || card
+  );
+
+  const listItem = app.data.find((x) => itemId(x.id) === itemId(id));
+  if (listItem) {
+    listItem.prediction = item.prediction;
+    listItem.history_rankings = item.history_rankings ?? listItem.history_rankings;
+    listItem.history_quotas = item.history_quotas ?? listItem.history_quotas;
+    saveMetricSnapshot(listItem);
+  }
 
   document.getElementById('modal-dept-title').textContent = item.full_name;
   document.getElementById('modal-dept-sub').textContent = `${item.location || item.city} (${item.city}) - ${item.degree}`;
@@ -2084,7 +2185,7 @@ async function openDetailModal(id) {
         </p>
 
         <div class="modal-metric-meta" style="font-size:0.7rem; color:var(--muted-foreground); margin-top:0.35rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
-          <span>Kaynak: ${eh(dataSource || (hasScore ? 'Analiz veritabanı' : 'Veri kaynağı bekleniyor'))}</span>
+          <span>Kaynak: ${eh(formatMetricSourceLabel(dataSource) || (hasScore ? 'Analiz veritabanı' : 'Veri kaynağı bekleniyor'))}</span>
         </div>
         ${hasScore ? explainHtml : ''}
       `;
@@ -2108,6 +2209,27 @@ async function openDetailModal(id) {
   if (quotaRow) {
     quotaRow.innerHTML = '<td><strong>Kontenjan</strong></td>' + padTo4(item.history_quotas)
       .map(q => `<td style="font-family: var(--font-mono);">${q != null ? q : '-'}</td>`).join('');
+  }
+
+  const predValueEl = document.getElementById('modal-prediction-value');
+  const predRangeEl = document.getElementById('modal-prediction-range');
+  const predTrendEl = document.getElementById('modal-prediction-trend');
+  const pred = item.prediction;
+
+  if (predValueEl) {
+    predValueEl.textContent = pred?.tahmini_skor != null
+      ? pred.tahmini_skor.toLocaleString('tr-TR')
+      : '—';
+  }
+  if (predRangeEl) {
+    predRangeEl.textContent = pred?.alt_sinir != null && pred?.ust_sinir != null
+      ? `Güven aralığı: ${pred.alt_sinir.toLocaleString('tr-TR')} – ${pred.ust_sinir.toLocaleString('tr-TR')}`
+      : 'Güven aralığı hesaplanamadı (yeterli geçmiş veri yok)';
+  }
+  if (predTrendEl) {
+    const trend = pred?.trend_direction || '—';
+    const egim = pred?.egim != null ? ` (eğim: ${pred.egim.toLocaleString('tr-TR')})` : '';
+    predTrendEl.textContent = `Trend: ${trend}${egim}`;
   }
 
   overlay.classList.remove('hidden');
@@ -2168,8 +2290,9 @@ const saveMetricSnapshot = (item) => {
 
 const applyMetricSnapshot = (item) => {
   const snap = loadMetricSnapshots()[itemId(item.id)];
-  if (!snap) return item;
-  return { ...item, ...snap, program_id: item.program_id || snap.program_id };
+  if (!snap) return enrichItemWithPrediction(item);
+  const merged = { ...item, ...snap, program_id: item.program_id || snap.program_id };
+  return enrichItemWithPrediction(merged);
 };
 
 const hydrateProgramMetrics = async (item) => {
@@ -2186,6 +2309,7 @@ const hydrateProgramMetrics = async (item) => {
 
     Object.assign(item, detail);
     item.program_id = String(item.program_id || programId);
+    enrichItemWithPrediction(item);
     item.rating = app.calculateRating(item) ?? item.rating;
     await ensureCampusMetricsOnItem(item);
     applyAcademicHeuristic(item);

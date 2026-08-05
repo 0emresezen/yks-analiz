@@ -78,6 +78,19 @@ def _build_history_quotas(row: Dict[str, Any]) -> List[int]:
     return out
 
 
+def _build_prediction(rankings: List[int], quotas: List[int]) -> Optional[Dict[str, Any]]:
+    if len(rankings) < 2:
+        return None
+    try:
+        from yokatlas_bot.analyzer import TrendAnalyzer
+
+        old_q = quotas[-2] if len(quotas) >= 2 else (quotas[-1] if quotas else 60)
+        new_q = quotas[-1] if quotas else 60
+        return TrendAnalyzer.predict_future_rank(rankings, old_q or 60, new_q or 60)
+    except Exception:
+        return None
+
+
 def yok_record_to_base(row: Dict[str, Any]) -> Dict[str, Any]:
     """Convert normalized YÖK parquet row to app-compatible base record."""
     program_id = str(row.get("program_id", "")).strip()
@@ -122,7 +135,10 @@ def yok_record_to_base(row: Dict[str, Any]) -> Dict[str, Any]:
         "publication_year": row.get("publication_year"),
         "notes": "-",
         "isFavorite": False,
-        "prediction": None,
+        "prediction": _build_prediction(
+            _build_history_rankings(row),
+            _build_history_quotas(row),
+        ),
     }
     base["campus_key"] = compute_campus_key(base)
     return base
