@@ -1993,6 +1993,15 @@ pre code {
   font-weight: 600;
 }
 
+.question-item.inferred {
+  opacity: 0.75;
+}
+
+.question-item.inferred .question-item-status {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
 .question-item-status {
   text-align: right;
   max-width: 55%;

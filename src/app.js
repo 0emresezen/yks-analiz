@@ -38,6 +38,7 @@ import {
 } from './usageStats.js';
 import { setupAboutPage, renderAboutPage } from './aboutPage.js';
 import { enrichItemWithPrediction } from './rankingPrediction.js';
+import { MergeSortWizard } from './pairwiseMergeSort.js';
 import { initModalScrollLock } from './scrollLock.js';
 import { BRAND_NAME, BRAND_TAGLINE } from './brand.js';
 import {
@@ -168,12 +169,10 @@ class MasterApp {
     // Favorites Order Array of IDs
     this.favoriteOrder = this.loadFavoriteOrder();
 
-    // Pairwise Wizard State
-    this.wizardPairs = [];
+    // Pairwise Wizard State (merge sort + transitivity graph)
+    this.wizardEngine = null;
     this.wizardCurrentIndex = 0;
-    this.wizardScores = {}; // id -> win count
-    this.wizardHeadToHead = {}; // id1_vs_id2 -> winnerId
-    this.wizardChoices = []; // index -> 'A' | 'B' | null
+    this.wizardReviewMode = false;
     this.wizardListFilter = 'all'; // 'all' | 'answered' | 'pending'
 
     // Comparison State
@@ -621,75 +620,42 @@ class MasterApp {
     return result;
   }
 
-  recalculateWizardScores() {
-    const candidates = this.favoriteOrder
-      .map(id => this.data.find(x => x.id === id))
-      .filter(Boolean);
-
-    this.wizardScores = {};
-    this.wizardHeadToHead = {};
-
-    candidates.forEach(x => { this.wizardScores[x.id] = 0; });
-
-    this.wizardChoices.forEach((choice, idx) => {
-      if (!choice) return;
-      const pair = this.wizardPairs[idx];
-      if (!pair) return;
-      const [itemA, itemB] = pair;
-      const winner = choice === 'A' ? itemA : itemB;
-      const loser = choice === 'A' ? itemB : itemA;
-
-      this.wizardScores[winner.id] = (this.wizardScores[winner.id] || 0) + 1;
-      this.wizardHeadToHead[`${winner.id}_vs_${loser.id}`] = winner.id;
-    });
-  }
-
   getWizardFavoriteHash() {
     return [...this.favoriteOrder].sort((a, b) => a - b).join(',');
   }
 
   saveWizardState() {
-    if (!this.wizardPairs.length) return;
+    if (!this.wizardEngine) return;
     try {
-      localStorage.setItem('yks_wizard_state_v1', JSON.stringify({
+      localStorage.setItem('yks_wizard_state_v2', JSON.stringify({
         hash: this.getWizardFavoriteHash(),
-        pairIds: this.wizardPairs.map(([a, b]) => [a.id, b.id]),
-        choices: this.wizardChoices,
+        userAnswers: this.wizardEngine.userAnswers,
         currentIndex: this.wizardCurrentIndex,
         listFilter: this.wizardListFilter
       }));
     } catch (e) {}
   }
 
-  restoreWizardState() {
+  restoreWizardState(candidates) {
     try {
-      const raw = localStorage.getItem('yks_wizard_state_v1');
+      const raw = localStorage.getItem('yks_wizard_state_v2');
       if (!raw) return false;
 
       const state = JSON.parse(raw);
       if (state.hash !== this.getWizardFavoriteHash()) return false;
-      if (!Array.isArray(state.pairIds) || !state.pairIds.length) return false;
+      if (!Array.isArray(state.userAnswers)) return false;
 
-      const pairs = state.pairIds.map(([idA, idB]) => {
-        const itemA = this.data.find(x => x.id === idA);
-        const itemB = this.data.find(x => x.id === idB);
-        if (!itemA || !itemB) return null;
-        return [itemA, itemB];
-      });
+      const validAnswers = state.userAnswers.filter(
+        (a) => (a.choice === 'A' || a.choice === 'B') && candidates.some((c) => c.id === a.idA) && candidates.some((c) => c.id === a.idB)
+      );
 
-      if (pairs.some(p => !p)) return false;
-
-      this.wizardPairs = pairs;
-      this.wizardChoices = Array.isArray(state.choices)
-        ? state.choices.map(c => (c === 'A' || c === 'B' ? c : null))
-        : Array(pairs.length).fill(null);
+      this.wizardEngine = MergeSortWizard.fromUserAnswers(candidates, validAnswers);
       this.wizardCurrentIndex = Number.isInteger(state.currentIndex)
-        ? Math.min(Math.max(state.currentIndex, 0), pairs.length - 1)
+        ? Math.max(state.currentIndex, 0)
         : 0;
       this.wizardListFilter = ['all', 'answered', 'pending'].includes(state.listFilter)
         ? state.listFilter
         : 'all';
-      this.recalculateWizardScores();
       return true;
     } catch (e) {
       return false;
@@ -698,6 +664,7 @@ class MasterApp {
 
   clearWizardState() {
     try {
+      localStorage.removeItem('yks_wizard_state_v2');
       localStorage.removeItem('yks_wizard_state_v1');
     } catch (e) {}
   }
@@ -1501,7 +1468,7 @@ function toggleWizardSidePane() {
   toggleBtn.setAttribute('aria-expanded', String(!isCollapsed));
 }
 
-function startPairwiseWizard() {
+function startPairwiseWizard(forceRestart = false) {
   const duelArea = document.getElementById('wizard-active-duel');
   const resultsArea = document.getElementById('wizard-final-results');
   const emptyState = document.getElementById('wizard-empty-state');
@@ -1513,6 +1480,7 @@ function startPairwiseWizard() {
     .filter(Boolean);
 
   if (candidates.length < 2) {
+    app.wizardEngine = null;
     if (duelArea) duelArea.classList.add('hidden');
     if (resultsArea) resultsArea.classList.add('hidden');
     if (emptyState) emptyState.classList.remove('hidden');
@@ -1521,32 +1489,31 @@ function startPairwiseWizard() {
 
   if (emptyState) emptyState.classList.add('hidden');
 
-  trackWizardUsed();
-  app.wizardPairs = [];
-  app.wizardScores = {};
-  app.wizardHeadToHead = {};
-
-  candidates.forEach(x => { app.wizardScores[x.id] = 0; });
-
-  for (let i = 0; i < candidates.length; i++) {
-    for (let j = i + 1; j < candidates.length; j++) {
-      app.wizardPairs.push([candidates[i], candidates[j]]);
+  if (forceRestart) {
+    app.clearWizardState();
+  } else if (app.restoreWizardState(candidates)) {
+    if (app.wizardEngine.isComplete()) {
+      finishWizard();
+      return;
     }
+    document.getElementById('btn-wizard-show-results')?.classList.add('hidden');
+    if (resultsArea) resultsArea.classList.add('hidden');
+    if (duelArea) duelArea.classList.remove('hidden');
+    renderDuelStep();
+    return;
   }
 
-  for (let i = app.wizardPairs.length - 1; i > 0; i--) {
-    const r = Math.floor(Math.random() * (i + 1));
-    [app.wizardPairs[i], app.wizardPairs[r]] = [app.wizardPairs[r], app.wizardPairs[i]];
-  }
-
-  app.wizardChoices = Array(app.wizardPairs.length).fill(null);
+  trackWizardUsed();
+  app.wizardReviewMode = false;
+  app.wizardEngine = new MergeSortWizard(candidates);
+  app.wizardEngine.advance();
   app.wizardCurrentIndex = 0;
-  app.recalculateWizardScores();
 
   document.getElementById('btn-wizard-show-results')?.classList.add('hidden');
 
   if (resultsArea) resultsArea.classList.add('hidden');
   if (duelArea) duelArea.classList.remove('hidden');
+  app.saveWizardState();
   renderDuelStep();
 }
 
@@ -1559,19 +1526,31 @@ function formatWizardRankDisplay(item) {
 }
 
 function renderDuelStep() {
-  const totalPairs = app.wizardPairs.length;
+  const engine = app.wizardEngine;
+  if (!engine) return;
 
-  if (app.wizardCurrentIndex >= totalPairs) {
-    const firstUnanswered = app.wizardChoices.indexOf(null);
-    if (firstUnanswered !== -1) {
-      app.wizardCurrentIndex = firstUnanswered;
-    } else {
-      finishWizard();
-      return;
-    }
+  if (!engine.currentQuestion && !engine.isComplete()) {
+    engine.advance();
   }
 
-  const [itemA, itemB] = app.wizardPairs[app.wizardCurrentIndex];
+  if (engine.isComplete()) {
+    if (app.wizardReviewMode) {
+      const stepText = document.getElementById('duel-step-text');
+      if (stepText) {
+        stepText.textContent = 'Sıralama tamamlandı. Yan panelden seçimleri düzenleyebilirsiniz.';
+      }
+      renderWizardQuestionsList();
+      return;
+    }
+    finishWizard();
+    return;
+  }
+
+  const q = engine.currentQuestion;
+  if (!q) return;
+
+  app.wizardCurrentIndex = q.comparisonIndex;
+  const { itemA, itemB } = q;
   const cardA = document.getElementById('option-a-card');
   const cardB = document.getElementById('option-b-card');
   if (cardA) cardA.dataset.itemId = String(itemA.id);
@@ -1580,37 +1559,33 @@ function renderDuelStep() {
   const stepText = document.getElementById('duel-step-text');
   const fillBar = document.getElementById('duel-progress-fill');
 
-  const currentStep = app.wizardCurrentIndex + 1;
-  const answeredCount = app.wizardChoices.filter(c => c !== null).length;
+  const answeredCount = engine.userAnswers.length;
+  const estimatedTotal = engine.getEstimatedMaxQuestions();
+  const inferredCount = engine.comparisons.filter((c) => c.inferred).length;
 
   if (stepText) {
-    stepText.textContent = `Karşılaştırma ${currentStep} / ${totalPairs} (${answeredCount} / ${totalPairs} Cevaplandı)`;
+    stepText.textContent = inferredCount > 0
+      ? `Karşılaştırma ${answeredCount + 1} (${answeredCount} cevap, ${inferredCount} otomatik, ~${estimatedTotal} tahmini)`
+      : `Karşılaştırma ${answeredCount + 1} (${answeredCount} cevap, ~${estimatedTotal} tahmini)`;
   }
   if (fillBar) {
-    fillBar.style.width = `${(answeredCount / totalPairs) * 100}%`;
+    const pct = estimatedTotal > 0 ? Math.min((answeredCount / estimatedTotal) * 100, 100) : 0;
+    fillBar.style.width = `${pct}%`;
   }
 
   const undoBtn = document.getElementById('btn-wizard-undo');
   if (undoBtn) {
-    undoBtn.disabled = app.wizardCurrentIndex === 0;
+    undoBtn.disabled = engine.userAnswers.length === 0;
   }
 
   const showResultsBtn = document.getElementById('btn-wizard-show-results');
   if (showResultsBtn) {
-    if (app.wizardChoices.every(c => c !== null)) {
-      showResultsBtn.classList.remove('hidden');
-    } else {
-      showResultsBtn.classList.add('hidden');
-    }
+    showResultsBtn.classList.toggle('hidden', !engine.isComplete());
   }
 
-  // Highlight selected card if answered already
-  const currentChoice = app.wizardChoices[app.wizardCurrentIndex];
   if (cardA && cardB) {
     cardA.classList.remove('selected-card-highlight');
     cardB.classList.remove('selected-card-highlight');
-    if (currentChoice === 'A') cardA.classList.add('selected-card-highlight');
-    if (currentChoice === 'B') cardB.classList.add('selected-card-highlight');
   }
 
   // Option A Card
@@ -1639,36 +1614,27 @@ function renderDuelStep() {
 }
 
 function handleDuelChoice(choice) {
-  if (app.wizardCurrentIndex >= app.wizardPairs.length) return;
+  const engine = app.wizardEngine;
+  if (!engine?.currentQuestion) return;
 
-  app.wizardChoices[app.wizardCurrentIndex] = choice;
-  app.recalculateWizardScores();
+  engine.submitAnswer(choice);
+  engine.advance();
   app.saveWizardState();
 
-  app.wizardCurrentIndex++;
-
-  const allAnswered = app.wizardChoices.every(c => c !== null);
-  if (allAnswered) {
-    const firstUnanswered = app.wizardChoices.indexOf(null);
-    if (firstUnanswered === -1) {
-      finishWizard();
-    } else {
-      app.wizardCurrentIndex = firstUnanswered;
-      renderDuelStep();
-    }
+  if (engine.isComplete()) {
+    finishWizard();
   } else {
     renderDuelStep();
   }
 }
 
 function handleWizardUndo() {
-  if (app.wizardCurrentIndex > 0) {
-    app.wizardCurrentIndex--;
-    app.wizardChoices[app.wizardCurrentIndex] = null;
-    app.recalculateWizardScores();
-    app.saveWizardState();
-    renderDuelStep();
-  }
+  const engine = app.wizardEngine;
+  if (!engine?.undoLastUserAnswer()) return;
+
+  app.wizardCurrentIndex = Math.max(engine.comparisons.length - 1, 0);
+  app.saveWizardState();
+  renderDuelStep();
 }
 
 function getWizardShortName(fullName) {
@@ -1676,7 +1642,7 @@ function getWizardShortName(fullName) {
 }
 
 function getWizardAnsweredCount() {
-  return app.wizardChoices.filter(c => c !== null).length;
+  return app.wizardEngine?.userAnswers?.length || 0;
 }
 
 function updateWizardHistoryBadge() {
@@ -1684,17 +1650,17 @@ function updateWizardHistoryBadge() {
   if (!toggleBtn) return;
 
   const answered = getWizardAnsweredCount();
-  const total = app.wizardPairs.length;
+  const estimated = app.wizardEngine?.getEstimatedMaxQuestions() || 0;
   const badge = toggleBtn.querySelector('.wizard-history-badge');
 
-  if (!total || answered === 0) {
+  if (!estimated || answered === 0) {
     badge?.remove();
     return;
   }
 
   const label = badge || document.createElement('span');
   label.className = 'wizard-history-badge';
-  label.textContent = `${answered}/${total}`;
+  label.textContent = `${answered}/${estimated}~`;
   if (!badge) toggleBtn.appendChild(label);
 }
 
@@ -1707,24 +1673,39 @@ function syncWizardListFilterUI() {
 }
 
 function getFilteredWizardEntries() {
-  return app.wizardPairs
-    .map((pair, idx) => ({ pair, idx, choice: app.wizardChoices[idx] }))
-    .filter(({ choice }) => {
-      if (app.wizardListFilter === 'answered') return choice !== null;
-      if (app.wizardListFilter === 'pending') return choice === null;
+  const engine = app.wizardEngine;
+  if (!engine) return [];
+
+  return engine.comparisons
+    .map((comp, idx) => ({ comp, idx }))
+    .filter(({ comp }) => {
+      if (app.wizardListFilter === 'answered') return comp.choice !== null;
+      if (app.wizardListFilter === 'pending') return comp.choice === null;
       return true;
     });
 }
 
-function buildWizardQuestionItem(pair, idx, choice, isActive, { readOnly = false } = {}) {
+function getComparisonItems(comp) {
+  const itemA = app.data.find((x) => x.id === comp.idA);
+  const itemB = app.data.find((x) => x.id === comp.idB);
+  return itemA && itemB ? [itemA, itemB] : null;
+}
+
+function buildWizardQuestionItem(comp, idx, isActive, { readOnly = false } = {}) {
+  const pair = getComparisonItems(comp);
+  if (!pair) return null;
+
   const [itemA, itemB] = pair;
+  const choice = comp.choice;
   const uNameA = getWizardShortName(itemA.full_name);
   const uNameB = getWizardShortName(itemB.full_name);
   const winnerName = choice === 'A' ? uNameA : choice === 'B' ? uNameB : null;
-  const statusText = winnerName ? `→ ${winnerName}` : 'Bekliyor';
+  const statusText = comp.inferred
+    ? (winnerName ? `↪ ${winnerName} (otomatik)` : 'Otomatik')
+    : (winnerName ? `→ ${winnerName}` : 'Bekliyor');
 
   const itemDiv = document.createElement('div');
-  itemDiv.className = `question-item${isActive ? ' active' : ''}${choice ? ' answered' : ''}`;
+  itemDiv.className = `question-item${isActive ? ' active' : ''}${choice ? ' answered' : ''}${comp.inferred ? ' inferred' : ''}`;
   itemDiv.dataset.index = idx;
 
   itemDiv.innerHTML = `
@@ -1733,35 +1714,38 @@ function buildWizardQuestionItem(pair, idx, choice, isActive, { readOnly = false
       <span class="question-item-status">${statusText}</span>
     </div>
     <div class="question-item-options">
-      <button type="button" class="q-opt-btn ${choice === 'A' ? 'selected' : ''}" data-choice="A" title="${eh(itemA.full_name)}" ${readOnly ? 'tabindex="-1"' : ''}>${eh(uNameA)}</button>
+      <button type="button" class="q-opt-btn ${choice === 'A' ? 'selected' : ''}" data-choice="A" title="${eh(itemA.full_name)}" ${readOnly || comp.inferred ? 'tabindex="-1"' : ''}>${eh(uNameA)}</button>
       <span class="question-item-vs">vs</span>
-      <button type="button" class="q-opt-btn ${choice === 'B' ? 'selected' : ''}" data-choice="B" title="${eh(itemB.full_name)}" ${readOnly ? 'tabindex="-1"' : ''}>${eh(uNameB)}</button>
+      <button type="button" class="q-opt-btn ${choice === 'B' ? 'selected' : ''}" data-choice="B" title="${eh(itemB.full_name)}" ${readOnly || comp.inferred ? 'tabindex="-1"' : ''}>${eh(uNameB)}</button>
     </div>
   `;
 
   return itemDiv;
 }
 
-function attachWizardQuestionItemHandlers(itemDiv, idx, { readOnly = false, onAfterChange } = {}) {
+function attachWizardQuestionItemHandlers(itemDiv, idx, comp, { readOnly = false, onAfterChange } = {}) {
   itemDiv.addEventListener('click', (e) => {
     const optBtn = e.target.closest('.q-opt-btn');
-    if (optBtn && !readOnly) {
+    if (optBtn && !readOnly && !comp.inferred) {
       e.stopPropagation();
-      app.wizardChoices[idx] = optBtn.dataset.choice;
-      app.recalculateWizardScores();
-      app.saveWizardState();
+      const engine = app.wizardEngine;
+      if (!engine) return;
 
-      if (app.wizardChoices.every(c => c !== null)) {
-        const resultsArea = document.getElementById('wizard-final-results');
-        if (resultsArea && !resultsArea.classList.contains('hidden')) {
-          finishWizard();
-          return;
-        }
+      app.wizardReviewMode = false;
+      const newChoice = optBtn.dataset.choice;
+      const userIdx = engine.getUserAnswerIndexForComparison(idx);
+      if (userIdx >= 0) {
+        engine.truncateFromUserAnswerIndex(userIdx);
+        engine.advance();
       }
-
+      if (engine.currentQuestion) {
+        handleDuelChoice(newChoice);
+      }
       if (typeof onAfterChange === 'function') onAfterChange();
       return;
     }
+
+    if (comp.inferred) return;
 
     app.wizardCurrentIndex = idx;
     if (readOnly) {
@@ -1790,10 +1774,11 @@ function renderWizardQuestionsList() {
     return;
   }
 
-  entries.forEach(({ pair, idx, choice }) => {
+  entries.forEach(({ comp, idx }) => {
     const isActive = idx === app.wizardCurrentIndex;
-    const itemDiv = buildWizardQuestionItem(pair, idx, choice, isActive);
-    attachWizardQuestionItemHandlers(itemDiv, idx, { onAfterChange: renderDuelStep });
+    const itemDiv = buildWizardQuestionItem(comp, idx, isActive);
+    if (!itemDiv) return;
+    attachWizardQuestionItemHandlers(itemDiv, idx, comp, { onAfterChange: renderDuelStep });
     listContainer.appendChild(itemDiv);
   });
 
@@ -1810,9 +1795,9 @@ function renderWizardResultsAnswersList() {
   const section = document.getElementById('wizard-results-answers');
   if (!listContainer || !section) return;
 
-  const answeredEntries = app.wizardPairs
-    .map((pair, idx) => ({ pair, idx, choice: app.wizardChoices[idx] }))
-    .filter(({ choice }) => choice !== null);
+  const answeredEntries = app.wizardEngine?.comparisons
+    .map((comp, idx) => ({ comp, idx }))
+    .filter(({ comp }) => comp.choice !== null && !comp.inferred) || [];
 
   if (!answeredEntries.length) {
     section.classList.add('hidden');
@@ -1822,43 +1807,30 @@ function renderWizardResultsAnswersList() {
   section.classList.remove('hidden');
   listContainer.innerHTML = '';
 
-  answeredEntries.forEach(({ pair, idx, choice }) => {
-    const itemDiv = buildWizardQuestionItem(pair, idx, choice, false, { readOnly: true });
-    attachWizardQuestionItemHandlers(itemDiv, idx, { readOnly: true });
+  answeredEntries.forEach(({ comp, idx }) => {
+    const itemDiv = buildWizardQuestionItem(comp, idx, false, { readOnly: true });
+    if (!itemDiv) return;
+    attachWizardQuestionItemHandlers(itemDiv, idx, comp, { readOnly: true });
     listContainer.appendChild(itemDiv);
   });
 }
 
 function finishWizard() {
+  app.wizardReviewMode = false;
   document.getElementById('wizard-active-duel').classList.add('hidden');
   const resultsArea = document.getElementById('wizard-final-results');
   const tbody = document.getElementById('wizard-final-tbody');
+  const engine = app.wizardEngine;
+  if (!engine) return;
 
-  const candidates = app.favoriteOrder
-    .map(id => app.data.find(x => x.id === id))
-    .filter(Boolean);
-
-  const totalRoundsPerItem = candidates.length - 1;
-
-  const sortedCandidates = [...candidates].sort((a, b) => {
-    const winsA = app.wizardScores[a.id] || 0;
-    const winsB = app.wizardScores[b.id] || 0;
-    if (winsB !== winsA) return winsB - winsA;
-
-    if (app.wizardHeadToHead && app.wizardHeadToHead[`${a.id}_vs_${b.id}`]) return -1;
-    if (app.wizardHeadToHead && app.wizardHeadToHead[`${b.id}_vs_${a.id}`]) return 1;
-
-    return (b.rating || 0) - (a.rating || 0);
-  });
-
-  const rankedIds = sortedCandidates.map(x => x.id);
+  const sortedCandidates = engine.getResult() || [];
+  const userComparisons = engine.userAnswers.length;
+  const inferredComparisons = engine.comparisons.filter((c) => c.inferred).length;
+  const rankedIds = sortedCandidates.map((x) => x.id);
 
   tbody.innerHTML = '';
 
   sortedCandidates.forEach((item, index) => {
-    const wins = app.wizardScores[item.id] || 0;
-    const winRate = totalRoundsPerItem > 0 ? Math.round((wins / totalRoundsPerItem) * 100) : 0;
-
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="font-family: var(--font-mono); font-weight:700; text-align:center;">#${index + 1}</td>
@@ -1869,7 +1841,7 @@ function finishWizard() {
       <td>${item.city}</td>
       <td>
         <span class="score-pill">
-          ${wins} / ${totalRoundsPerItem} Galibiyet (%${winRate})
+          ${userComparisons} soru${inferredComparisons > 0 ? `, ${inferredComparisons} otomatik` : ''}
         </span>
       </td>
     `;
@@ -1907,8 +1879,7 @@ function finishWizard() {
   document.getElementById('btn-edit-wizard-choices').onclick = () => {
     resultsArea.classList.add('hidden');
     document.getElementById('wizard-active-duel').classList.remove('hidden');
-    // Start by editing the first step, or keep it at the end
-    app.wizardCurrentIndex = 0;
+    app.wizardReviewMode = true;
     renderDuelStep();
   };
 
