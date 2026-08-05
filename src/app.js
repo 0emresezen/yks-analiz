@@ -1,4 +1,26 @@
-import { initDataModule, getProgramById } from './data.js';
+import {
+  ensureCampusMetricsOnItem,
+  applyAcademicHeuristic,
+  loadCampusMetricsIndex,
+} from './campusMetrics.js';
+import {
+  initDataModule,
+  getProgramCard,
+  loadProgramDetail,
+  loadProgramIndex,
+  loadFilterIndexes,
+  fetchProgramsByIds as fetchProgramsByIdsLocal,
+} from './data.js';
+import {
+  isSupabaseDataEnabled,
+  fetchProgramsByIds as fetchProgramsByIdsSupabase,
+  fetchFilterOptions,
+  searchPrograms,
+} from './analysisRepository.js';
+
+const fetchProgramsByIds = (ids) => (
+  isSupabaseDataEnabled() ? fetchProgramsByIdsSupabase(ids) : fetchProgramsByIdsLocal(ids)
+);
 import {
   escapeHtml as eh,
   escapeAttr as ea,
@@ -63,14 +85,15 @@ export function sanitizeItem(item) {
 }
 
 const PAGE_SIZE = 100;
+const VIRTUAL_ROW_HEIGHT = 52;
+const VIRTUAL_OVERSCAN = 6;
 let MASTER_DATABASE = [];
 
 const itemId = (raw) => String(raw);
 
 const bootstrapDatabase = async () => {
-  const raw = await initDataModule();
-  MASTER_DATABASE = raw.map(sanitizeItem);
-  return MASTER_DATABASE;
+  MASTER_DATABASE = await initDataModule();
+  return isSupabaseDataEnabled();
 };
 
 // SVG Icon Helper Constants (Pure Monochrome / Emoji-Free)
@@ -97,7 +120,12 @@ const DEFAULT_RATING_WEIGHTS = {
 
 class MasterApp {
   constructor() {
-    this.data = this.loadState();
+    this.useSupabase = false;
+    this.data = [];
+    this.totalCount = 0;
+    this.isLoadingPrograms = false;
+    this.filterRefreshTimer = null;
+    this.favoriteCache = new Map();
     this.viewMode = 'scores'; // 'scores' (Puanlar 1-10) or 'descriptions' (Metinler)
     this.filterDegree = 'all'; // 'all', 'Lisans (4Y)', 'Önlisans (2Y)'
     this.searchQuery = '';
@@ -106,7 +134,7 @@ class MasterApp {
     this.tuitionFilter = '';
     this.minRatingFilter = 0; // 0, 5, 6, 7, 8, 9
     this.sortOrder = 'rating-desc';
-    this.currentPage = 1;
+    this.virtualScrollTop = 0;
 
     // Favorites Order Array of IDs
     this.favoriteOrder = this.loadFavoriteOrder();
@@ -167,60 +195,187 @@ class MasterApp {
     localStorage.setItem(key, JSON.stringify(value));
   }
 
-  loadState() {
-    let deletedIds = [];
+  ensureListBootstrapped() {
+    const hasExistingState =
+      localStorage.getItem('yks_deleted_ids') ||
+      localStorage.getItem('yks_master_v8_employability_data') ||
+      localStorage.getItem('yks_cleared_list') ||
+      localStorage.getItem('yks_custom_programs');
+    if (hasExistingState || localStorage.getItem('yks_list_bootstrapped_v1')) return;
 
+    if (!this.useSupabase && MASTER_DATABASE.length) {
+      localStorage.setItem(
+        'yks_deleted_ids',
+        JSON.stringify(MASTER_DATABASE.map((x) => x.id))
+      );
+    }
+    localStorage.setItem('yks_list_bootstrapped_v1', '1');
+  }
+
+  getPersistedListIds() {
+    const ids = new Set();
+    const deletedSet = new Set();
+
+    try {
+      const deleted = localStorage.getItem('yks_deleted_ids');
+      if (deleted) JSON.parse(deleted).forEach((d) => deletedSet.add(itemId(d)));
+    } catch (e) {}
+
+    try {
+      const saved = localStorage.getItem('yks_master_v8_employability_data');
+      if (saved) {
+        JSON.parse(saved).forEach((row) => {
+          if (row?.id != null) ids.add(itemId(row.id));
+        });
+      }
+    } catch (e) {}
+
+    if (ids.size > 0) {
+      return [...ids].filter((id) => !deletedSet.has(id));
+    }
+
+    if (!this.useSupabase) {
+      return MASTER_DATABASE
+        .filter((x) => !deletedSet.has(itemId(x.id)))
+        .map((x) => itemId(x.id));
+    }
+
+    return [];
+  }
+
+  loadCustomPrograms() {
+    try {
+      const raw = localStorage.getItem('yks_custom_programs');
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.map((row) => sanitizeItem(row)) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  unmarkDeleted(id) {
+    const key = itemId(id);
+    try {
+      const deletedIds = JSON.parse(localStorage.getItem('yks_deleted_ids') || '[]');
+      const filtered = deletedIds.filter((d) => itemId(d) !== key);
+      if (filtered.length !== deletedIds.length) {
+        localStorage.setItem('yks_deleted_ids', JSON.stringify(filtered));
+      }
+    } catch (e) {}
+  }
+
+  loadState() {
+    const enrichedMaster = MASTER_DATABASE.map((item) => applyMetricSnapshot(item));
+    const fromMaster = this.applyUserStateToPrograms(enrichedMaster);
+    const masterIds = new Set(fromMaster.map((x) => itemId(x.id)));
+    const custom = this.loadCustomPrograms().filter((c) => !masterIds.has(itemId(c.id)));
+    return [...fromMaster, ...custom];
+  }
+
+  async loadUserList() {
+    const persistedIds = this.getPersistedListIds();
+    const custom = this.loadCustomPrograms();
+    const customIdSet = new Set(custom.map((c) => itemId(c.id)));
+    const catalogIds = persistedIds.filter((id) => !customIdSet.has(itemId(id)));
+
+    let catalogPrograms = [];
+    if (catalogIds.length > 0) {
+      catalogPrograms = this.applyUserStateToPrograms(await fetchProgramsByIds(catalogIds));
+    }
+
+    const catalogIdSet = new Set(catalogPrograms.map((x) => itemId(x.id)));
+    const extraCustom = custom.filter((c) => !catalogIdSet.has(itemId(c.id)));
+    this.data = [...catalogPrograms, ...extraCustom];
+    this.totalCount = this.data.length;
+    this.data.forEach((item) => {
+      if (item.isFavorite) this.favoriteCache.set(item.id, item);
+    });
+    this.updateStats();
+  }
+
+  applyUserStateToPrograms(programs) {
+    let deletedIds = [];
     try {
       const deleted = localStorage.getItem('yks_deleted_ids');
       if (deleted) deletedIds = JSON.parse(deleted);
     } catch (e) {}
 
-    const deletedSet = new Set(deletedIds);
-    const saved = localStorage.getItem('yks_master_v8_employability_data');
-    const savedFavorites = localStorage.getItem('yks_favorite_ids');
+    const deletedSet = new Set(deletedIds.map(itemId));
     let favoriteIds = new Set();
     try {
-      if (savedFavorites) favoriteIds = new Set(JSON.parse(savedFavorites));
+      const savedFavorites = localStorage.getItem('yks_favorite_ids');
+      if (savedFavorites) favoriteIds = new Set(JSON.parse(savedFavorites).map(itemId));
     } catch (e) {}
 
-    const mergeSavedFields = (item) => {
-      const rating = this.calculateRating(item);
-      const isFavorite = favoriteIds.has(item.id) || favoriteIds.has(String(item.id));
-
-      if (!saved) return { ...item, rating, isFavorite };
-
+    const saved = localStorage.getItem('yks_master_v8_employability_data');
+    let savedMap = new Map();
+    if (saved) {
       try {
-        const parsed = JSON.parse(saved);
-        const match = parsed.find(x => String(x.id) === String(item.id));
-        if (match) {
-          return {
-            ...item,
-            rating,
-            notes: typeof match.notes === 'string' ? sanitizePlainText(match.notes) : match.notes,
-            isFavorite: typeof match.isFavorite === 'boolean' ? match.isFavorite : isFavorite
-          };
-        }
+        JSON.parse(saved).forEach((row) => savedMap.set(itemId(row.id), row));
       } catch (e) {}
+    }
 
-      return { ...item, rating, isFavorite };
-    };
+    return programs
+      .filter((item) => !deletedSet.has(itemId(item.id)))
+      .map((item) => {
+        const id = itemId(item.id);
+        const savedRow = savedMap.get(id);
+        const isFavorite = savedRow?.isFavorite ?? favoriteIds.has(id) ?? false;
+        const notes = savedRow?.notes ?? item.notes ?? '-';
+        return {
+          ...item,
+          isFavorite,
+          notes: typeof notes === 'string' ? notes : '-',
+          rating: item.rating ?? (item.overall_rating != null ? item.overall_rating / 10 : null),
+        };
+      });
+  }
 
-    return MASTER_DATABASE
-      .filter(item => !deletedSet.has(item.id))
-      .map(mergeSavedFields);
+  async refreshPrograms() {
+    if (!this.useSupabase) return;
+    this.isLoadingPrograms = true;
+    try {
+      const { programs, total } = await searchPrograms({
+        search: this.searchQuery,
+        city: this.cityFilter,
+        degree: this.filterDegree,
+        language: this.langFilter,
+        tuition: this.tuitionFilter,
+        minRating: this.minRatingFilter,
+        sort: this.sortOrder,
+        limit: PAGE_SIZE,
+      });
+      this.data = this.applyUserStateToPrograms(programs);
+      this.totalCount = total;
+      this.data.forEach((item) => {
+        if (item.isFavorite) this.favoriteCache.set(item.id, item);
+      });
+    } finally {
+      this.isLoadingPrograms = false;
+      this.updateStats();
+    }
+  }
+
+  scheduleDataRefresh() {
+    resetTablePage();
+    renderMasterTable();
   }
 
   saveState() {
-    const masterIds = new Set(MASTER_DATABASE.map(x => x.id));
-    const stateToSave = this.data.map(item => ({
+    const masterIds = new Set(MASTER_DATABASE.map((x) => itemId(x.id)));
+    const stateToSave = this.data.map((item) => ({
       id: item.id,
       rating: item.rating,
       notes: typeof item.notes === 'string' ? sanitizePlainText(item.notes) : item.notes,
-      isFavorite: item.isFavorite
+      isFavorite: item.isFavorite,
     }));
     localStorage.setItem('yks_master_v8_employability_data', JSON.stringify(stateToSave));
 
-    const customPrograms = this.data.filter(item => !masterIds.has(item.id));
+    const customPrograms = this.data.filter((item) => {
+      if (this.useSupabase) return /^\d+$/.test(itemId(item.id));
+      return !masterIds.has(itemId(item.id));
+    });
     localStorage.setItem('yks_custom_programs', JSON.stringify(customPrograms));
 
     this.updateStats();
@@ -234,7 +389,7 @@ class MasterApp {
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) {}
     }
-    return MASTER_DATABASE.map(x => x.id);
+    return [];
   }
 
   saveFavoriteOrder() {
@@ -243,24 +398,26 @@ class MasterApp {
 
   toggleFavorite(id) {
     const key = itemId(id);
-    const item = this.data.find(x => itemId(x.id) === key);
+    const item = this.data.find((x) => itemId(x.id) === key) || this.favoriteCache.get(key);
     if (!item) return;
 
     item.isFavorite = !item.isFavorite;
     if (item.isFavorite) {
+      this.favoriteCache.set(key, item);
       if (!this.favoriteOrder.includes(id)) {
         this.favoriteOrder.push(id);
       }
     } else {
-      this.favoriteOrder = this.favoriteOrder.filter(x => x !== id);
+      this.favoriteOrder = this.favoriteOrder.filter((x) => x !== id);
     }
+
     this.saveState();
     this.saveFavoriteOrder();
     this.updateStats();
   }
 
   clearAllFavorites() {
-    this.data.forEach(item => {
+    this.data.forEach((item) => {
       item.isFavorite = false;
     });
     this.favoriteOrder = [];
@@ -269,18 +426,19 @@ class MasterApp {
     this.updateStats();
   }
 
-  deleteItem(id) {
+  async deleteItem(id) {
     const key = itemId(id);
-    const index = this.data.findIndex(x => itemId(x.id) === key);
+    const index = this.data.findIndex((x) => itemId(x.id) === key);
     if (index === -1) return null;
     const item = this.data[index];
     const wasFavorite = item.isFavorite || this.favoriteOrder.map(itemId).includes(key);
-    const masterIds = new Set(MASTER_DATABASE.map(x => itemId(x.id)));
+    const masterIds = new Set(MASTER_DATABASE.map((x) => itemId(x.id)));
+    const isLocalCustom = /^\d+$/.test(key) && !masterIds.has(key);
 
     this.data.splice(index, 1);
-    this.favoriteOrder = this.favoriteOrder.filter(x => itemId(x) !== key);
+    this.favoriteOrder = this.favoriteOrder.filter((x) => itemId(x) !== key);
 
-    if (masterIds.has(key)) {
+    if (masterIds.has(key) || (this.useSupabase && !isLocalCustom)) {
       const deletedIds = JSON.parse(localStorage.getItem('yks_deleted_ids') || '[]');
       if (!deletedIds.map(itemId).includes(key)) {
         deletedIds.push(key);
@@ -305,6 +463,7 @@ class MasterApp {
     if (wasFavorite && !this.favoriteOrder.includes(item.id)) {
       this.favoriteOrder.push(item.id);
     }
+    this.unmarkDeleted(item.id);
     this.saveState();
     this.saveFavoriteOrder();
     this.updateStats();
@@ -313,8 +472,12 @@ class MasterApp {
   restoreAllItems() {
     localStorage.setItem('yks_cleared_list', 'true');
     localStorage.setItem('yks_custom_programs', '[]');
-    localStorage.setItem('yks_deleted_ids', JSON.stringify(MASTER_DATABASE.map(x => x.id)));
     localStorage.setItem('yks_master_v8_employability_data', '[]');
+    if (!this.useSupabase && MASTER_DATABASE.length) {
+      localStorage.setItem('yks_deleted_ids', JSON.stringify(MASTER_DATABASE.map((x) => x.id)));
+    } else {
+      localStorage.setItem('yks_deleted_ids', '[]');
+    }
     this.data = [];
     this.favoriteOrder = [];
     this.saveFavoriteOrder();
@@ -322,7 +485,7 @@ class MasterApp {
   }
 
   updateItem(id, key, value) {
-    const item = this.data.find(x => x.id === id);
+    const item = this.data.find((x) => x.id === id);
     if (item) {
       item[key] = value;
       this.saveState();
@@ -330,23 +493,26 @@ class MasterApp {
   }
 
   getNextId() {
-    if (this.data.length === 0) return 1;
-    return Math.max(...this.data.map(x => x.id)) + 1;
+    const numericIds = this.data
+      .map((x) => Number(x.id))
+      .filter((n) => Number.isFinite(n) && n > 0);
+    if (!numericIds.length) return 1;
+    return Math.max(...numericIds) + 1;
   }
 
   addProgramItem(item) {
     localStorage.removeItem('yks_cleared_list');
+    this.unmarkDeleted(item.id);
     this.data.push(item);
     this.saveState();
     this.updateStats();
   }
 
   syncFavoritesList() {
-    const favIds = this.data.filter(x => x.isFavorite).map(x => x.id);
+    const favIds = this.data.filter((x) => x.isFavorite).map((x) => x.id);
 
-    // Keep existing order, add new favs, remove unfavs
-    this.favoriteOrder = this.favoriteOrder.filter(id => favIds.includes(id));
-    favIds.forEach(id => {
+    this.favoriteOrder = this.favoriteOrder.filter((id) => favIds.includes(id));
+    favIds.forEach((id) => {
       if (!this.favoriteOrder.includes(id)) {
         this.favoriteOrder.push(id);
       }
@@ -359,9 +525,10 @@ class MasterApp {
     const favEl = document.getElementById('stat-fav-count');
     const favHeaderCount = document.getElementById('fav-count-header');
 
-    const favCount = this.data.filter(x => x.isFavorite).length;
+    const favCount = this.data.filter((x) => x.isFavorite).length;
+    const totalDisplay = this.getFilteredData().length;
 
-    if (totalEl) totalEl.textContent = this.getFilteredData().length;
+    if (totalEl) totalEl.textContent = totalDisplay;
     if (favEl) favEl.textContent = favCount;
     if (favHeaderCount) favHeaderCount.textContent = favCount;
   }
@@ -514,16 +681,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     if (loader) loader.classList.remove('hidden');
     await bootstrapDatabase();
-    app.data = app.loadState();
+    await loadCampusMetricsIndex(2026);
+    app.useSupabase = isSupabaseDataEnabled();
+    app.ensureListBootstrapped();
+    await app.loadUserList();
+    app.favoriteOrder = app.loadFavoriteOrder();
+    const catalogTotal = app.useSupabase
+      ? (await searchPrograms({ limit: 1 })).total
+      : MASTER_DATABASE.length;
     const subtitle = document.querySelector('.subtitle');
     if (subtitle) {
-      subtitle.textContent = `${MASTER_DATABASE.length.toLocaleString('tr-TR')} Program | Deterministik Karar Motoru`;
+      subtitle.textContent = `${catalogTotal.toLocaleString('tr-TR')} Program | Deterministik Karar Motoru`;
     }
-    const totalBadge = document.getElementById('stat-total-count');
-    if (totalBadge) totalBadge.textContent = MASTER_DATABASE.length.toLocaleString('tr-TR');
+    app.updateStats();
   } catch (e) {
     console.error('Veritabanı yükleme hatası:', e);
-    alert('Analiz veritabanı yüklenemedi. Lütfen build_analysis_database.py çalıştırın.');
+    alert(app.useSupabase
+      ? 'Supabase veritabanı yüklenemedi. Şema ve migration scriptini kontrol edin.'
+      : 'Analiz veritabanı yüklenemedi. Lütfen build_analysis_database.py çalıştırın.');
   } finally {
     if (loader) loader.classList.add('hidden');
   }
@@ -534,9 +709,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupNavTabs();
   setupFilterEvents();
   setupViewModeToggle();
-  populateDropdowns();
+  await populateDropdowns();
   renderMasterTable();
-  renderFavoritesList();
+  await renderFavoritesList();
   setupModalEvents();
   setupAddProgramModal();
   setupDisclaimer();
@@ -588,10 +763,25 @@ function setupViewModeToggle() {
   });
 }
 
-function populateDropdowns() {
+async function populateDropdowns() {
   const citySelect = document.getElementById('filter-city');
   if (citySelect) {
-    const cities = [...new Set(app.data.map(x => x.city))].sort();
+    let cities = [];
+    if (app.useSupabase) {
+      try {
+        const opts = await fetchFilterOptions();
+        cities = opts.cities || [];
+      } catch (e) {
+        console.warn('Şehir listesi yüklenemedi', e);
+      }
+    } else {
+      try {
+        const indexes = await loadFilterIndexes();
+        cities = Object.keys(indexes.city || {}).sort();
+      } catch (e) {
+        cities = [...new Set(MASTER_DATABASE.map((x) => x.city).filter(Boolean))].sort();
+      }
+    }
     citySelect.innerHTML = '<option value="">Tümü</option>';
     cities.forEach(c => {
       const opt = document.createElement('option');
@@ -603,13 +793,14 @@ function populateDropdowns() {
 }
 
 function setupFilterEvents() {
+  const refresh = () => app.scheduleDataRefresh();
+
   document.querySelectorAll('.filter-bar .seg-btn[data-filter-degree]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-bar .seg-btn[data-filter-degree]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       app.filterDegree = btn.dataset.filterDegree;
-      resetTablePage();
-      renderMasterTable();
+      refresh();
     });
   });
 
@@ -617,8 +808,7 @@ function setupFilterEvents() {
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       app.searchQuery = e.target.value;
-      resetTablePage();
-      renderMasterTable();
+      refresh();
     });
   }
 
@@ -628,11 +818,11 @@ function setupFilterEvents() {
   const minRatingSelect = document.getElementById('filter-min-rating');
   const sortSelect = document.getElementById('sort-order');
 
-  if (citySelect) citySelect.addEventListener('change', (e) => { app.cityFilter = e.target.value; resetTablePage(); renderMasterTable(); });
-  if (langSelect) langSelect.addEventListener('change', (e) => { app.langFilter = e.target.value; resetTablePage(); renderMasterTable(); });
-  if (tuitionSelect) tuitionSelect.addEventListener('change', (e) => { app.tuitionFilter = e.target.value; resetTablePage(); renderMasterTable(); });
-  if (minRatingSelect) minRatingSelect.addEventListener('change', (e) => { app.minRatingFilter = parseFloat(e.target.value) || 0; resetTablePage(); renderMasterTable(); });
-  if (sortSelect) sortSelect.addEventListener('change', (e) => { app.sortOrder = e.target.value; resetTablePage(); renderMasterTable(); });
+  if (citySelect) citySelect.addEventListener('change', (e) => { app.cityFilter = e.target.value; refresh(); });
+  if (langSelect) langSelect.addEventListener('change', (e) => { app.langFilter = e.target.value; refresh(); });
+  if (tuitionSelect) tuitionSelect.addEventListener('change', (e) => { app.tuitionFilter = e.target.value; refresh(); });
+  if (minRatingSelect) minRatingSelect.addEventListener('change', (e) => { app.minRatingFilter = parseFloat(e.target.value) || 0; refresh(); });
+  if (sortSelect) sortSelect.addEventListener('change', (e) => { app.sortOrder = e.target.value; refresh(); });
 
   const restoreBtn = document.getElementById('btn-restore-all');
   if (restoreBtn) {
@@ -653,50 +843,102 @@ function setupFilterEvents() {
       if (sortKey) {
         app.sortOrder = sortKey;
         if (sortSelect) sortSelect.value = sortKey;
-        renderMasterTable();
+        app.scheduleDataRefresh();
       }
     });
   });
 }
 
 function resetTablePage() {
-  app.currentPage = 1;
+  app.virtualScrollTop = 0;
+  const container = document.getElementById('master-scroll-container');
+  if (container) container.scrollTop = 0;
 }
 
-function renderTablePagination(total, totalPages, startIndex) {
+function attachVirtualScroll() {
+  const container = document.getElementById('master-scroll-container');
+  if (!container || container.dataset.virtualBound) return;
+  container.dataset.virtualBound = '1';
+  container.addEventListener('scroll', () => {
+    app.virtualScrollTop = container.scrollTop;
+    renderMasterTable();
+  }, { passive: true });
+}
+
+const buildRowHtml = (item) => {
+  const lastRankStr = item.last_rank ? item.last_rank.toLocaleString('tr-TR') : '-';
+  const predRankStr = item.prediction && typeof item.prediction.tahmini_skor === 'number'
+    ? item.prediction.tahmini_skor.toLocaleString('tr-TR')
+    : '-';
+  const degreeClass = (item.degree || '').includes('Lisans') ? 'lisans' : 'onlisans';
+  const renderMetricCell = (key) => {
+    const score = getMetricScore(item, key);
+    const desc = item[`${key}_desc`];
+    const note = item[`${key}_data_note`];
+    return formatMetricDisplay(score, desc, note, app.viewMode);
+  };
+  const starSvg = item.isFavorite ? SVG_STAR_FILLED : SVG_STAR_OUTLINE;
+  const displayRating = typeof item.rating === 'number'
+    ? Math.round(item.rating * 10)
+    : (item.overall_rating ?? '-');
+
+  return `
+    <td style="text-align: center;">
+      <button class="fav-star-btn ${item.isFavorite ? 'active' : ''}" data-id="${ea(item.id)}" title="Favorilere Ekle/Çıkar">${starSvg}</button>
+    </td>
+    <td>
+      <div class="cell-stack">
+        <span class="cell-title">#${eh(item.id)}</span>
+        <span class="cell-tag ${degreeClass}">${eh(item.degree || '-')}</span>
+      </div>
+    </td>
+    <td>
+      <div class="cell-stack">
+        <span class="cell-title">${eh(item.university)}</span>
+        <span class="cell-sub">${eh(item.department)}</span>
+        <span class="cell-sub" style="color: var(--muted-foreground);">${eh(item.faculty || '')}</span>
+      </div>
+    </td>
+    <td>
+      <div class="cell-stack">
+        <span class="cell-title">${eh(item.city)}</span>
+        <span class="cell-sub">${eh(item.language || '-')}</span>
+        <span class="cell-sub">${eh(item.tuition_status || '-')}</span>
+      </div>
+    </td>
+    <td>${renderMetricCell('transport')}</td>
+    <td>${renderMetricCell('uniar')}</td>
+    <td>${renderMetricCell('prestige')}</td>
+    <td>${renderMetricCell('academic')}</td>
+    <td>
+      <div class="cell-stack">
+        <span class="cell-sub">Geçen: ${lastRankStr}</span>
+        <span class="cell-title" style="font-family: var(--font-mono); font-size: 0.8125rem;">Tahmin: ${predRankStr}</span>
+      </div>
+    </td>
+    <td>
+      <span class="rating-badge font-mono">${displayRating}</span>
+    </td>
+    <td>
+      <div style="display: flex; gap: 0.25rem;">
+        <button class="btn-action detail-btn" data-id="${ea(item.id)}" title="Detaylı İncele">${SVG_INSPECT} İncele</button>
+        <button class="btn-action delete-btn" data-id="${ea(item.id)}" style="background-color: var(--destructive-bg); color: var(--destructive-text); border-color: var(--destructive-border);" title="Listeden Sil">${SVG_DELETE} Sil</button>
+      </div>
+    </td>
+  `;
+};
+
+function renderTableStatus(total, startIndex, endIndex) {
   const container = document.getElementById('table-pagination');
   if (!container) return;
-
   if (total === 0) {
     container.innerHTML = '';
     return;
   }
-
-  const end = Math.min(startIndex + PAGE_SIZE, total);
-  container.innerHTML = `
-    <span>${(startIndex + 1).toLocaleString('tr-TR')}–${end.toLocaleString('tr-TR')} / ${total.toLocaleString('tr-TR')} program</span>
-    <div class="pagination-actions">
-      <button class="btn btn-outline btn-sm" id="btn-page-prev" ${app.currentPage <= 1 ? 'disabled' : ''}>Önceki</button>
-      <span>Sayfa ${app.currentPage} / ${totalPages}</span>
-      <button class="btn btn-outline btn-sm" id="btn-page-next" ${app.currentPage >= totalPages ? 'disabled' : ''}>Sonraki</button>
-    </div>
-  `;
-
-  document.getElementById('btn-page-prev')?.addEventListener('click', () => {
-    if (app.currentPage > 1) {
-      app.currentPage -= 1;
-      renderMasterTable();
-    }
-  });
-  document.getElementById('btn-page-next')?.addEventListener('click', () => {
-    if (app.currentPage < totalPages) {
-      app.currentPage += 1;
-      renderMasterTable();
-    }
-  });
+  container.innerHTML = `<span>${(startIndex + 1).toLocaleString('tr-TR')}–${endIndex.toLocaleString('tr-TR')} / ${total.toLocaleString('tr-TR')} program (sanal liste)</span>`;
 }
 
-// Master Table Rendering (Emoji-Free / High Contrast)
+// Master Table Rendering — virtual scroll
 function renderMasterTable() {
   const tbody = document.getElementById('master-tbody');
   if (!tbody) return;
@@ -750,81 +992,30 @@ function renderMasterTable() {
     return;
   }
 
-  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
-  if (app.currentPage > totalPages) app.currentPage = totalPages;
-  const startIndex = (app.currentPage - 1) * PAGE_SIZE;
-  const pageItems = items.slice(startIndex, startIndex + PAGE_SIZE);
+  const container = document.getElementById('master-scroll-container');
+  const viewport = container?.clientHeight || 600;
+  const scrollTop = container?.scrollTop ?? app.virtualScrollTop ?? 0;
+  const visibleCount = Math.ceil(viewport / VIRTUAL_ROW_HEIGHT) + VIRTUAL_OVERSCAN * 2;
+  const startIndex = Math.max(0, Math.floor(scrollTop / VIRTUAL_ROW_HEIGHT) - VIRTUAL_OVERSCAN);
+  const endIndex = Math.min(items.length, startIndex + visibleCount);
+  const topPad = startIndex * VIRTUAL_ROW_HEIGHT;
+  const bottomPad = Math.max(0, (items.length - endIndex) * VIRTUAL_ROW_HEIGHT);
 
-  pageItems.forEach(item => {
-    const tr = document.createElement('tr');
+  const rows = [];
+  if (topPad > 0) rows.push(`<tr class="virtual-spacer" aria-hidden="true"><td colspan="11" style="height:${topPad}px;padding:0;border:0;"></td></tr>`);
+  for (let i = startIndex; i < endIndex; i++) {
+    rows.push(`<tr style="height:${VIRTUAL_ROW_HEIGHT}px">${buildRowHtml(items[i])}</tr>`);
+  }
+  if (bottomPad > 0) rows.push(`<tr class="virtual-spacer" aria-hidden="true"><td colspan="11" style="height:${bottomPad}px;padding:0;border:0;"></td></tr>`);
 
-    const lastRankStr = item.last_rank ? item.last_rank.toLocaleString('tr-TR') : '-';
-    const predRankStr = item.prediction && typeof item.prediction.tahmini_skor === 'number'
-      ? item.prediction.tahmini_skor.toLocaleString('tr-TR')
-      : '-';
+  tbody.innerHTML = rows.join('');
+  renderTableStatus(items.length, startIndex, endIndex);
+  attachVirtualScroll();
 
-    const degreeClass = item.degree.includes('Lisans') ? 'lisans' : 'onlisans';
-
-    const renderMetricCell = (key) => {
-      const score = getMetricScore(item, key);
-      const desc = item[`${key}_desc`];
-      const note = item[`${key}_data_note`];
-      return formatMetricDisplay(score, desc, note, app.viewMode);
-    };
-
-    const starSvg = item.isFavorite ? SVG_STAR_FILLED : SVG_STAR_OUTLINE;
-
-    tr.innerHTML = `
-      <td style="text-align: center;">
-        <button class="fav-star-btn ${item.isFavorite ? 'active' : ''}" data-id="${item.id}" title="Favorilere Ekle/Çıkar">${starSvg}</button>
-      </td>
-      <td>
-        <div class="cell-stack">
-          <span class="cell-title">#${item.id}</span>
-          <span class="cell-tag ${degreeClass}">${item.degree}</span>
-        </div>
-      </td>
-      <td>
-        <div class="cell-stack">
-          <span class="cell-title">${item.university}</span>
-          <span class="cell-sub">${item.department}</span>
-          <span class="cell-sub" style="color: var(--muted-foreground);">${item.faculty}</span>
-        </div>
-      </td>
-      <td>
-        <div class="cell-stack">
-          <span class="cell-title">${item.city}</span>
-          <span class="cell-sub">${item.language}</span>
-          <span class="cell-sub">${item.tuition_status}</span>
-        </div>
-      </td>
-      <td>${renderMetricCell('transport')}</td>
-      <td>${renderMetricCell('uniar')}</td>
-      <td>${renderMetricCell('prestige')}</td>
-      <td>${renderMetricCell('academic')}</td>
-      <td>
-        <div class="cell-stack">
-          <span class="cell-sub">Geçen: ${lastRankStr}</span>
-          <span class="cell-title" style="font-family: var(--font-mono); font-size: 0.8125rem;">Tahmin: ${predRankStr}</span>
-        </div>
-      </td>
-      <td>
-        <span class="rating-badge font-mono">${typeof item.rating === 'number' ? Math.round(item.rating * 10) : item.rating}</span>
-      </td>
-      <td>
-        <div style="display: flex; gap: 0.25rem;">
-          <button class="btn-action detail-btn" data-id="${item.id}" title="Detaylı İncele">${SVG_INSPECT} İncele</button>
-          <button class="btn-action delete-btn" data-id="${item.id}" style="background-color: var(--destructive-bg); color: var(--destructive-text); border-color: var(--destructive-border);" title="Listeden Sil">${SVG_DELETE} Sil</button>
-        </div>
-      </td>
-    `;
-
-    tbody.appendChild(tr);
+  hydrateVisibleProgramMetrics(items, startIndex, endIndex).then((changed) => {
+    if (changed) renderMasterTable();
   });
 
-  renderTablePagination(items.length, totalPages, startIndex);
-
-  // Attach Star Toggle
   tbody.querySelectorAll('.fav-star-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const id = itemId(e.currentTarget.dataset.id);
@@ -913,13 +1104,31 @@ function showUndoToast(deletedInfo) {
 }
 
 // Favorites Drag & Drop List Rendering
-function renderFavoritesList() {
+async function renderFavoritesList() {
   const container = document.getElementById('fav-list-container');
   if (!container) return;
 
   app.syncFavoritesList();
+
+  if (app.useSupabase) {
+    const missing = app.favoriteOrder.filter((id) => (
+      !app.data.find((x) => x.id === id) && !app.favoriteCache.has(id)
+    ));
+    if (missing.length) {
+      try {
+        const fetched = await fetchProgramsByIds(missing);
+        fetched.forEach((item) => {
+          const [withState] = app.applyUserStateToPrograms([item]);
+          if (withState) app.favoriteCache.set(withState.id, withState);
+        });
+      } catch (e) {
+        console.warn('Favori programlar yüklenemedi', e);
+      }
+    }
+  }
+
   const favItems = app.favoriteOrder
-    .map(id => app.data.find(x => x.id === id))
+    .map(id => app.data.find(x => x.id === id) || app.favoriteCache.get(id))
     .filter(Boolean);
 
   if (favItems.length === 0) {
@@ -1743,10 +1952,12 @@ function getOverallMetricDescription(item, key, score) {
 }
 
 // Modal Details Logic
-function openDetailModal(id) {
+async function openDetailModal(id) {
   const overlay = document.getElementById('dept-detail-modal');
-  const item = app.data.find(x => itemId(x.id) === itemId(id));
-  if (!item) return;
+  const card = app.data.find(x => itemId(x.id) === itemId(id));
+  if (!card) return;
+
+  const item = await loadProgramDetail(id).catch(() => card) || card;
 
   document.getElementById('modal-dept-title').textContent = item.full_name;
   document.getElementById('modal-dept-sub').textContent = `${item.location || item.city} (${item.city}) - ${item.degree}`;
@@ -1926,9 +2137,94 @@ function openDetailModal(id) {
 let programSearchCache = null;
 let programIndexCache = null;
 let departmentsIndexCache = null;
-let selectedAddProgram = null;
+const METRIC_SNAPSHOT_STORAGE_KEY = 'yks_metric_snapshots_v1';
+const metricHydrationInFlight = new Set();
+
+const extractMetricSnapshot = (item) => {
+  const snap = {};
+  for (const [key, val] of Object.entries(item)) {
+    if (val == null || val === '') continue;
+    if (
+      key.endsWith('_score') ||
+      key.endsWith('_desc') ||
+      key.includes('_data_') ||
+      key === 'prediction' ||
+      key === 'history_rankings' ||
+      key === 'history_quotas' ||
+      key === 'rating' ||
+      key === 'partial_rating' ||
+      key === 'last_rank' ||
+      key === 'program_id' ||
+      key === 'campus_key' ||
+      key === 'uniar_subcategories'
+    ) {
+      snap[key] = val;
+    }
+  }
+  return snap;
+};
+
+const loadMetricSnapshots = () => {
+  try {
+    const raw = localStorage.getItem(METRIC_SNAPSHOT_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+};
+
+const saveMetricSnapshot = (item) => {
+  try {
+    const map = loadMetricSnapshots();
+    map[itemId(item.id)] = extractMetricSnapshot(item);
+    localStorage.setItem(METRIC_SNAPSHOT_STORAGE_KEY, JSON.stringify(map));
+  } catch (e) {
+    console.warn('Metrik snapshot kaydedilemedi:', e);
+  }
+};
+
+const applyMetricSnapshot = (item) => {
+  const snap = loadMetricSnapshots()[itemId(item.id)];
+  if (!snap) return item;
+  return { ...item, ...snap, program_id: item.program_id || snap.program_id };
+};
+
+const hydrateProgramMetrics = async (item) => {
+  if (!item?.program_id) return false;
+  const programId = String(item.program_id);
+  if (getMetricScore(item, 'prestige') != null) return false;
+  if (metricHydrationInFlight.has(programId)) return false;
+
+  metricHydrationInFlight.add(programId);
+  try {
+    await loadProgramIndex();
+    const detail = await loadProgramDetail(programId);
+    if (!detail) return false;
+
+    Object.assign(item, detail);
+    item.program_id = String(item.program_id || programId);
+    item.rating = app.calculateRating(item) ?? item.rating;
+    await ensureCampusMetricsOnItem(item);
+    applyAcademicHeuristic(item);
+    saveMetricSnapshot(item);
+    return true;
+  } catch (e) {
+    console.warn('Metrik yükleme hatası:', programId, e);
+    return false;
+  } finally {
+    metricHydrationInFlight.delete(programId);
+  }
+};
+
+const hydrateVisibleProgramMetrics = async (items, startIndex, endIndex) => {
+  const slice = items.slice(startIndex, endIndex);
+  const results = await Promise.all(slice.map((item) => hydrateProgramMetrics(item)));
+  return results.some(Boolean);
+};
+let selectedAddProgramIds = new Set();
+let addProgramSearchResults = [];
 let addProgramSearchTimer = null;
-const MIN_SEARCH_CHARS = 2;
+const MIN_SEARCH_CHARS = 1;
 const MAX_SEARCH_RESULTS = 40;
 
 const trLower = (s) => {
@@ -2061,35 +2357,67 @@ const isProgramAlreadyAdded = (program) => {
   return app.data.some(item => normalizeTitle(item.full_name) === normalized);
 };
 
-const buildNewProgramItem = (program, rank, predRank, notes, matchSource) => {
-  const existing = getProgramById(program.program_id)
-  if (existing) {
-    return sanitizeItem({
-      ...existing,
-      last_rank: rank || existing.last_rank,
-      prediction: predRank ? {
-        tahmini_skor: predRank,
-        model: 'manual_entry',
-        confidence: 'low',
-        prediction_generated_at: new Date().toISOString()
-      } : existing.prediction,
-      notes: sanitizePlainText(notes || existing.notes || '-'),
-      isFavorite: true,
-    })
+const mergeUniversityMetrics = (item, matchSource) => {
+  if (!matchSource) return item;
+  const out = { ...item };
+  const metricKeys = ['transport', 'prestige', 'academic', 'uniar'];
+  for (const key of metricKeys) {
+    if (getMetricScore(out, key) != null) continue;
+    if (getMetricScore(matchSource, key) == null) continue;
+    out[`${key}_score`] = matchSource[`${key}_score`];
+    out[`${key}_desc`] = matchSource[`${key}_desc`];
+    out[`${key}_data_available`] = matchSource[`${key}_data_available`];
+    out[`${key}_data_note`] = matchSource[`${key}_data_note`];
+  }
+  if (!out.transport_desc && matchSource.transport_desc) {
+    out.transport_desc = matchSource.transport_desc;
+  }
+  return out;
+};
+
+const buildNewProgramItemFromDb = async (program) => {
+  await loadProgramIndex();
+  const programId = String(program.program_id);
+
+  let detail = null;
+  try {
+    detail = await loadProgramDetail(programId);
+  } catch (e) {
+    console.warn('Program detayı yüklenemedi:', programId, e);
   }
 
-  const { university, department } = parseProgramTitle(program.full_title);
+  const card = detail || getProgramCard(programId);
+  const title = program.full_title || card?.full_name || '';
+  const { university } = parseProgramTitle(title);
+  const matchSource = findMatchingUniversityProgram(university);
+
+  if (card) {
+    const merged = mergeUniversityMetrics({
+      ...card,
+      program_id: String(card.program_id || program.program_id),
+      id: String(card.id || card.program_id || program.program_id),
+      isFavorite: true,
+      notes: '-',
+    }, matchSource);
+    merged.rating = app.calculateRating(merged) ?? merged.rating;
+    await ensureCampusMetricsOnItem(merged);
+    applyAcademicHeuristic(merged);
+    saveMetricSnapshot(merged);
+    return sanitizeItem(merged);
+  }
+
+  const { university: inferredUniversity, department } = parseProgramTitle(program.full_title);
   const city = normalizeCity(program.city);
   const degree = inferDegree(program.full_title);
   const language = inferLanguage(program.full_title);
   const tuition = inferTuition(program.full_title);
-  const fullName = `${university} - ${department}`;
+  const fullName = `${inferredUniversity} - ${department}`;
 
   const base = {
     id: app.getNextId(),
     degree,
-    score_type: 'SAY',
-    university,
+    score_type: program.score_type || 'SAY',
+    university: inferredUniversity,
     department,
     full_name: fullName,
     faculty: 'Fakülte / Meslek Yüksekokulu',
@@ -2112,94 +2440,122 @@ const buildNewProgramItem = (program, rank, predRank, notes, matchSource) => {
     academic_desc: matchSource?.academic_desc || null,
     academic_data_available: matchSource?.academic_data_available ?? false,
     academic_data_note: matchSource?.academic_data_note || NO_DATA_NOTE,
-    last_rank: rank || null,
-    prediction: predRank ? {
-      tahmini_skor: predRank,
-      model: 'manual_entry',
-      confidence: 'low',
-      prediction_generated_at: new Date().toISOString()
-    } : null,
-    history_rankings: rank ? [rank] : [],
+    last_rank: null,
+    prediction: null,
+    history_rankings: [],
     history_quotas: [],
-    notes: sanitizePlainText(notes || '-'),
+    notes: '-',
     isFavorite: true,
-    program_id: program.program_id
+    program_id: program.program_id,
   };
 
   base.rating = app.calculateRating(base);
+  await ensureCampusMetricsOnItem(base);
+  applyAcademicHeuristic(base);
+  saveMetricSnapshot(base);
   return sanitizeItem(base);
 };
 
+const updateAddProgramSelectionBar = () => {
+  const bar = document.getElementById('add-program-selection-bar');
+  const countEl = document.getElementById('add-program-selection-count');
+  const saveBtn = document.getElementById('btn-save-new-program');
+  const count = selectedAddProgramIds.size;
+
+  if (bar) bar.classList.toggle('hidden', count === 0);
+  if (countEl) {
+    countEl.textContent = count === 1 ? '1 program seçildi' : `${count} program seçildi`;
+  }
+  if (saveBtn) saveBtn.disabled = count === 0;
+};
+
 const resetAddProgramModal = () => {
-  selectedAddProgram = null;
+  selectedAddProgramIds = new Set();
+  addProgramSearchResults = [];
 
   const searchInput = document.getElementById('search-add-program');
   const resultsContainer = document.getElementById('search-add-results');
-  const detailsForm = document.getElementById('add-program-details-form');
-  const matchingBadge = document.getElementById('matching-badge');
+  const selectionBar = document.getElementById('add-program-selection-bar');
 
   if (searchInput) searchInput.value = '';
   if (resultsContainer) {
     resultsContainer.innerHTML = '<div class="search-empty-state">Aramaya başlamak için bölüm veya üniversite adı yazın.</div>';
   }
-  if (detailsForm) {
-    detailsForm.classList.add('hidden');
-    document.getElementById('add-program-rank').value = '';
-    document.getElementById('add-program-pred').value = '';
-    document.getElementById('add-program-notes').value = '';
-    document.getElementById('selected-program-title').textContent = '-';
-  }
-  if (matchingBadge) matchingBadge.style.display = 'none';
+  if (selectionBar) selectionBar.classList.add('hidden');
+  updateAddProgramSelectionBar();
 };
 
 const renderAddProgramSearchResults = (programs, totalMatches = 0) => {
+  addProgramSearchResults = programs;
   const container = document.getElementById('search-add-results');
   if (!container) return;
 
   if (programs.length === 0) {
     container.innerHTML = '<div class="search-empty-state">Sonuç bulunamadı. Farklı bir bölüm veya üniversite adı deneyin.</div>';
+    updateAddProgramSelectionBar();
     return;
   }
 
   const truncated = typeof totalMatches === 'string' || totalMatches > programs.length;
   const countHtml = truncated
     ? `<div class="search-match-count">${totalMatches} eşleşme — ilk ${programs.length} gösteriliyor</div>`
-    : `<div class="search-match-count">${programs.length} program bulundu</div>`;
+    : `<div class="search-match-count">${programs.length} program bulundu — çoklu seçim yapabilirsiniz</div>`;
 
-  container.innerHTML = countHtml + programs.slice(0, MAX_SEARCH_RESULTS).map(prog => `
-    <button type="button" class="add-program-result-item${selectedAddProgram?.program_id === prog.program_id ? ' selected' : ''}" data-program-id="${ea(prog.program_id)}" role="option">
-      <span class="add-program-result-title">${eh(prog.full_title)}</span>
-      <span class="add-program-result-meta">
-        <span>${eh(prog.department_group || prog.department || '')}</span>
-        <span>${eh(prog.city)}</span>
-        <span>${eh(prog.score_type || '')}</span>
-        ${prog.scholarship_rate ? `<span>${eh(prog.scholarship_rate)}</span>` : ''}
+  container.innerHTML = countHtml + programs.slice(0, MAX_SEARCH_RESULTS).map(prog => {
+    const programId = String(prog.program_id);
+    const alreadyAdded = isProgramAlreadyAdded(prog);
+    const isSelected = selectedAddProgramIds.has(programId);
+    const card = getProgramCard(programId);
+    const rankLabel = card?.last_rank
+      ? card.last_rank.toLocaleString('tr-TR')
+      : null;
+
+    return `
+    <button
+      type="button"
+      class="add-program-result-item${isSelected ? ' selected' : ''}${alreadyAdded ? ' already-added' : ''}"
+      data-program-id="${ea(programId)}"
+      role="option"
+      aria-selected="${isSelected}"
+      ${alreadyAdded ? 'disabled' : ''}
+    >
+      <span class="add-program-check" aria-hidden="true">${isSelected ? '✓' : ''}</span>
+      <span class="add-program-result-body">
+        <span class="add-program-result-title">${eh(prog.full_title)}</span>
+        <span class="add-program-result-meta">
+          <span>${eh(prog.department_group || prog.department || '')}</span>
+          <span>${eh(prog.city)}</span>
+          <span>${eh(prog.score_type || '')}</span>
+          ${prog.scholarship_rate ? `<span>${eh(prog.scholarship_rate)}</span>` : ''}
+          ${rankLabel ? `<span>Sıra: ${eh(rankLabel)}</span>` : ''}
+          ${alreadyAdded ? '<span>Listede</span>' : ''}
+        </span>
       </span>
     </button>
-  `).join('');
+  `;
+  }).join('');
 
-  container.querySelectorAll('.add-program-result-item').forEach(btn => {
+  container.querySelectorAll('.add-program-result-item:not(.already-added)').forEach(btn => {
     btn.addEventListener('click', () => {
       const programId = btn.dataset.programId;
-      const program = programs.find(p => p.program_id === programId);
-      if (!program) return;
+      const check = btn.querySelector('.add-program-check');
 
-      selectedAddProgram = program;
-      container.querySelectorAll('.add-program-result-item').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-
-      const detailsForm = document.getElementById('add-program-details-form');
-      const titleEl = document.getElementById('selected-program-title');
-      const matchingBadge = document.getElementById('matching-badge');
-      const matchSource = findMatchingUniversityProgram(parseProgramTitle(program.full_title).university);
-
-      if (titleEl) titleEl.textContent = program.full_title;
-      if (matchingBadge) {
-        matchingBadge.style.display = matchSource ? 'block' : 'none';
+      if (selectedAddProgramIds.has(programId)) {
+        selectedAddProgramIds.delete(programId);
+        btn.classList.remove('selected');
+        btn.setAttribute('aria-selected', 'false');
+        if (check) check.textContent = '';
+      } else {
+        selectedAddProgramIds.add(programId);
+        btn.classList.add('selected');
+        btn.setAttribute('aria-selected', 'true');
+        if (check) check.textContent = '✓';
       }
-      if (detailsForm) detailsForm.classList.remove('hidden');
+      updateAddProgramSelectionBar();
     });
   });
+
+  updateAddProgramSelectionBar();
 };
 
 const searchAddPrograms = async () => {
@@ -2209,17 +2565,17 @@ const searchAddPrograms = async () => {
   const degreeFilter = document.getElementById('add-program-degree')?.value || 'all';
   const container = document.getElementById('search-add-results');
 
-  if (query.length < MIN_SEARCH_CHARS) {
+  if (!query.length) {
     if (container) {
-      container.innerHTML = `<div class="search-empty-state">En az ${MIN_SEARCH_CHARS} harf yazın.</div>`;
+      container.innerHTML = '<div class="search-empty-state">Aramaya başlamak için bölüm veya üniversite adı yazın.</div>';
     }
     return;
   }
 
-  const queryTerms = query.split(/\s+/).filter(t => t.length >= 2);
+  const queryTerms = query.split(/\s+/).filter(Boolean);
   if (!queryTerms.length) {
     if (container) {
-      container.innerHTML = '<div class="search-empty-state">Anlamlı bir arama terimi girin.</div>';
+      container.innerHTML = '<div class="search-empty-state">Aramaya başlamak için bölüm veya üniversite adı yazın.</div>';
     }
     return;
   }
@@ -2229,7 +2585,6 @@ const searchAddPrograms = async () => {
 
   for (const entry of index) {
     const prog = expandSearchEntry(entry);
-    if (isProgramAlreadyAdded(prog)) continue;
     if (cityFilter && prog.city !== cityFilter) continue;
     if (degreeFilter === 'Lisans' && inferDegree(prog.full_title) !== 'Lisans (4Y)') continue;
     if (degreeFilter === 'Önlisans' && inferDegree(prog.full_title) !== 'Önlisans (2Y)') continue;
@@ -2266,9 +2621,49 @@ const openAddProgramModal = async () => {
   if (!modal) return;
 
   resetAddProgramModal();
-  await Promise.all([loadProgramSearchIndex(), populateAddProgramCityDropdown()]);
+  await Promise.all([loadProgramSearchIndex(), populateAddProgramCityDropdown(), bootstrapDatabase()]);
+  app.useSupabase = isSupabaseDataEnabled();
   modal.classList.remove('hidden');
   document.getElementById('search-add-program')?.focus();
+};
+
+const addSelectedProgramsToList = async () => {
+  const programs = addProgramSearchResults.filter(p => selectedAddProgramIds.has(String(p.program_id)));
+  if (!programs.length) {
+    alert('Lütfen en az bir program seçin.');
+    return;
+  }
+
+  const saveBtn = document.getElementById('btn-save-new-program');
+  const defaultLabel = 'Seçilenleri Tercih Listeme Ekle';
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Ekleniyor...';
+  }
+
+  try {
+    for (const program of programs) {
+      const newItem = await buildNewProgramItemFromDb(program);
+      app.addProgramItem(newItem);
+      if (!app.favoriteOrder.includes(newItem.id)) {
+        app.favoriteOrder.push(newItem.id);
+      }
+    }
+    app.saveFavoriteOrder();
+    closeAddProgramModal();
+    renderMasterTable();
+    renderFavoritesList();
+    populateDropdowns();
+    renderCompareHub();
+  } catch (e) {
+    console.error('Program ekleme hatası:', e);
+    alert('Programlar eklenirken bir hata oluştu. Lütfen tekrar deneyin.');
+  } finally {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = defaultLabel;
+    }
+  }
 };
 
 const closeAddProgramModal = () => {
@@ -2313,7 +2708,11 @@ function setupAddProgramModal() {
       e.preventDefault();
       clearTimeout(addProgramSearchTimer);
       await searchAddPrograms();
-      document.querySelector('.add-program-result-item')?.click();
+      if (selectedAddProgramIds.size > 0) {
+        await addSelectedProgramsToList();
+      } else {
+        document.querySelector('.add-program-result-item:not(.already-added)')?.click();
+      }
     }
   });
   citySelect?.addEventListener('change', () => {
@@ -2327,32 +2726,7 @@ function setupAddProgramModal() {
     }
   });
 
-  saveBtn?.addEventListener('click', () => {
-    if (!selectedAddProgram) {
-      alert('Lütfen önce bir program seçin.');
-      return;
-    }
-
-    const rank = parseInt(document.getElementById('add-program-rank')?.value, 10) || null;
-    const predRank = parseInt(document.getElementById('add-program-pred')?.value, 10) || null;
-    const notes = document.getElementById('add-program-notes')?.value.trim() || '-';
-    const { university } = parseProgramTitle(selectedAddProgram.full_title);
-    const matchSource = findMatchingUniversityProgram(university);
-
-    const newItem = buildNewProgramItem(selectedAddProgram, rank, predRank, notes, matchSource);
-    app.addProgramItem(newItem);
-
-    if (!app.favoriteOrder.includes(newItem.id)) {
-      app.favoriteOrder.push(newItem.id);
-      app.saveFavoriteOrder();
-    }
-
-    closeAddProgramModal();
-    renderMasterTable();
-    renderFavoritesList();
-    populateDropdowns();
-    renderCompareHub();
-  });
+  saveBtn?.addEventListener('click', () => addSelectedProgramsToList());
 }
 
 function setupModalEvents() {

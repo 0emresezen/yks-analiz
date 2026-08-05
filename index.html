@@ -60,7 +60,7 @@
       <button class="nav-tab active" data-tab="tab-main-list">
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         Ana Tercih Listesi
-        <span id="stat-total-count" class="tab-badge">96</span>
+        <span id="stat-total-count" class="tab-badge">0</span>
       </button>
       <button class="nav-tab" data-tab="tab-favorites">
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -163,7 +163,7 @@
         </div>
 
         <!-- Ultra High-Density Compact Table -->
-        <div class="table-wrapper">
+        <div class="table-wrapper virtual-table-wrapper" id="master-scroll-container">
           <table class="compact-table" id="master-table">
             <thead>
               <tr>
@@ -716,7 +716,7 @@
             type="text"
             id="search-add-program"
             class="compact-input"
-            placeholder="En az 2 harf yazın — örn: bilgisayar, tıp, mimarlık..."
+            placeholder="Bölüm veya üniversite ara — örn: bilgisayar, tıp, mimarlık..."
             autocomplete="off"
             spellcheck="false"
             aria-label="Program ara"
@@ -724,7 +724,7 @@
             aria-controls="search-add-results"
             style="width: 100%; padding: 0.75rem; font-size: 0.875rem;"
           >
-          <p id="search-add-hint" class="search-hint">Yazdıkça eşleşen programlar listelenir (21.000+ program).</p>
+          <p id="search-add-hint" class="search-hint">Yazdıkça eşleşen programlar listelenir. Birden fazla seçip tek seferde ekleyebilirsiniz — sıralama ve metrikler otomatik gelir.</p>
         </div>
 
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -742,34 +742,14 @@
           </div>
         </div>
 
-        <div id="search-add-results" class="search-add-results" role="listbox" aria-label="Arama sonuçları">
+        <div id="search-add-results" class="search-add-results" role="listbox" aria-label="Arama sonuçları" aria-multiselectable="true">
           <div class="search-empty-state">Aramaya başlamak için bölüm veya üniversite adı yazın.</div>
         </div>
 
-        <div id="add-program-details-form" class="hidden" style="display: flex; flex-direction: column; gap: 0.75rem; border-top: 1px solid var(--border); padding-top: 1rem;">
-          <h4 style="font-size: 0.875rem; font-weight: 700; margin: 0; color: var(--primary);" id="selected-program-title">-</h4>
-          <div id="matching-badge" style="font-size: 0.7rem; color: #10b981; font-weight: 600; display: none;">
-            Eşleşen Üniversite Metrikleri Bulundu (Prestij, Ulaşım vb. otomatik kopyalanacaktır)
-          </div>
-          
-          <div style="display: flex; gap: 0.5rem;">
-            <div class="filter-group" style="flex: 1;">
-              <label for="add-program-rank" style="font-size: 0.75rem;">Geçen Yıl Sıralama:</label>
-              <input type="number" id="add-program-rank" class="compact-input" placeholder="Örn: 24500" style="width: 100%;">
-            </div>
-            <div class="filter-group" style="flex: 1;">
-              <label for="add-program-pred" style="font-size: 0.75rem;">Tahmini Sıralama:</label>
-              <input type="number" id="add-program-pred" class="compact-input" placeholder="Örn: 22000" style="width: 100%;">
-            </div>
-          </div>
-
-          <div class="filter-group">
-            <label for="add-program-notes" style="font-size: 0.75rem;">Kişisel Notlar / Artılar - Eksiler:</label>
-            <textarea id="add-program-notes" class="compact-input" placeholder="Kampüs, olanaklar, kiralar vb..." style="width: 100%; height: 50px; font-size: 0.8125rem; padding: 0.5rem; resize: vertical;"></textarea>
-          </div>
-
-          <button id="btn-save-new-program" class="btn btn-primary" style="width: 100%; padding: 0.75rem; display: flex; justify-content: center; align-items: center; gap: 0.25rem;">
-            Seçilen Programı Tercih Listeme Ekle
+        <div id="add-program-selection-bar" class="add-program-selection-bar hidden">
+          <span id="add-program-selection-count" class="add-program-selection-count">0 program seçildi</span>
+          <button id="btn-save-new-program" type="button" class="btn btn-primary" style="width: 100%; padding: 0.75rem; display: flex; justify-content: center; align-items: center; gap: 0.25rem;">
+            Seçilenleri Tercih Listeme Ekle
           </button>
         </div>
 
