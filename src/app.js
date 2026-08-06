@@ -1739,8 +1739,8 @@ function buildWizardQuestionItem(comp, idx, isActive, { readOnly = false } = {})
   const uNameB = getWizardShortName(itemB.full_name);
   const winnerName = choice === 'A' ? uNameA : choice === 'B' ? uNameB : null;
   const statusText = comp.inferred
-    ? (winnerName ? `↪ ${winnerName} (otomatik)` : 'Otomatik')
-    : (winnerName ? `→ ${winnerName}` : 'Bekliyor');
+    ? (winnerName ? `${winnerName} (otomatik)` : 'Otomatik')
+    : (winnerName ? winnerName : 'Bekliyor');
 
   const itemDiv = document.createElement('div');
   itemDiv.className = `question-item${isActive ? ' active' : ''}${choice ? ' answered' : ''}${comp.inferred ? ' inferred' : ''}`;
@@ -1753,7 +1753,7 @@ function buildWizardQuestionItem(comp, idx, isActive, { readOnly = false } = {})
     </div>
     <div class="question-item-options">
       <button type="button" class="q-opt-btn ${choice === 'A' ? 'selected' : ''}" data-choice="A" title="${eh(itemA.full_name)}" ${readOnly || comp.inferred ? 'tabindex="-1"' : ''}>${eh(uNameA)}</button>
-      <span class="question-item-vs">vs</span>
+      <span class="question-item-vs">veya</span>
       <button type="button" class="q-opt-btn ${choice === 'B' ? 'selected' : ''}" data-choice="B" title="${eh(itemB.full_name)}" ${readOnly || comp.inferred ? 'tabindex="-1"' : ''}>${eh(uNameB)}</button>
     </div>
   `;
@@ -2152,33 +2152,13 @@ async function openDetailModal(id) {
         metricKey: key,
         label,
         score,
-        dataSource,
         dataNote,
-        explainableDetails: exp,
         escapeHtml: eh,
       });
 
-      let explainHtml = '';
-      if (hasScore && exp[key]) {
-        const subItems = Object.entries(exp[key]).map(([subKey, subVal]) => {
-          const subLabel = SUB_LABELS[subKey] || subKey;
-          const reason = getQualitativeReason(subKey, subVal);
-          return `<li><strong>${eh(subLabel)}:</strong> ${eh(reason)}</li>`;
-        }).join('');
-
-        explainHtml = `
-          <details class="metric-explain-details">
-            <summary>Puan Detayları</summary>
-            <ul class="explain-sub-list">
-              ${subItems}
-            </ul>
-          </details>
-        `;
-      }
-
       const cardEl = document.createElement('div');
       cardEl.className = `modal-metric-card${hasScore ? '' : ' modal-metric-card-na'}`;
-      cardEl.innerHTML = sections.html + explainHtml;
+      cardEl.innerHTML = sections.html;
       gridContainer.appendChild(cardEl);
     });
   }
@@ -2640,7 +2620,7 @@ const renderAddProgramSearchResults = (programs, totalMatches = 0) => {
       aria-selected="${isSelected}"
       ${alreadyAdded ? 'disabled' : ''}
     >
-      <span class="add-program-check" aria-hidden="true">${isSelected ? '✓' : ''}</span>
+      <span class="add-program-check" aria-hidden="true"></span>
       <span class="add-program-result-body">
         <span class="add-program-result-title">${eh(prog.full_title)}</span>
         <span class="add-program-result-meta">
@@ -2674,7 +2654,7 @@ const renderAddProgramSearchResults = (programs, totalMatches = 0) => {
         if (prog) selectedAddProgramCache.set(programId, prog);
         btn.classList.add('selected');
         btn.setAttribute('aria-selected', 'true');
-        if (check) check.textContent = '✓';
+        if (check) check.textContent = '';
       }
       updateAddProgramSelectionBar();
     });
@@ -3258,7 +3238,7 @@ const renderComparePickerResults = (picker, rawQuery = '') => {
         role="option"
         aria-selected="${isSelected}"
       >
-        <span class="add-program-check" aria-hidden="true">${isSelected ? '✓' : ''}</span>
+        <span class="add-program-check" aria-hidden="true"></span>
         <span class="add-program-result-body">
           <span class="add-program-result-title">${eh(item.label)}</span>
           ${item.meta ? `<span class="add-program-result-meta"><span>${eh(item.meta)}</span></span>` : ''}

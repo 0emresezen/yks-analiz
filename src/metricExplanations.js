@@ -157,7 +157,7 @@ export const getScoreBand = (scorePercent, metricKey = '') => {
     return { label: 'Çok yüksek maliyet', tone: 'negative' }
   }
 
-  if (scorePercent >= 80) return { label: 'Çok yüksek', tone: 'positive' }
+  if (scorePercent >= 80) return { label: 'Çok Yüksek', tone: 'positive' }
   if (scorePercent >= 65) return { label: 'Yüksek', tone: 'positive' }
   if (scorePercent >= 45) return { label: 'Orta', tone: 'neutral' }
   if (scorePercent >= 25) return { label: 'Sınırlı', tone: 'negative' }
@@ -374,22 +374,23 @@ export const buildMetricCardSections = ({
   metricKey,
   label,
   score,
-  dataSource,
   dataNote,
-  explainableDetails,
   escapeHtml,
 }) => {
   const hasScore = score != null
   const scorePercent = hasScore ? getScorePercent(score) : null
   const band = hasScore ? getScoreBand(scorePercent, metricKey) : null
-  const factors = buildMetricFactors(item, metricKey, explainableDetails)
+  const metricField = metricKey === 'student_life' ? 'uniar' : metricKey
+  const storedSections = item?.[`${metricField}_sections`]
   const description = hasScore
     ? buildMetricDescription(item, metricKey, score)
     : (dataNote || 'Bu alan için doğrulanmış resmî veri bulunamadı.')
-  const factorExplanation = hasScore ? buildFactorExplanation(factors) : ''
-  const fullDescription = [description, factorExplanation].filter(Boolean).join(' ')
 
   const eh = escapeHtml
+
+  const sections = Array.isArray(storedSections) && storedSections.length
+    ? storedSections
+    : (hasScore ? buildMetricSectionsFallback(item, metricKey, score) : [])
 
   const statusClass = band?.tone === 'positive'
     ? 'metric-status-positive'
@@ -397,24 +398,36 @@ export const buildMetricCardSections = ({
       ? 'metric-status-negative'
       : 'metric-status-neutral'
 
+  const sectionsHtml = sections.map((section) => `
+    <div class="modal-metric-section">
+      <div class="modal-metric-section-head">${eh(section.title || '')}</div>
+      <p class="modal-metric-section-text">${eh(section.text || '')}</p>
+    </div>
+  `).join('')
+
   return {
     hasScore,
     scorePercent,
+    sections,
     html: `
       <div class="modal-metric-header">
         <span class="modal-metric-title">${eh(label)}</span>
         <span class="modal-metric-score">${hasScore ? `${scorePercent} / 100` : '—'}</span>
       </div>
-      <div class="modal-metric-bar-bg" aria-hidden="true">
-        <div class="modal-metric-bar-fill" style="width: ${hasScore ? scorePercent : 0}%;"></div>
-      </div>
       ${hasScore ? `
-        <div class="modal-metric-status-row">
-          <span class="modal-metric-status-label">Durum</span>
-          <span class="modal-metric-status-value ${statusClass}">${eh(band.label)}</span>
-        </div>
+        <div class="modal-metric-status-badge ${statusClass}">${eh(band.label)}</div>
+        <div class="modal-metric-divider" aria-hidden="true"></div>
       ` : ''}
-      <p class="modal-metric-desc">${eh(fullDescription)}</p>
+      <p class="modal-metric-summary">${eh(description)}</p>
+      ${sectionsHtml ? `<div class="modal-metric-sections">${sectionsHtml}</div>` : ''}
     `,
   }
+}
+
+const buildMetricSectionsFallback = (item, metricKey, score) => {
+  const factors = buildMetricFactors(item, metricKey, null)
+  return factors.slice(0, 4).map((factor) => ({
+    title: factor.label,
+    text: factor.reason || `${factor.label} değerlendirmeye dahil edilmiştir.`,
+  }))
 }
