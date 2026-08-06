@@ -169,7 +169,7 @@
           <table class="compact-table" id="master-table">
             <thead>
               <tr>
-                <th style="width: 36px; text-align: center;">Fav</th>
+                <th style="width: 36px; text-align: center;" title="Favori">★</th>
                 <th style="width: 60px; cursor: pointer;" data-sort="id">ID & Tür</th>
                 <th style="width: 280px;">Üniversite / Bölüm / Fakülte</th>
                 <th style="width: 160px;">Şehir / Dil / Burs</th>
@@ -325,11 +325,11 @@
                   </div>
 
                   <div class="duel-card-actions">
-                    <button type="button" class="btn btn-primary btn-select-choice">Seçenek A'yı Seç (Tuş: 1 / A / Left)</button>
+                    <button type="button" class="btn btn-primary btn-select-choice">Seçenek A'yı Seç (Tuş: 1 / A / Sol)</button>
                   </div>
                 </div>
 
-                <div class="duel-vs">VS</div>
+                <div class="duel-vs" aria-hidden="true">veya</div>
 
                 <!-- Option B Card -->
                 <div class="duel-card option-card" id="option-b-card" data-choice="B">
@@ -379,7 +379,7 @@
                   </div>
 
                   <div class="duel-card-actions">
-                    <button type="button" class="btn btn-primary btn-select-choice">Seçenek B'yi Seç (Tuş: 2 / B / Right)</button>
+                    <button type="button" class="btn btn-primary btn-select-choice">Seçenek B'yi Seç (Tuş: 2 / B / Sağ)</button>
                   </div>
                 </div>
 
@@ -492,7 +492,7 @@
                   </div>
                 </div>
               </div>
-              <div class="compare-vs-badge">VS</div>
+              <div class="compare-vs-badge" aria-hidden="true">karşı</div>
               <div class="compare-select-block">
                 <span class="compare-select-label" id="compare-program-label-2">2. Program</span>
                 <div class="compare-picker" id="compare-program-picker-2" data-mode="program" data-slot="1">
@@ -529,7 +529,7 @@
                   </div>
                 </div>
               </div>
-              <div class="compare-vs-badge">VS</div>
+              <div class="compare-vs-badge" aria-hidden="true">karşı</div>
               <div class="compare-select-block">
                 <span class="compare-select-label" id="compare-university-label-2">2. Üniversite</span>
                 <div class="compare-picker" id="compare-university-picker-2" data-mode="university" data-slot="1">
@@ -566,7 +566,7 @@
                   </div>
                 </div>
               </div>
-              <div class="compare-vs-badge">VS</div>
+              <div class="compare-vs-badge" aria-hidden="true">karşı</div>
               <div class="compare-select-block">
                 <span class="compare-select-label" id="compare-department-label-2">2. Bölüm</span>
                 <div class="compare-picker" id="compare-department-picker-2" data-mode="department" data-slot="1">
@@ -688,7 +688,7 @@
                 <div style="font-size: 0.75rem; color: var(--muted-foreground); margin-bottom: 0.25rem;">Tahmini yerleşme sıralaması (regresyon + kontenjan modeli)</div>
                 <div id="modal-prediction-value" style="font-family: var(--font-mono); font-size: 1.375rem; font-weight: 700; color: var(--primary);">—</div>
                 <div id="modal-prediction-range" class="cell-sub" style="margin-top: 0.35rem;">Güven aralığı: —</div>
-                <div id="modal-prediction-trend" class="cell-sub" style="margin-top: 0.15rem;">Trend: —</div>
+                <div id="modal-prediction-trend" class="cell-sub" style="margin-top: 0.15rem;">Eğilim: —</div>
               </div>
             </div>
           </div>
@@ -777,7 +777,7 @@
             type="text"
             id="search-add-program"
             class="compact-input"
-            placeholder="Bölüm veya üniversite ara — örn: bilgisayar, tıp, mimarlık..."
+            placeholder="Bölüm veya üniversite ara — örn: bilgisayar, açıköğretim, işletme..."
             autocomplete="off"
             spellcheck="false"
             aria-label="Program ara"
@@ -799,6 +799,16 @@
               <option value="all">Tümü</option>
               <option value="Lisans">Lisans (4Y)</option>
               <option value="Önlisans">Önlisans (2Y)</option>
+            </select>
+          </div>
+          <div class="filter-group" style="flex: 1; min-width: 140px;">
+            <label for="add-program-instruction" style="font-size: 0.75rem;">Öğretim türü (opsiyonel)</label>
+            <select id="add-program-instruction" class="compact-select" style="width: 100%;">
+              <option value="all">Tümü</option>
+              <option value="orgun">Örgün Öğretim</option>
+              <option value="acik">Açıköğretim</option>
+              <option value="uzaktan">Uzaktan Öğretim</option>
+              <option value="dis">Açık / Uzaktan (tümü)</option>
             </select>
           </div>
         </div>

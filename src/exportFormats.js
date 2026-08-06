@@ -13,7 +13,7 @@ export const EXPORT_FORMATS = [
   {
     id: 'excel',
     label: 'Excel',
-    hint: 'Excel veya Google Sheets\'te açılır',
+    hint: 'Excel veya Google E-Tablolar\'da açılır',
     ext: 'csv',
     mime: 'text/csv;charset=utf-8',
     icon: 'XL',

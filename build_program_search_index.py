@@ -30,6 +30,27 @@ def tokenize(s: str) -> list:
     return [t for t in s.split() if len(t) >= 2]
 
 
+def infer_instruction_type(full_title: str) -> str:
+    upper = (full_title or "").upper()
+    if "AÇIKÖĞRETİM" in upper or "AÇIK ÖĞRETİM" in upper:
+        return "Açıköğretim"
+    if "UZAKTAN" in upper:
+        return "Uzaktan Öğretim"
+    if "UOLP" in upper:
+        return "UOLP"
+    return "Örgün"
+
+
+def instruction_search_tokens(full_title: str) -> str:
+    upper = (full_title or "").upper()
+    tokens = []
+    if "AÇIKÖĞRETİM" in upper or "AÇIK ÖĞRETİM" in upper:
+        tokens.extend(["açıköğretim", "açık öğretim", "açık öğretim programı"])
+    if "UZAKTAN" in upper:
+        tokens.extend(["uzaktan öğretim", "uzaktan", "açık öğretim", "açıköğretim"])
+    return " ".join(tokens)
+
+
 def main():
     with open(INDEX_PATH, "r", encoding="utf-8") as f:
         programs = json.load(f)
@@ -39,16 +60,22 @@ def main():
 
     for p in programs:
         dept = p.get("department_group") or p.get("department", "")
+        full_title = p.get("full_title", "")
+        instruction = infer_instruction_type(full_title)
+        search_extra = instruction_search_tokens(full_title)
         entry = {
             "id": p["program_id"],
-            "t": p.get("full_title", ""),
+            "t": full_title,
             "u": p.get("university", ""),
             "d": p.get("department", ""),
             "g": dept,
             "c": p.get("city", ""),
             "s": p.get("score_type", ""),
             "b": p.get("scholarship_rate", ""),
-            "h": tr_lower(f"{p.get('full_title','')} {p.get('university','')} {dept} {p.get('city','')}"),
+            "o": instruction,
+            "h": tr_lower(
+                f"{full_title} {p.get('university', '')} {dept} {p.get('city', '')} {search_extra}"
+            ),
         }
         compact.append(entry)
         if dept:

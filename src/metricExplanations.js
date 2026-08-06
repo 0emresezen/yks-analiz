@@ -1,7 +1,39 @@
 /**
- * Deterministik metrik açıklamaları — skor bantları, kanıt ve faktör ağırlıkları.
+ * Deterministik metrik açıklamaları — skor bantları ve kanıt kaynakları.
  * LLM kaynağı kullanıcıya asla gösterilmez.
  */
+
+const SUB_KEY_LABELS = {
+  learning_experience: 'Öğrenme deneyimi',
+  academic_support: 'Akademik destek',
+  learning_resources: 'Öğrenme kaynakları',
+  employer_reputation: 'İşveren itibarı',
+  employment_rate: 'İstihdam oranı',
+  alumni_network: 'Mezun ağı',
+  academic_reputation: 'Akademik itibar',
+  industry_collaboration: 'Sanayi iş birliği',
+  research_power: 'Araştırma gücü',
+  mudek_fedek: 'MÜDEK/FEDEK akreditasyonu',
+  professor_count: 'Profesör sayısı',
+  student_faculty_ratio: 'Öğrenci/hoca oranı',
+  sci_publications: 'SCI yayın performansı',
+  tubitak_projects: 'TÜBİTAK projeleri',
+  erasmus_mobility: 'Erasmus anlaşmaları',
+  lab_facilities: 'Laboratuvar altyapısı',
+  teknopark_presence: 'Teknopark varlığı',
+  metro_access: 'Metro erişimi',
+  tram_access: 'Tramvay erişimi',
+  bus_frequency: 'Otobüs sıklığı',
+  kyk_dorm_capacity: 'KYK yurt kapasitesi',
+  kyk_occupancy_rate: 'KYK doluluk durumu',
+  inner_campus_transit: 'Kampüs ulaşımı',
+  city_transit_integration: 'Şehir içi ulaşım entegrasyonu',
+  uniar_satisfaction: 'ÜNİAR memnuniyeti',
+  student_clubs: 'Öğrenci kulüpleri',
+  erasmus_mobility_rate: 'Erasmus değişimi',
+  sports_facilities: 'Spor tesisleri',
+  campus_size: 'Kampüs genişliği',
+}
 
 const LLM_SOURCE_PATTERNS = [/llm/i, /yapay zek/i, /gemini/i, /model/i]
 
@@ -196,7 +228,7 @@ export const buildMetricFactors = (item, metricKey, explainableDetails) => {
   const exp = explainableDetails?.[metricKey]
   if (exp && Object.keys(exp).length) {
     return Object.entries(exp).map(([subKey, subVal]) => ({
-      label: subKey,
+      label: SUB_KEY_LABELS[subKey] || subKey.replace(/_/g, ' '),
       weight: null,
       reason: String(subVal),
     }))
@@ -221,9 +253,6 @@ const buildFactorExplanation = (factors) => {
     .map((factor) => {
       if (factor.reason) return toSentence(factor.reason)
       if (!factor.label) return ''
-      if (factor.weight != null) {
-        return `${factor.label} bu skorda yaklaşık %${factor.weight} ağırlığa sahiptir.`
-      }
       return `${factor.label} değerlendirmeye dahil edilmiştir.`
     })
     .filter(Boolean)
@@ -316,8 +345,8 @@ const buildMetricSpecificDescription = (item, metricKey, scorePercent) => {
     case 'ai_opportunity':
       if (storedDesc) return storedDesc
       return item.city === 'İstanbul' || item.city === 'Ankara'
-        ? 'Bölgedeki bilişim/AI ekosistemi ve teknopark yoğunluğu fırsat skorunu yükseltir.'
-        : 'Teknopark varlığı ve teknoloji yatırımları AI sektörü yakınlığını belirler.'
+        ? 'Bölgedeki yapay zeka ekosistemi ve teknopark yoğunluğu fırsat skorunu yükseltir.'
+        : 'Teknopark varlığı ve teknoloji yatırımları yapay zeka sektörü yakınlığını belirler.'
     case 'internship':
       if (storedDesc) return storedDesc
       return 'Çevredeki sanayi/ofis yoğunluğu ve stajyer kabul istatistikleri staj kolaylığını yansıtır.'
@@ -329,7 +358,7 @@ const buildMetricSpecificDescription = (item, metricKey, scorePercent) => {
       return 'ÖSYM kılavuzundaki burs/indirim oranı ve üniversite statüsü değerlendirilmiştir.'
     case 'startup':
       if (storedDesc) return storedDesc
-      return 'Kuluçka merkezleri, teknopark entegrasyonu ve girişimcilik ekosistemi startup skorunu belirler.'
+      return 'Kuluçka merkezleri, teknopark entegrasyonu ve girişimcilik ekosistemi girişimcilik skorunu belirler.'
     default:
       return storedDesc || 'Kanıta dayalı değerlendirme modeli ile hesaplanmıştır.'
   }

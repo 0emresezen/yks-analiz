@@ -29,12 +29,12 @@ import {
   sanitizeProgramStrings
 } from './security.js';
 import {
-  trackVisit,
+  initUsageStats,
   trackWizardUsed,
   trackListCreated,
   startPresence,
   fetchSimpleStats,
-  formatStatNumber
+  formatStatNumber,
 } from './usageStats.js';
 import { setupAboutPage, renderAboutPage } from './aboutPage.js';
 import { enrichItemWithPrediction } from './rankingPrediction.js';
@@ -673,6 +673,10 @@ class MasterApp {
 const app = new MasterApp();
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Ziyaret sayacı veritabanı yüklemesini beklemez; her sayfa açılışı/F5 sayılır.
+  initUsageStats();
+  startPresence();
+
   // Buton/etkileşim dinleyicileri veri yüklemesini BEKLEMEDEN bağlanır;
   // aksi halde yavaş ağda saniyelerce "ölü buton" dönemi oluşuyor.
   setupNavTabs();
@@ -706,14 +710,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (e) {
     console.error('Veritabanı yükleme hatası:', e);
     alert(app.useSupabase
-      ? 'Supabase veritabanı yüklenemedi. Şema ve migration scriptini kontrol edin.'
+      ? 'Uzak veritabanı yüklenemedi. Şema ve migration betiğini kontrol edin.'
       : 'Analiz veritabanı yüklenemedi. Lütfen build_analysis_database.py çalıştırın.');
   } finally {
     if (loader) loader.classList.add('hidden');
   }
 
-  trackVisit();
-  startPresence();
   app.syncFavoritesList();
   await populateDropdowns();
   renderMasterTable();
@@ -946,6 +948,9 @@ const buildRowHtml = (item) => {
         <span class="cell-title">${eh(item.city)}</span>
         <span class="cell-sub">${eh(item.language || '-')}</span>
         <span class="cell-sub">${eh(item.tuition_status || '-')}</span>
+        ${inferInstructionType(item.full_name || item.department) !== 'Örgün'
+          ? `<span class="cell-tag onlisans">${eh(inferInstructionType(item.full_name || item.department))}</span>`
+          : ''}
       </div>
     </td>
     <td>${renderMetricCell('transport')}</td>
@@ -1923,6 +1928,35 @@ function finishWizard() {
   trackListCreated();
 }
 
+const METRIC_SUB_LABELS = {
+  employer_reputation: 'İşveren İtibarı',
+  employment_rate: 'İstihdam Oranı',
+  alumni_network: 'Mezun Ağı',
+  academic_reputation: 'Akademik İtibar',
+  industry_collaboration: 'Sanayi İş Birliği',
+  research_power: 'Araştırma Gücü',
+  mudek_fedek: 'MÜDEK/FEDEK Akreditasyonu',
+  professor_count: 'Profesör Sayısı',
+  student_faculty_ratio: 'Öğrenci/Hoca Oranı',
+  sci_publications: 'SCI Yayın Performansı',
+  tubitak_projects: 'TÜBİTAK Projeleri',
+  erasmus_mobility: 'Erasmus Anlaşmaları',
+  lab_facilities: 'Laboratuvar Altyapısı',
+  teknopark_presence: 'Teknopark Varlığı',
+  metro_access: 'Metro Erişimi',
+  tram_access: 'Tramvay Erişimi',
+  bus_frequency: 'Otobüs Sıklığı',
+  kyk_dorm_capacity: 'KYK Yurt Kapasitesi',
+  kyk_occupancy_rate: 'KYK Doluluk Durumu',
+  inner_campus_transit: 'Kampüs Ulaşımı',
+  city_transit_integration: 'Şehir İçi Ulaşım Entegrasyonu',
+  uniar_satisfaction: 'ÜNİAR Memnuniyeti',
+  student_clubs: 'Öğrenci Kulüpleri',
+  erasmus_mobility_rate: 'Erasmus Değişimi',
+  sports_facilities: 'Spor Tesisleri',
+  campus_size: 'Kampüs Genişliği',
+};
+
 function getQualitativeReason(subKey, value) {
   switch (subKey) {
     case 'employer_reputation':
@@ -1939,7 +1973,7 @@ function getQualitativeReason(subKey, value) {
       if (value >= 9) return "Çok güçlü ve sektörü domine eden mezun ağı.";
       if (value >= 7) return "Geniş mezun ağı ve aktif dayanışma platformları.";
       if (value >= 5) return "Standart mezun ilişkileri ve bölgesel iş birlikleri.";
-      return "Gelişmekte olan, sınırlı mezun network gücü.";
+      return "Gelişmekte olan, sınırlı mezun ağı gücü.";
     case 'academic_reputation':
       if (value >= 9) return "Ulusal ve uluslararası akademik çevrelerde yüksek saygınlık.";
       if (value >= 7) return "Köklü akademik gelenek ve bilimsel tanınırlık.";
@@ -2030,7 +2064,7 @@ function getQualitativeReason(subKey, value) {
       if (value >= 6) return "Standart genişlikte ve sosyal alanları olan bir yerleşke.";
       return "Sınırlı alana sahip şehir veya bina kampüsü.";
     default:
-      return `${subKey}: ${value}`;
+      return METRIC_SUB_LABELS[subKey] ? `${METRIC_SUB_LABELS[subKey]} için değerlendirme yapıldı.` : 'Bu alt kriter değerlendirmeye dahil edildi.';
   }
 }
 
@@ -2058,7 +2092,9 @@ async function openDetailModal(id) {
   document.getElementById('modal-dept-sub').textContent = `${item.location || item.city} (${item.city}) - ${item.degree}`;
 
   document.getElementById('modal-faculty').textContent = item.faculty || 'Fakülte / Yüksekokul bilgisi bulunamadı';
-  document.getElementById('modal-lang-tuition').textContent = `${item.language} | ${item.tuition_status}`;
+  const instructionLabel = inferInstructionType(item.full_name || item.department);
+  const instructionSuffix = instructionLabel !== 'Örgün' ? ` | ${instructionLabel}` : '';
+  document.getElementById('modal-lang-tuition').textContent = `${item.language} | ${item.tuition_status}${instructionSuffix}`;
 
   const METRIC_LABELS = {
     prestige: 'Diploma Gücü & Prestij',
@@ -2071,43 +2107,13 @@ async function openDetailModal(id) {
     cost: 'Yaşam Maliyeti Uygunluğu',
     housing: 'Barınma / Yurt Olanakları',
     career: 'İlk İş Bulma Hızı',
-    ai_opportunity: 'AI Sektörü Fırsatları',
+    ai_opportunity: 'Yapay Zeka Fırsatları',
     internship: 'Staj Olanakları',
     scholarship: 'Burs Olanakları',
-    startup: 'Girişimcilik & Startup'
+    startup: 'Girişimcilik'
   };
 
-  const SUB_LABELS = {
-    employer_reputation: 'İşveren İtibarı (%30)',
-    employment_rate: 'İstihdam Oranı (%20)',
-    alumni_network: 'Mezun Ağı (%20)',
-    academic_reputation: 'Akademik İtibar (%10)',
-    industry_collaboration: 'Sanayi İş Birliği (%10)',
-    research_power: 'Araştırma Gücü (%10)',
-
-    mudek_fedek: 'MÜDEK/FEDEK Akreditasyonu',
-    professor_count: 'Profesör Sayısı',
-    student_faculty_ratio: 'Öğrenci/Hoca Oranı',
-    sci_publications: 'SCI Yayın Performansı',
-    tubitak_projects: 'TÜBİTAK Projeleri',
-    erasmus_mobility: 'Erasmus Anlaşmaları',
-    lab_facilities: 'Laboratuvar Altyapısı',
-    teknopark_presence: 'Teknopark Varlığı',
-
-    metro_access: 'Metro Erişimi (%20)',
-    tram_access: 'Tramvay Erişimi (%15)',
-    bus_frequency: 'Otobüs Sıklığı (%15)',
-    kyk_dorm_capacity: 'KYK Yurt Kapasitesi (%15)',
-    kyk_occupancy_rate: 'KYK Doluluk Durumu (%10)',
-    inner_campus_transit: 'Kampüs Ulaşımı (%10)',
-    city_transit_integration: 'Şehir İçi Ulaşım Entegrasyonu (%15)',
-
-    uniar_satisfaction: 'ÜNİAR Memnuniyeti (%40)',
-    student_clubs: 'Öğrenci Kulüpleri (%20)',
-    erasmus_mobility_rate: 'Erasmus Değişimi (%15)',
-    sports_facilities: 'Spor Tesisleri (%10)',
-    campus_size: 'Kampüs Genişliği (%15)'
-  };
+  const SUB_LABELS = METRIC_SUB_LABELS;
 
   const gridContainer = document.getElementById('modal-detailed-scores-grid');
   if (gridContainer) {
@@ -2213,7 +2219,7 @@ async function openDetailModal(id) {
   if (predTrendEl) {
     const trend = pred?.trend_direction || '—';
     const egim = pred?.egim != null ? ` (eğim: ${pred.egim.toLocaleString('tr-TR')})` : '';
-    predTrendEl.textContent = `Trend: ${trend}${egim}`;
+    predTrendEl.textContent = `Eğilim: ${trend}${egim}`;
   }
 
   overlay.classList.remove('hidden');
@@ -2349,6 +2355,7 @@ const loadProgramSearchIndex = async () => {
     c: p.city || '',
     s: p.score_type || '',
     b: p.scholarship_rate || '',
+    o: inferInstructionType(p.full_title),
     h: trLower(`${p.full_title} ${p.university || ''} ${p.department_group || ''} ${p.city || ''}`),
   }));
   return programSearchCache;
@@ -2376,6 +2383,7 @@ const expandSearchEntry = (entry) => ({
   city: entry.c,
   score_type: entry.s,
   scholarship_rate: entry.b,
+  instruction_type: entry.o || inferInstructionType(entry.t),
 });
 
 const scoreSearchMatch = (entry, queryTerms) => {
@@ -2408,6 +2416,24 @@ const normalizeCity = (city) => {
 };
 
 const normalizeTitle = (title) => title.toUpperCase().replace(/\s+/g, ' ').trim();
+
+const inferInstructionType = (title = '') => {
+  const upper = String(title).toUpperCase();
+  if (upper.includes('AÇIKÖĞRETİM') || upper.includes('AÇIK ÖĞRETİM')) return 'Açıköğretim';
+  if (upper.includes('UZAKTAN')) return 'Uzaktan Öğretim';
+  if (upper.includes('UOLP')) return 'UOLP';
+  return 'Örgün';
+};
+
+const matchesInstructionFilter = (title, filter) => {
+  if (!filter || filter === 'all') return true;
+  const type = inferInstructionType(title);
+  if (filter === 'orgun') return type === 'Örgün';
+  if (filter === 'acik') return type === 'Açıköğretim';
+  if (filter === 'uzaktan') return type === 'Uzaktan Öğretim';
+  if (filter === 'dis') return type === 'Açıköğretim' || type === 'Uzaktan Öğretim';
+  return true;
+};
 
 const inferDegree = (fullTitle) => {
   const upper = fullTitle.toUpperCase();
@@ -2603,6 +2629,8 @@ const renderAddProgramSearchResults = (programs, totalMatches = 0) => {
       ? card.last_rank.toLocaleString('tr-TR')
       : null;
 
+    const instructionLabel = prog.instruction_type || inferInstructionType(prog.full_title);
+
     return `
     <button
       type="button"
@@ -2619,6 +2647,7 @@ const renderAddProgramSearchResults = (programs, totalMatches = 0) => {
           <span>${eh(prog.department_group || prog.department || '')}</span>
           <span>${eh(prog.city)}</span>
           <span>${eh(prog.score_type || '')}</span>
+          ${instructionLabel !== 'Örgün' ? `<span>${eh(instructionLabel)}</span>` : ''}
           ${prog.scholarship_rate ? `<span>${eh(prog.scholarship_rate)}</span>` : ''}
           ${rankLabel ? `<span>Sıra: ${eh(rankLabel)}</span>` : ''}
           ${alreadyAdded ? '<span>Listede</span>' : ''}
@@ -2659,9 +2688,11 @@ const searchAddPrograms = async () => {
   const query = trLower(rawQuery);
   const cityFilter = document.getElementById('add-program-city')?.value || '';
   const degreeFilter = document.getElementById('add-program-degree')?.value || 'all';
+  const instructionFilter = document.getElementById('add-program-instruction')?.value || 'all';
   const container = document.getElementById('search-add-results');
+  const hasSideFilter = Boolean(cityFilter) || degreeFilter !== 'all' || instructionFilter !== 'all';
 
-  if (!query.length) {
+  if (!query.length && !hasSideFilter) {
     if (container) {
       container.innerHTML = '<div class="search-empty-state">Aramaya başlamak için bölüm veya üniversite adı yazın.</div>';
     }
@@ -2669,7 +2700,7 @@ const searchAddPrograms = async () => {
   }
 
   const queryTerms = query.split(/\s+/).filter(Boolean);
-  if (!queryTerms.length) {
+  if (!queryTerms.length && !hasSideFilter) {
     if (container) {
       container.innerHTML = '<div class="search-empty-state">Aramaya başlamak için bölüm veya üniversite adı yazın.</div>';
     }
@@ -2684,17 +2715,17 @@ const searchAddPrograms = async () => {
     if (cityFilter && prog.city !== cityFilter) continue;
     if (degreeFilter === 'Lisans' && inferDegree(prog.full_title) !== 'Lisans (4Y)') continue;
     if (degreeFilter === 'Önlisans' && inferDegree(prog.full_title) !== 'Önlisans (2Y)') continue;
+    if (!matchesInstructionFilter(prog.full_title, instructionFilter)) continue;
 
-    const matchScore = scoreSearchMatch(entry, queryTerms);
+    const matchScore = queryTerms.length ? scoreSearchMatch(entry, queryTerms) : 0;
     if (matchScore >= 0) {
       scored.push({ prog, matchScore });
-      if (scored.length >= MAX_SEARCH_RESULTS * 4) break;
     }
   }
 
   scored.sort((a, b) => b.matchScore - a.matchScore);
   const results = scored.slice(0, MAX_SEARCH_RESULTS).map(s => s.prog);
-  renderAddProgramSearchResults(results, scored.length >= MAX_SEARCH_RESULTS * 4 ? '160+' : scored.length);
+  renderAddProgramSearchResults(results, scored.length > MAX_SEARCH_RESULTS ? `${scored.length}+` : scored.length);
 };
 
 const populateAddProgramCityDropdown = async () => {
@@ -2787,6 +2818,7 @@ function setupAddProgramModal() {
   const searchBtn = document.getElementById('btn-search-add-program');
   const citySelect = document.getElementById('add-program-city');
   const degreeSelect = document.getElementById('add-program-degree');
+  const instructionSelect = document.getElementById('add-program-instruction');
   const saveBtn = document.getElementById('btn-save-new-program');
 
   if (!openBtn || !modal) return;
@@ -2828,9 +2860,12 @@ function setupAddProgramModal() {
     }
   });
   degreeSelect?.addEventListener('change', () => {
-    if ((searchInput?.value.trim().length || 0) >= MIN_SEARCH_CHARS) {
+    if ((searchInput?.value.trim().length || 0) >= MIN_SEARCH_CHARS || instructionSelect?.value !== 'all' || citySelect?.value) {
       runSearch();
     }
+  });
+  instructionSelect?.addEventListener('change', () => {
+    runSearch();
   });
 
   saveBtn?.addEventListener('click', () => addSelectedProgramsToList());
@@ -3075,6 +3110,64 @@ const getCompareSelectedLabel = (mode, value) => {
   if (value == null || value === '') return null
   const match = getCompareCatalog(mode).find((item) => String(item.value) === String(value))
   return match?.label || String(value)
+}
+
+const normalizeCompareRank = (value) => {
+  const n = Number(value)
+  return Number.isFinite(n) && n > 0 ? Math.round(n) : null
+}
+
+const getProgramTabanSira = (item) => (
+  normalizeCompareRank(item.last_rank) ?? normalizeCompareRank(item.prediction?.tahmini_skor)
+)
+
+const getCompareRankRange = (programs) => {
+  const ranks = programs.map(getProgramTabanSira).filter((n) => n != null)
+  const total = programs.length
+  const withData = ranks.length
+  if (!ranks.length) {
+    return { best: null, worst: null, total, withData, unique: 0 }
+  }
+  return {
+    best: Math.min(...ranks),
+    worst: Math.max(...ranks),
+    total,
+    withData,
+    unique: new Set(ranks).size,
+  }
+}
+
+const formatCompareRank = (value) => (
+  value != null ? value.toLocaleString('tr-TR') : '-'
+)
+
+const renderCompareRankRangeHtml = (range) => {
+  const { best, worst, total, withData, unique } = range
+  if (best == null) {
+    return '<div class="compare-desc-text">Taban sıra verisi yok.</div>'
+  }
+
+  if (unique <= 1) {
+    const hint = withData < total
+      ? `${withData}/${total} programda sıra verisi var.`
+      : total === 1
+        ? 'Listedeki tek program.'
+        : `${total} program — aynı taban sıra.`
+    return `
+      <div style="font-family:var(--font-mono); font-size:0.8125rem; display:flex; flex-direction:column; gap:0.25rem;">
+        <div>Taban sıra: <strong>${formatCompareRank(best)}</strong></div>
+        <div class="compare-desc-text">${hint}</div>
+      </div>
+    `
+  }
+
+  return `
+    <div style="font-family:var(--font-mono); font-size:0.8125rem; display:flex; flex-direction:column; gap:0.25rem;">
+      <div>En iyi taban sıra: <strong>${formatCompareRank(best)}</strong></div>
+      <div>En zayıf taban sıra: <strong>${formatCompareRank(worst)}</strong></div>
+      <div class="compare-desc-text">${withData}/${total} programda veri.</div>
+    </div>
+  `
 }
 
 const setCompareSelection = (mode, slot, value) => {
@@ -3544,34 +3637,8 @@ function renderUniversityComparison() {
     `;
   });
 
-  html += renderRow('Veritabanındaki Programları', uni => {
-    let listHtml = `<ul class="compare-programs-list">`;
-    uni.programs.forEach(prog => {
-      const pred = prog.prediction && typeof prog.prediction.tahmini_skor === 'number'
-        ? prog.prediction.tahmini_skor.toLocaleString('tr-TR')
-        : '-';
-      listHtml += `
-        <li class="compare-program-item">
-          <div style="flex:1; margin-right:0.5rem;">
-            <div style="font-weight:600; font-size:0.75rem;">${eh(prog.department)}</div>
-            <div style="font-size:0.7rem; color:var(--muted-foreground);">Tahmin: ${pred} | Puan: ${prog.rating || '-'}</div>
-          </div>
-          <button class="btn btn-ghost btn-sm btn-inspect-compare" data-id="${prog.id}" style="padding: 0.2rem 0.4rem; height: auto;">Gözat</button>
-        </li>
-      `;
-    });
-    listHtml += `</ul>`;
-    return listHtml;
-  });
-
   html += `</tbody></table>`;
   results.innerHTML = html;
-
-  results.querySelectorAll('.btn-inspect-compare').forEach(btn => {
-    btn.addEventListener('click', () => {
-      openDetailModal(itemId(btn.dataset.id));
-    });
-  });
 }
 
 function renderDepartmentComparison() {
@@ -3604,9 +3671,7 @@ function renderDepartmentComparison() {
       return (sum / valid.length).toFixed(1);
     };
 
-    const ranks = matches.map(x => x.last_rank).filter(Boolean);
-    const bestRank = ranks.length > 0 ? Math.min(...ranks) : null;
-    const worstRank = ranks.length > 0 ? Math.max(...ranks) : null;
+    const rankRange = getCompareRankRange(matches)
 
     return {
       name: deptName,
@@ -3616,8 +3681,7 @@ function renderDepartmentComparison() {
       avgAcademic: avg(matches.map(x => x.academic_score)),
       avgTransport: avg(matches.map(x => x.transport_score)),
       avgUniar: avg(matches.map(x => x.uniar_score)),
-      bestRank,
-      worstRank,
+      rankRange,
       programs: matches
     };
   }).filter(Boolean);
@@ -3650,16 +3714,7 @@ function renderDepartmentComparison() {
     <div style="font-size:0.75rem; color:var(--muted-foreground);">Kişisel tercih listenizdeki ortalama puanı.</div>
   `);
 
-  html += renderRow('Sıralama Aralığı', dept => {
-    const bestStr = dept.bestRank ? dept.bestRank.toLocaleString('tr-TR') : '-';
-    const worstStr = dept.worstRank ? dept.worstRank.toLocaleString('tr-TR') : '-';
-    return `
-      <div style="font-family:var(--font-mono); font-size:0.8125rem; display:flex; flex-direction:column; gap:0.25rem;">
-        <div>En Yüksek Başarı: <strong>${bestStr}</strong></div>
-        <div>En Düşük Başarı: <strong>${worstStr}</strong></div>
-      </div>
-    `;
-  });
+  html += renderRow('Sıralama Aralığı', dept => renderCompareRankRangeHtml(dept.rankRange));
 
   html += renderRow('Ort. Ulaşım & KYK', dept => {
     const val = parseFloat(dept.avgTransport) || 0;
@@ -3777,11 +3832,9 @@ async function renderUsageStatsPage() {
 
   if (footnote) {
     if (data.statsMode === 'remote') {
-      footnote.textContent = 'Anonim kullanım sayıları — kişisel bilgi toplanmaz.'
-    } else if (data.statsMode === 'local-fallback') {
-      footnote.textContent = 'Sunucu sayacı henüz güncellenemedi; bu cihazdaki sayılar gösteriliyor.'
+      footnote.textContent = 'Tüm kullanıcılar için ortak anonim sayaçlar.'
     } else {
-      footnote.textContent = 'İstatistikler yalnızca bu cihazda görüntülenir.'
+      footnote.textContent = 'Kullanım sayaçları şu an gösterilemiyor.'
     }
   }
 
