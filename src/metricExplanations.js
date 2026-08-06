@@ -3,6 +3,11 @@
  * LLM kaynağı kullanıcıya asla gösterilmez.
  */
 
+import { buildMetricSectionsFromScore, getMetricSectionBand, getSectionText } from './metricSectionTexts.js'
+import { getQualitativeReason } from './metricQualitative.js'
+
+const GENERIC_FILLER = /değerlendirmeye dahil|değerlendirme yapıldı|katılmıştır|katkı sağlıyor|değerlendirmeye alındı/i
+
 const SUB_KEY_LABELS = {
   learning_experience: 'Öğrenme deneyimi',
   academic_support: 'Akademik destek',
@@ -195,31 +200,40 @@ export const getMetricEvidence = (item, metricKey, dataSource) => {
   return [...evidence].slice(0, 5)
 }
 
-const factorReasonFromItem = (item, factor, metricKey) => {
+const factorReasonFromItem = (item, factor, metricKey, score) => {
   if (factor.subKey) {
     const val = item.uniar_subcategories?.[factor.subKey]
     if (val != null) {
-      const pct = Math.round(Number(val) * 10)
-      return `${factor.label} skoru ${pct}/100 düzeyinde`
+      const reason = getQualitativeReason(factor.subKey, Number(val))
+      if (reason) return reason
     }
   }
-  if (factor.itemKey) {
-    const val = item[factor.itemKey]
-    if (val != null) {
-      const pct = Math.round(Number(val) * 10)
-      return `${factor.label} ${pct}/100 katkı sağlıyor`
+  if (factor.itemKey === 'prestige_urap_rank' && item.prestige_urap_rank) {
+    return `URAP Türkiye sıralamasında ${item.prestige_urap_rank}. sırada yer alıyor.`
+  }
+  if (factor.itemKey && item[factor.itemKey] != null) {
+    const val = Number(item[factor.itemKey])
+    if (factor.id === 'uniar' || factor.itemKey === 'uniar_score') {
+      const reason = getQualitativeReason('uniar_satisfaction', val)
+      if (reason) return reason
     }
   }
   if (metricKey === 'scholarship') {
     if (factor.id === 'rate' && item.scholarship_rate) {
-      return `${item.scholarship_rate} statüsü değerlendirmeye alındı`
+      return `${item.scholarship_rate} statüsü burs skorunun ana belirleyicisidir.`
     }
     if (factor.id === 'type' && item.university_type) {
-      return `${item.university_type} üniversite statüsü`
+      return `${item.university_type} üniversite statüsü burs imkânlarını şekillendirir.`
     }
   }
   if (metricKey === 'international' && factor.id === 'language' && item.language) {
-    return `Eğitim dili: ${item.language}`
+    return `Eğitim dili ${item.language}; uluslararasılaşma profilini doğrudan etkiler.`
+  }
+  if (score != null) {
+    const scorePercent = getScorePercent(score)
+    const band = getMetricSectionBand(scorePercent, metricKey)
+    const sectionText = getSectionText(metricKey, factor.id, band)
+    if (sectionText && !GENERIC_FILLER.test(sectionText)) return sectionText
   }
   return null
 }
@@ -238,26 +252,8 @@ export const buildMetricFactors = (item, metricKey, explainableDetails) => {
   return factors.map((factor) => ({
     label: factor.label,
     weight: factor.weight,
-    reason: factorReasonFromItem(item, factor, metricKey),
+    reason: factorReasonFromItem(item, factor, metricKey, item[`${metricKey === 'student_life' ? 'uniar' : metricKey}_score`] ?? item[metricKey]),
   }))
-}
-
-const toSentence = (text) => {
-  const trimmed = String(text || '').trim()
-  if (!trimmed) return ''
-  return trimmed.endsWith('.') ? trimmed : `${trimmed}.`
-}
-
-const buildFactorExplanation = (factors) => {
-  const sentences = factors
-    .map((factor) => {
-      if (factor.reason) return toSentence(factor.reason)
-      if (!factor.label) return ''
-      return `${factor.label} değerlendirmeye dahil edilmiştir.`
-    })
-    .filter(Boolean)
-
-  return sentences.join(' ')
 }
 
 const buildCostDescription = (item, scorePercent) => {
@@ -382,15 +378,18 @@ export const buildMetricCardSections = ({
   const band = hasScore ? getScoreBand(scorePercent, metricKey) : null
   const metricField = metricKey === 'student_life' ? 'uniar' : metricKey
   const storedSections = item?.[`${metricField}_sections`]
+  const fromData = Array.isArray(storedSections)
+    ? storedSections.map(sanitizeMetricSection).filter(Boolean)
+    : []
+  const sections = fromData.length
+    ? fromData
+    : (hasScore ? buildMetricSectionsFallback(item, metricKey, score) : [])
+
   const description = hasScore
     ? buildMetricDescription(item, metricKey, score)
     : (dataNote || 'Bu alan için doğrulanmış resmî veri bulunamadı.')
 
   const eh = escapeHtml
-
-  const sections = Array.isArray(storedSections) && storedSections.length
-    ? storedSections
-    : (hasScore ? buildMetricSectionsFallback(item, metricKey, score) : [])
 
   const statusClass = band?.tone === 'positive'
     ? 'metric-status-positive'
@@ -424,10 +423,24 @@ export const buildMetricCardSections = ({
   }
 }
 
+const sanitizeMetricSection = (section) => {
+  const title = String(section?.title || '').trim()
+  const text = String(section?.text || '').trim()
+  if (!title || !text || GENERIC_FILLER.test(text)) return null
+  return { title, text }
+}
+
 const buildMetricSectionsFallback = (item, metricKey, score) => {
-  const factors = buildMetricFactors(item, metricKey, null)
-  return factors.slice(0, 4).map((factor) => ({
-    title: factor.label,
-    text: factor.reason || `${factor.label} değerlendirmeye dahil edilmiştir.`,
-  }))
+  const fromScore = buildMetricSectionsFromScore(metricKey, score)
+  if (fromScore.length) return fromScore
+
+  const factors = buildMetricFactors(item, metricKey, item.explainable_details)
+  return factors
+    .map((factor) => {
+      const text = factor.reason?.trim()
+      if (!text || GENERIC_FILLER.test(text)) return null
+      return { title: factor.label, text }
+    })
+    .filter(Boolean)
+    .slice(0, 4)
 }
