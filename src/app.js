@@ -53,6 +53,8 @@ import {
   getExportFormat,
 } from './exportFormats.js';
 import { buildMetricCardSections } from './metricExplanations.js';
+import { getAkdenizDeptEasterEgg } from './easterEggs.js';
+import { renderRankingEvolutionChart } from './rankingChart.js';
 
 const NO_DATA_NOTE = 'Bu alan için doğrulanmış resmî veri bulunamadı.';
 
@@ -928,7 +930,7 @@ const buildRowHtml = (item) => {
 
   return `
     <td style="text-align: center;">
-      <button class="fav-star-btn ${item.isFavorite ? 'active' : ''}" data-id="${ea(item.id)}" title="Favorilere Ekle/Çıkar">${starSvg}</button>
+      <button type="button" class="fav-star-btn ${item.isFavorite ? 'active' : ''}" data-id="${ea(item.id)}" title="Favorilere Ekle/Çıkar" aria-pressed="${item.isFavorite ? 'true' : 'false'}">${starSvg}</button>
     </td>
     <td>
       <div class="cell-stack">
@@ -1039,9 +1041,27 @@ function getVirtualSlice(items, scrollTop, viewport) {
 function bindMasterTableRowEvents(tbody) {
   tbody.querySelectorAll('.fav-star-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       const id = itemId(e.currentTarget.dataset.id);
+      const container = document.getElementById('master-scroll-container');
+      const savedScroll = container?.scrollTop ?? app.virtualScrollTop ?? 0;
+
       app.toggleFavorite(id);
-      renderMasterTable();
+
+      const item = app.data.find((x) => itemId(x.id) === id);
+      if (item) {
+        e.currentTarget.classList.toggle('active', item.isFavorite);
+        e.currentTarget.innerHTML = item.isFavorite ? SVG_STAR_FILLED : SVG_STAR_OUTLINE;
+        e.currentTarget.setAttribute('aria-pressed', item.isFavorite ? 'true' : 'false');
+      }
+
+      if (container) {
+        app.virtualScrollTop = savedScroll;
+        requestAnimationFrame(() => {
+          container.scrollTop = savedScroll;
+        });
+      }
     });
   });
 
@@ -1109,9 +1129,14 @@ function renderVirtualTableBody({ force = false } = {}) {
 }
 
 // Master Table Rendering — virtual scroll
-function renderMasterTable() {
+function renderMasterTable({ preserveScroll = false } = {}) {
   const tbody = document.getElementById('master-tbody');
   if (!tbody) return;
+
+  const container = document.getElementById('master-scroll-container');
+  const savedScroll = preserveScroll && container
+    ? (container.scrollTop ?? app.virtualScrollTop ?? 0)
+    : 0;
 
   invalidateFilteredDataCache();
   resetVirtualRangeState();
@@ -1127,8 +1152,17 @@ function renderMasterTable() {
     return;
   }
 
+  if (preserveScroll && savedScroll > 0) {
+    app.virtualScrollTop = savedScroll;
+  }
+
   renderVirtualTableBody({ force: true });
   attachVirtualScroll();
+
+  if (preserveScroll && container && savedScroll > 0) {
+    container.scrollTop = savedScroll;
+    app.virtualScrollTop = savedScroll;
+  }
 }
 
 // Single-Click Delete Undo Toast Manager (2 Seconds)
@@ -1951,6 +1985,18 @@ async function openDetailModal(id) {
   document.getElementById('modal-dept-title').textContent = item.full_name;
   document.getElementById('modal-dept-sub').textContent = `${item.location || item.city} (${item.city}) - ${item.degree}`;
 
+  const easterEggEl = document.getElementById('modal-easter-egg');
+  const easterEggText = getAkdenizDeptEasterEgg(item);
+  if (easterEggEl) {
+    if (easterEggText) {
+      easterEggEl.textContent = easterEggText;
+      easterEggEl.classList.remove('hidden');
+    } else {
+      easterEggEl.textContent = '';
+      easterEggEl.classList.add('hidden');
+    }
+  }
+
   document.getElementById('modal-faculty').textContent = item.faculty || 'Fakülte / Yüksekokul bilgisi bulunamadı';
   const instructionLabel = inferInstructionType(item.full_name || item.department);
   const instructionSuffix = instructionLabel !== 'Örgün' ? ` | ${instructionLabel}` : '';
@@ -2038,6 +2084,11 @@ async function openDetailModal(id) {
     quotaRow.innerHTML = '<td><strong>Kontenjan</strong></td>' + padTo4(item.history_quotas)
       .map(q => `<td style="font-family: var(--font-mono);">${q != null ? q : '-'}</td>`).join('');
   }
+
+  renderRankingEvolutionChart(
+    document.getElementById('modal-ranking-chart'),
+    { rankings: padTo4(item.history_rankings), prediction: item.prediction }
+  );
 
   const predValueEl = document.getElementById('modal-prediction-value');
   const predRangeEl = document.getElementById('modal-prediction-range');

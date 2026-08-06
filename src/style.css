@@ -1288,6 +1288,19 @@ body.scroll-locked {
   margin-top: 0.15rem;
 }
 
+.modal-easter-egg {
+  margin-top: 0.45rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--primary) 8%, var(--secondary));
+  border: 1px dashed var(--border-strong);
+  width: fit-content;
+  max-width: 100%;
+}
+
 .modal-close-btn {
   background: transparent;
   border: none;
@@ -1365,6 +1378,120 @@ body.scroll-locked {
 .history-table th {
   background: var(--secondary);
   font-weight: 600;
+}
+
+.ranking-evolution-chart {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.ranking-evolution-chart.hidden {
+  display: none;
+}
+
+.rank-chart-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: var(--foreground);
+}
+
+.rank-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.rank-chart-axis {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.rank-chart-grid {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.rank-chart-axis-label {
+  font-size: 9px;
+  fill: var(--muted-foreground);
+  font-family: var(--font-mono);
+}
+
+.rank-chart-line {
+  stroke: var(--foreground);
+  stroke-width: 2;
+  stroke-linejoin: miter;
+  stroke-linecap: square;
+}
+
+.rank-chart-line-pred {
+  stroke: var(--muted-foreground);
+  stroke-width: 1.75;
+  stroke-dasharray: 6 4;
+}
+
+.rank-chart-dot {
+  fill: var(--foreground);
+}
+
+.rank-chart-dot-pred {
+  fill: var(--muted-foreground);
+  stroke: var(--background);
+  stroke-width: 1.5;
+}
+
+.rank-chart-year {
+  font-size: 9px;
+  fill: var(--muted-foreground);
+  font-family: var(--font-mono);
+}
+
+.rank-chart-year-pred {
+  fill: var(--foreground);
+  font-weight: 700;
+}
+
+.rank-chart-pred-label {
+  font-size: 8px;
+  fill: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rank-chart-gap {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 2 5;
+  opacity: 0.7;
+}
+
+.rank-chart-confidence {
+  fill: url(#rank-ci-hatch);
+  fill-opacity: 0.35;
+  stroke: none;
+}
+
+.rank-chart-hatch-line {
+  stroke: var(--muted-foreground);
+  stroke-width: 1;
+  opacity: 0.35;
+}
+
+.rank-chart-ci-line {
+  stroke: var(--muted-foreground);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+  opacity: 0.65;
+}
+
+.rank-chart-caption {
+  margin: 0.35rem 0 0;
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+  line-height: 1.45;
 }
 
 .collapsible-section {
@@ -2230,9 +2357,10 @@ pre code {
   font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.4;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  width: fit-content;
 }
 
 .modal-metric-status-badge::before {
@@ -2328,19 +2456,28 @@ pre code {
   font-size: 0.75rem;
 }
 
-.metric-status-positive {
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
-  color: var(--foreground);
-}
-
-.metric-status-neutral {
-  background: var(--secondary);
-  color: var(--foreground);
-}
-
+.metric-status-positive,
+.metric-status-neutral,
 .metric-status-negative {
-  background: color-mix(in srgb, #ef4444 10%, transparent);
+  background: transparent;
   color: var(--foreground);
+}
+
+.modal-metric-status-badge.metric-status-positive::before {
+  background: #15803d;
+}
+
+.modal-metric-status-badge.metric-status-neutral::before {
+  background: var(--muted-foreground);
+}
+
+.modal-metric-status-badge.metric-status-negative::before {
+  background: #b91c1c;
+}
+
+.modal-metric-status-value {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
 }
 
 .metric-explain-details {
